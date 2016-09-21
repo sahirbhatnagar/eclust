@@ -3,16 +3,20 @@ Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
 Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
-Depends: R (>= 3.3.1),
+Depends:
+    R (>= 3.3.1),
     data.table
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Suggests: knitr,
+Suggests:
+    knitr,
     rmarkdown
 VignetteBuilder: knitr
-Imports: WGCNA,
+Imports:
+    WGCNA,
     magrittr,
     glmnet,
     dynamicTreeCut,
     earth
+RoxygenNote: 5.0.1
