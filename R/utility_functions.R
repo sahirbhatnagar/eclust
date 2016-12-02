@@ -1,8 +1,51 @@
+#' Not in helper function
+#'
+#' @description Helper function which does the opposite of "in"
+
 "%ni%" <- Negate("%in%")
 
-#' @param rho correlations between green module and temp vector T, and red
-#'   module and temp vector T. A numeric vector of length 2
-simModule <- function(n, p, rho, exposed, ...) {
+#' Simulate Covariates With Exposure Dependent Correlations
+#'
+#' @description This is a wrapper of the \code{\link[WGCNA]{simulateDatExpr}}
+#'   function which simulates data in a modular structure (i.e. in blocks). This
+#'   function simulates data in 5 blocks referred to as Turquoise, Blue, Red,
+#'   Green and Yellow, separately for exposed (E=1) and unexposed (E=0)
+#'   observations.
+#'
+#' @param n number of observations
+#' @param p total number of predictors to simulate
+#' @param exposed binary numeric vector of length \code{n} with 0 for unexposed
+#'   and 1 for exposed
+#' @param rho numeric value representing the expected correlation between green
+#'   module and red module
+#' @param ... arguments passed to the \code{\link[WGCNA]{simulateDatExpr}} function
+#' @return \code{n x p} matrix of simulated data
+#' @examples
+#' d0 <- simModule(n = 100, p = 1000, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- simModule(n = 100, p = 1000, rho = 0.90, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'  magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'  magrittr::set_rownames(paste0("Subject",1:n))
+#' dim(X)
+
+simulate_modules <- function(n, p, rho, exposed, ...) {
 
   if (exposed) {
     #Step 1: simulate the seed module eigengenes
@@ -19,7 +62,7 @@ simModule <- function(n, p, rho, exposed, ...) {
     temp0 <- rho[1] * sMEgreen + sqrt(1 - rho[1] ^ 2) * rnorm(n)
 
     #expected cor(y.continuous,seed.ME) <- -0.95
-    sMEred <- rho[2] * temp0 + sqrt(1 - rho[2] ^ 2) * rnorm(n)
+    sMEred <- rho[1] * temp0 + sqrt(1 - rho[1] ^ 2) * rnorm(n)
 
     datsME <- data.frame(sMEturquoise,sMEblue,sMEred,sMEgreen,sMEyellow)
 
@@ -40,7 +83,7 @@ simModule <- function(n, p, rho, exposed, ...) {
     temp0 <- rho[1] * sMEgreen + sqrt(1 - rho[1] ^ 2) * rnorm(n)
 
     #expected cor(y.continuous,seed.ME) <- -0.95
-    sMEred <- rho[2] * temp0 + sqrt(1 - rho[2] ^ 2) * rnorm(n)
+    sMEred <- rho[1] * temp0 + sqrt(1 - rho[1] ^ 2) * rnorm(n)
 
     datsME <- data.frame(sMEturquoise,sMEblue,sMEred,sMEgreen,sMEyellow)
 
@@ -50,6 +93,8 @@ simModule <- function(n, p, rho, exposed, ...) {
 
   return(dat1)
 }
+
+
 
 fisherTransform <- function (n1, r1, n2, r2) {
   num1a <- which(r1 >= 0.99)
@@ -68,6 +113,8 @@ fisherTransform <- function (n1, r1, n2, r2) {
   pv <- 2 * (1 - pnorm(abs(dz)))
   return(list(diff = dz, pval = pv))
 }
+
+
 
 #' Calculate Fisher's Z test for correlations
 fisherZ <- function(n0, cor0, n1, cor1) {
@@ -99,29 +146,41 @@ fisherZ <- function(n0, cor0, n1, cor1) {
 }
 
 
-#' Cluster similarity matrix and return cluster membership of each gene
-#' as well as average expression per module, 1st PC of each module, and 1st PC
-#' of each module from Test dataset
+#' Cluster similarity matrix
+#'
+#' @description Return cluster membership of each predictor. This function is
+#'   called internally by the \code{\link{generate_data}} and
+#'   \code{\link{generate_data_mars}} function
+#'
 #' @param x similarity matrix. must have non-NULL dimnames i.e., the rows and
-#'   columns should be labelled preferable "Gene1, Gene2, ..."
+#'   columns should be labelled, e.g. "Gene1, Gene2, ..."
 #' @param expr gene expression data (training set). rows are people, columns are
 #'   genes
 #' @param exprTest gene expression test set
 #' @param distanceMethod  one of "euclidean","maximum","manhattan", "canberra",
-#'   "binary","minkowski" to be passed to \code{dist} function. If missing, then
-#'   this function will take 1-x as the dissimilarity measure. This
-#'   functionality is for diffCorr,diffTOM, fisherScore matrices which need to be
-#'   converted to a distance type matrix.
-#' @param clusterMethod how to cluster the data
-#' @param cutMethod what method to use to cut the dendrogram. \code{dynamic}
-#'   refers to dynamicTreeCut library, \code{gap} is Tibshirani's gap statistic
-#'   \code{fixed} is a fixed number specified by the \code{nClusters} argument
+#'   "binary","minkowski" to be passed to \code{\link[stats]{dist}} function. If
+#'   missing, then this function will take 1-x as the dissimilarity measure.
+#'   This functionality is for diffCorr,diffTOM, fisherScore matrices which need
+#'   to be converted to a distance type matrix.
+#' @param clustMethod Cluster the data using hierarchical clustering or
+#'   prototype clustering. Defaults \code{clustMethod="hclust"}. Other option is
+#'   \code{\link[protoclust]{protoclust}}, however this package must be
+#'   installed before proceeding with this option
+#' @param cutMethod what method to use to cut the dendrogram. \code{'dynamic'}
+#'   refers to \code{\link[dynamicTreeCut]{}} library. \code{'gap'} is
+#'   Tibshirani's gap statistic \code{\link[cluster]{clusGap}} using the
+#'   \code{'Tibs2001SEmax'} rule. \code{'fixed'} is a fixed number specified by the
+#'   \code{nClusters} argument
 #' @param nClusters number of clusters. Only used if \code{cutMethod = fixed}
+#' @param K.max the maximum number of clusters to consider, must be at least
+#'   two. Only used if \code{cutMethod='gap'}
+#' @param B integer, number of Monte Carlo (“bootstrap”) samples. Only used if \code{cutMethod='gap'}
 #' @param method the agglomeration method to be used. This should be (an
 #'   unambiguous abbreviation of) one of "ward.D", "ward.D2", "single",
 #'   "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC)
 #'   or "centroid" (= UPGMC).
-clusterSimilarity <- function(x,
+#' @export
+cluster_similarity <- function(x,
                               expr,
                               exprTest,
                               distanceMethod,
@@ -149,6 +208,22 @@ clusterSimilarity <- function(x,
   method <- match.arg(method)
   cutMethod <- match.arg(cutMethod)
   clustMethod <- match.arg(clustMethod)
+
+
+  if (clustMethod=="protoclust") {
+    if (!requireNamespace("protoclust", quietly = TRUE)) {
+      stop("protoclust package needed for this function to work. Please install it.",
+           call. = FALSE)
+    }
+  }
+
+  if (cutMethod=="gap") {
+    if (!requireNamespace("cluster", quietly = TRUE)) {
+      stop("cluster package needed for this function to work. Please install it.",
+           call. = FALSE)
+    }
+  }
+
 
   distance <- if (missing(distanceMethod)) {
     as.dist(1 - x)
@@ -235,7 +310,7 @@ clusterSimilarity <- function(x,
                                                               FUNcluster = FUNcluster,
                                                               K.max = K.max,
                                                               B = B)
-                                nClustGap <- maxSE(f = gapResult$Tab[, "gap"],
+                                nClustGap <- cluster::maxSE(f = gapResult$Tab[, "gap"],
                                                    SE.f = gapResult$Tab[, "SE.sim"],
                                                    method = "Tibs2001SEmax",
                                                    SE.factor = 1)
@@ -246,7 +321,7 @@ clusterSimilarity <- function(x,
                                                               FUNcluster = FUNcluster,
                                                               K.max = K.max,
                                                               B = B)
-                                nClustGap <- maxSE(f = gapResult$Tab[, "gap"],
+                                nClustGap <- cluster::maxSE(f = gapResult$Tab[, "gap"],
                                                    SE.f = gapResult$Tab[, "SE.sim"],
                                                    method = "Tibs2001SEmax",
                                                    SE.factor = 1)
@@ -256,7 +331,7 @@ clusterSimilarity <- function(x,
                             fixed = {
                               if (clustMethod == "hclust") {
                                 cutree(hc, nClusters)
-                              } else protocut(hc, k = nClusters)[["cl"]]
+                              } else protoclust::protocut(hc, k = nClusters)[["cl"]]
                             }
   )
 
@@ -607,7 +682,7 @@ generate_data <- function(p, X, beta,
   # the only difference here is the distance_method arg
   res <- if (cluster_distance %in% c("diffcorr","difftom",
                                      "corScor", "tomScor","fisherScore")) {
-    clusterSimilarity(x = similarity,
+    cluster_similarity(x = similarity,
                       expr = genes_all,
                       exprTest = genes_all_test,
                       distanceMethod = distance_method,
@@ -616,7 +691,7 @@ generate_data <- function(p, X, beta,
                       method = agglomeration_method,
                       K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
   } else {
-    clusterSimilarity(x = similarity,
+    cluster_similarity(x = similarity,
                       expr = genes_all,
                       exprTest = genes_all_test,
                       clustMethod = cluster_method,
@@ -645,7 +720,7 @@ generate_data <- function(p, X, beta,
 
   resEclust <- if (eclust_distance %in% c("diffcorr","difftom",
                                           "corScor", "tomScor","fisherScore")) {
-    clusterSimilarity(x = similarityEclust,
+    cluster_similarity(x = similarityEclust,
                       expr = genes_all,
                       exprTest = genes_all_test,
                       distanceMethod = distance_method,
@@ -654,7 +729,7 @@ generate_data <- function(p, X, beta,
                       method = agglomeration_method,
                       K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
   } else {
-    clusterSimilarity(x = similarityEclust,
+    cluster_similarity(x = similarityEclust,
                       expr = genes_all,
                       exprTest = genes_all_test,
                       clustMethod = cluster_method,
@@ -1223,7 +1298,7 @@ generate_data_mars <- function(p, X, beta,
   # the only difference here is the distance_method arg
   res <- if (cluster_distance %in% c("diffcorr","difftom",
                                      "corScor", "tomScor","fisherScore")) {
-    clusterSimilarity(x = similarity,
+    cluster_similarity(x = similarity,
                       expr = genes_all,
                       exprTest = genes_all_test,
                       distanceMethod = distance_method,
@@ -1232,7 +1307,7 @@ generate_data_mars <- function(p, X, beta,
                       method = agglomeration_method,
                       K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
   } else {
-    clusterSimilarity(x = similarity,
+    cluster_similarity(x = similarity,
                       expr = genes_all,
                       exprTest = genes_all_test,
                       clustMethod = cluster_method,
@@ -1261,7 +1336,7 @@ generate_data_mars <- function(p, X, beta,
 
   resEclust <- if (eclust_distance %in% c("diffcorr","difftom",
                                           "corScor", "tomScor","fisherScore")) {
-    clusterSimilarity(x = similarityEclust,
+    cluster_similarity(x = similarityEclust,
                       expr = genes_all,
                       exprTest = genes_all_test,
                       distanceMethod = distance_method,
@@ -1270,7 +1345,7 @@ generate_data_mars <- function(p, X, beta,
                       method = agglomeration_method,
                       K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
   } else {
-    clusterSimilarity(x = similarityEclust,
+    cluster_similarity(x = similarityEclust,
                       expr = genes_all,
                       exprTest = genes_all_test,
                       clustMethod = cluster_method,
@@ -1382,3 +1457,238 @@ generate_data_mars <- function(p, X, beta,
                  X_train_folds = X_train_folds, Y_train_folds = Y_train_folds)
   return(result)
 }
+
+
+
+#' @param ... arguments passed to the \code{cluster_similarity} function
+#' @param distance_method argument passed to the dist function for calculating the distance
+#' for the clusters based on the corr,corr1,corr0, tom, tom0, tom1 matrices
+cluster_kmeans <- function(data,
+                           response,
+                           exposure,
+                           train_index,
+                           test_index,
+                           min_cluster_size = 50,
+                           cluster_distance = c("corr", "corr0", "corr1", "tom",
+                                                "tom0", "tom1", "diffcorr",
+                                                "difftom", "fisherScore"),
+                           eclust_add = TRUE,
+                           eclust_distance = c("fisherScore", "corScor", "diffcorr",
+                                               "difftom"),
+                           distance_method = c("euclidean","maximum","manhattan", "canberra",
+                                               "binary","minkowski"), ...) {
+
+  # data <- clusters[[1]]
+  #   data <- t(placentaALL[filterd_probes[1:500],])
+  #   min_cluster_size <- 50
+  #   exposure <- E
+  #   train_index <- trainIndex
+  #   test_index <- testIndex
+  #   nPC <- 2
+  #   cluster_distance <- "tom"
+  #   cluster_method <- "hclust"
+  #   cut_method <- "dynamic"
+  #   agglomeration_method <- "average"
+  #   distance_method <- "euclidean"
+  #   eclust_add <- TRUE
+  #   eclust_distance <- "difftom"
+  #   cut_method <- "dynamic" #,"gap", "fixed")
+  #   # summary <- match.arg(summary)
+  #   response <- Y
+
+  # ==================================================================
+  args <- list(...)
+  xtrain <- data[train_index,]
+  xtest <- data[test_index,]
+  etrain <- exposure[train_index]
+
+  ytrain <- response[train_index]
+  ytest <- response[test_index]
+
+  xtrainE0 <- xtrain[which(etrain == 0), ]
+  xtrainE1 <- xtrain[which(etrain == 1), ]
+
+  corrTrain <- WGCNA::cor(xtrain)
+
+  #   message(sprintf("Calculating number of clusters based on %s using %s with %s
+  #                   linkage and the %s method to determine the number of clusters",
+  #                   cluster_distance, cluster_method, agglomeration_method, cut_method))
+
+  #############################################################################
+  #               CORRELATION/TOM CLUSTERS                                    #
+  #############################################################################
+
+  # this cannot be based on difftom, diffcorr, fisherScore
+  if (cluster_distance %in% c("difftom", "diffcorr", "fisherScore")) stop(message("cluster_distance must be one of corr, corr0, corr1, tom, tom0, tom1"))
+
+  # clusters based on cluster_distance argument
+  similarity <- switch(cluster_distance,
+                       corr = corrTrain,
+                       corr0 = WGCNA::cor(xtrainE0),
+                       corr1 = WGCNA::cor(xtrainE1),
+                       tom0 = {
+                         tomTrainE0 <- WGCNA::TOMsimilarityFromExpr(xtrainE0)
+                         dimnames(tomTrainE0)[[1]] <- dimnames(corrTrain)[[1]]
+                         dimnames(tomTrainE0)[[2]] <- dimnames(corrTrain)[[2]]
+                         tomTrainE0
+                       },
+                       tom1 = {
+                         tomTrainE1 <- WGCNA::TOMsimilarityFromExpr(xtrainE1)
+                         dimnames(tomTrainE1)[[1]] <- dimnames(corrTrain)[[1]]
+                         dimnames(tomTrainE1)[[2]] <- dimnames(corrTrain)[[2]]
+                         tomTrainE1
+                       },
+                       tom = {
+                         tomTrainAll <- WGCNA::TOMsimilarityFromExpr(xtrain)
+                         dimnames(tomTrainAll)[[1]] <- dimnames(corrTrain)[[1]]
+                         dimnames(tomTrainAll)[[2]] <- dimnames(corrTrain)[[2]]
+                         tomTrainAll
+                       })
+
+  # results for clustering
+  # note that the cluster_similarity returns the PCs but you dont need this info
+  # because it is calculated in the clust_fun fitting function
+  # we just need to provide the clust_fun function the group membership for all the data
+  res <- cluster_similarity(x = similarity,
+                            x_train = xtrain,
+                            x_test = xtest,
+                            y_train = ytrain,
+                            y_test = ytest,
+                            distance = dist(x = similarity, method = distance_method), ...)
+
+  #############################################################################
+  #               ECLUST CLUSTERS                                             #
+  #############################################################################
+
+  message(paste("Calculating number of environment clusters based on",eclust_distance))
+
+  # clusters based on eclust_distance
+  similarityEclust <- switch(eclust_distance,
+                             corr = corrTrain,
+                             corr0 = WGCNA::cor(xtrainE0),
+                             corr1 = WGCNA::cor(xtrainE1),
+                             diffcorr = {
+                               corr0 <- WGCNA::cor(xtrainE0)
+                               corr1 <- WGCNA::cor(xtrainE1)
+                               abs(corr1 - corr0)
+                             },
+                             difftom = {
+                               tomTrainE0 <- WGCNA::TOMsimilarityFromExpr(xtrainE0)
+                               tomTrainE1 <- WGCNA::TOMsimilarityFromExpr(xtrainE1)
+                               tomTrainDiff <- abs(tomTrainE1 - tomTrainE0)
+                               dimnames(tomTrainDiff)[[1]] <- dimnames(corrTrain)[[1]]
+                               dimnames(tomTrainDiff)[[2]] <- dimnames(corrTrain)[[2]]
+                               tomTrainDiff
+                             },
+                             tom0 = {
+                               tomTrainE0 <- WGCNA::TOMsimilarityFromExpr(xtrainE0)
+                               dimnames(tomTrainE0)[[1]] <- dimnames(corrTrain)[[1]]
+                               dimnames(tomTrainE0)[[2]] <- dimnames(corrTrain)[[2]]
+                               tomTrainE0
+                             },
+                             tom1 = {
+                               tomTrainE1 <- WGCNA::TOMsimilarityFromExpr(xtrainE1)
+                               dimnames(tomTrainE1)[[1]] <- dimnames(corrTrain)[[1]]
+                               dimnames(tomTrainE1)[[2]] <- dimnames(corrTrain)[[2]]
+                               tomTrainE1
+                             },
+                             tom = {
+                               tomTrainAll <- WGCNA::TOMsimilarityFromExpr(xtrain)
+                               dimnames(tomTrainAll)[[1]] <- dimnames(corrTrain)[[1]]
+                               dimnames(tomTrainAll)[[2]] <- dimnames(corrTrain)[[2]]
+                               tomTrainAll
+                             },
+                             fisherScore = {
+                               n0 <- nrow(xtrainE0)
+                               n1 <- nrow(xtrainE1)
+                               corr0 <- WGCNA::cor(xtrainE0)
+                               corr1 <- WGCNA::cor(xtrainE1)
+                               fisherZ(n0 = n0, cor0 = corr0,
+                                       n1 = n1, cor1 = corr1)
+                             })
+
+  resEclust <- if (eclust_distance %in% c("diffcorr","difftom","fisherScore")) {
+    cluster_similarity(x = similarityEclust,
+                       x_train = xtrain,
+                       x_test = xtest,
+                       y_train = ytrain,
+                       y_test = ytest, ...)
+  } else {
+    cluster_similarity(x = similarityEclust,
+                       x_train = xtrain,
+                       x_test = xtest,
+                       y_train = ytrain,
+                       y_test = ytest,
+                       distance = dist(x = similarity, method = distance_method), ...)
+  }
+
+  # we need to combine the cluster information here
+  # this is based on cluster_distance only
+  clustersAll <- copy(res$clusters)
+  n_clusters_All <- res$pcInfo$nclusters
+
+  message(sprintf("There are %d clusters derived from the %s similarity matrix",
+                  n_clusters_All, cluster_distance))
+
+  # this is based on eclust_distance only
+  n_clusters_Eclust <- resEclust$pcInfo$nclusters
+  clustersEclust <- copy(resEclust$clusters)
+
+  message(sprintf("There are %d clusters derived from the %s environment similarity matrix",
+                  n_clusters_Eclust, eclust_distance))
+
+  # this is based on both
+  n_clusters_Addon <- n_clusters_All + n_clusters_Eclust
+
+  message(sprintf("There are a total of %d clusters derived from the %s
+                  similarity matrix and the %s environment similarity matrix",
+                  n_clusters_Addon,cluster_distance,eclust_distance))
+
+  # check if any of the cluster numbers in clustersEclust are 0
+  # if there are, then add n_clusters+1 to each module number in
+  # clustersEclust, else just add n_clusters. this is to control for the
+  # situation where there are some clusters numbers of 0 which would cause
+  # identical cluster numbers in the clusters and clustersEclust data
+  if (clustersEclust[,any(cluster==0)]) {
+    clustersEclust[,cluster := cluster + n_clusters_All + 1 ]
+  } else {
+    clustersEclust[,cluster := cluster + n_clusters_All ]
+  }
+
+  # this contains the clusters from the cluster_distance (e.g. TOM matrix)
+  # and the clusters from the eclust_distance (e.g. diffTOM)
+  clustersAddon <- rbindlist(list(clustersAll, clustersEclust))
+  # clustersAddon[, table(cluster, module)]
+
+  # these are only derived on the main effects genes.. E is only included in the model
+  # this is the clusters based on tom and difftom
+  PC_and_avg_Addon <- extractPC(x_train = xtrain[,clustersAddon$gene],
+                                colors = clustersAddon$cluster,
+                                x_test = xtest[,clustersAddon$gene],
+                                y_train = ytrain,
+                                y_test = ytest, nPC = args$nPC)
+
+  # this is the clusters based on tom only
+  PC_and_avg_All <- extractPC(x_train = xtrain[,clustersAll$gene],
+                              colors = clustersAll$cluster,
+                              x_test = xtest[,clustersAll$gene],
+                              y_train = ytrain,
+                              y_test = ytest, nPC = args$nPC)
+
+  # n.clusters <- PC_and_avg_Addon$nclusters
+
+  # this contains either the averages or PCs for each module in a data.frame
+  #   clust_data_Addon <- switch(summary,
+  #                        avg = PC_and_avg_Addon$averageExpr,
+  #                        pc = PC_and_avg_Addon$PC)
+  #
+  #   clust_data_All <- switch(summary,
+  #                            avg = PC_and_avg_All$averageExpr,
+  #                            pc = PC_and_avg_All$PC)
+
+
+  return(list(clustersAddon = PC_and_avg_Addon,
+              clustersAll = PC_and_avg_All,
+              etrain = etrain))
+}
+

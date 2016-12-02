@@ -42,6 +42,11 @@ set that you want to use to cluster the genes. Must be one of the following
 \itemize{ \item corr, corr0, corr1, tom, tom0, tom1, diffcorr, difftom,
 corScor, tomScor, fisherScore }}
 
+\item{K.max}{the maximum number of clusters to consider, must be at least
+two. Only used if \code{cutMethod='gap'}}
+
+\item{B}{integer, number of Monte Carlo (“bootstrap”) samples. Only used if \code{cutMethod='gap'}}
+
 \item{EclustDistance}{character representing which matrix from the training
 set that you want to use to cluster the genes based on the environment.
 See \code{cluster_distance} for
