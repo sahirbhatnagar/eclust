@@ -1,13 +1,11 @@
-# number_pc=2 will not work if there is only one gene in a module!
-# number_pc=2 will not work if there is only one gene in a module!
-
 #' Fit Penalized Regression Models on Simulated Cluster Summaries
 #'
 #' @description This function creates summaries of the given clusters (e.g. 1st
 #'   PC or average), and then fits a penalized regression model on those
 #'   summaries. To be used with simulated data where the 'truth' is known i.e.,
 #'   you know which features are associated with the response. This function was
-#'   used to produce the simulation results in Bhatnagar et al. 2016
+#'   used to produce the simulation results in Bhatnagar et al. 2016. Can run
+#'   lasso, elasticnet, SCAD or MCP models
 #' @param x_train \code{ntrain x p} matrix of simulated training set where
 #'   \code{ntrain} is the number of training observations  and \code{p} is total
 #'   number of predictors. This matrix needs to have named columns representing
@@ -28,13 +26,17 @@
 #'   either a factor with two levels, or a two-column matrix of counts or
 #'   proportions (the second column is treated as the target class; for a
 #'   factor, the last level in alphabetical order is the target class).
-#' @param s0 chracter vector of
+#' @param s0 chracter vector of the active feature names, i.e., the features in
+#'   \code{x_train} that are truly associated with the response.
 #' @param summary the summary of each cluster. Can be the principal component or
 #'   average. Default is \code{summary = "pc"} which takes the first
 #'   \code{number_pc} principal components. Currently a maximum of 2 principal
 #'   components can be chosen.
 #' @param model Regression model to be fit on cluster summaries. Default is
-#'   \code{model="lasso"}. Can also be
+#'   \code{model="lasso"} which corresponds to glmnet mixing parameter
+#'   \code{alpha=1}. \code{model="elasticnet"} corresponds to glmnet mixing
+#'   parameter \code{alpha=0.5}, \code{model="mcp"} and \code{model="scad"} are
+#'   the non-convex models from the \code{\link[ncvreg]{}} package
 #' @param exp_family Response type. See details for \code{y_train} argument
 #'   above.
 #' @param gene_groups data.frame that contains the group membership for each
@@ -85,8 +87,17 @@
 #'   approach for interpretable predictive models in high dimensional data, in
 #'   the presence of interactions with exposures
 #'   \href{http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf}{Preprint}}
-#'
-#'
+#' @references Langfelder, P., Zhang, B., & Horvath, S. (2008). \emph{Defining
+#'   clusters from a hierarchical cluster tree: the Dynamic Tree Cut package for
+#'   R. Bioinformatics, 24(5), 719-720.}
+#' @references Friedman, J., Hastie, T. and Tibshirani, R. (2008)
+#'   \emph{Regularization Paths for Generalized Linear Models via Coordinate
+#'   Descent, \url{http://www.stanford.edu/~hastie/Papers/glmnet.pdf}}
+#' @references Breheny, P. and Huang, J. (2011) \emph{Coordinate descent
+#'   algorithms for nonconvex penalized regression, with applications to
+#'   biological feature selection. Ann. Appl. Statist., 5: 232-253.}
+#' @note \code{number_pc=2} will not work if there is only one feature in an
+#'   estimated cluster
 #' @importFrom pacman p_load
 #' @import data.table
 #' @import magrittr
@@ -97,36 +108,40 @@
 #'   data.frame or data.table of regression coefficients without the intercept.
 #'   The output of this is used for subsequent calculations of stability.
 #'
-#'   If \code{stability = FALSE} then returns a vector with the following elements:
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
-#'  \item{}{}
+#'   If \code{stability = FALSE} then returns a vector with the following
+#'   elements (See Table 3: Measures of Performance in Bhatnagar et al (2016+)
+#'   for definitions of each measure of performance): \item{mse or AUC}{Test set
+#'   mean squared error if \code{exp_family = "gaussion"} or test set Area under
+#'   the curve if \code{exp_family = "binomial"} calculated using the
+#'   \code{\link[pROC]{roc}} function} \item{RMSE}{Square root of the mse. Only
+#'   applicable if \code{exp_family = "gaussion"}} \item{Shat}{Number of
+#'   non-zero estimated regression coefficients. The non-zero estimated
+#'   regression coefficients are referred to as being selected by the model}
+#'   \item{TPR}{true positive rate} \item{FPR}{false positive rate}
+#'   \item{Correct Sparsity}{Correct true positives + correct true negative
+#'   coefficients divided by the total number of features}
+#'   \item{CorrectZeroMain}{Proportion of correct true negative main effects}
+#'   \item{CorrectZeroInter}{Proportion of correct true negative interactions}
+#'   \item{IncorrectZeroMain}{Proportion of incorrect true negative main
+#'   effects} \item{IncorrectZeroInter}{Proportion of incorrect true negative
+#'   interaction effects} \item{nclusters}{number of estimated clusters by the
+#'   \code{\link[dynamicTreeCut]{cutreeDynamic}} function}
 #' @export
 #'
 #' @examples
-#' dsfds
+#'
 s_clust_reg <- function(x_train,
                         x_test,
                         y_train,
                         y_test,
                         s0,
-                        summary = c("pc","avg"),
-                        model = c("lasso", "scad", "mcp", "elasticnet"),
-                        exp_family = c("gaussian","binomial"),
                         gene_groups,
+                        summary = c("pc","avg"),
+                        model = c("lasso", "elasticnet", "scad", "mcp"),
+                        exp_family = c("gaussian","binomial"),
+                        filter = F,
                         topgenes = NULL,
                         stability = F,
-                        filter = F,
                         include_E = T,
                         include_interaction = T,
                         clust_type = c("CLUST","ECLUST"),
@@ -530,3 +545,587 @@ s_clust_reg <- function(x_train,
 
   }
 }
+
+
+
+
+#' Fit Penalized Regression Models on Simulated Data
+#'
+#' @description This function can run penalized regression models on the
+#'   untransformed design matrix. To be used with simulated data where the
+#'   'truth' is known i.e., you know which features are associated with the
+#'   response. This function was used to produce the simulation results in
+#'   Bhatnagar et al. 2016. Can run lasso, elasticnet, SCAD or MCP models
+#'
+#' @inheritParams s_clust_reg
+#' @return This function has two different outputs depending on whether
+#'   \code{stability = TRUE} or \code{stability = FALSE}
+#'
+#'   If \code{stability = TRUE} then this function returns a \code{p x 2}
+#'   data.frame or data.table of regression coefficients without the intercept.
+#'   The output of this is used for subsequent calculations of stability.
+#'
+#'   If \code{stability = FALSE} then returns a vector with the following
+#'   elements (See Table 3: Measures of Performance in Bhatnagar et al (2016+)
+#'   for definitions of each measure of performance): \item{mse or AUC}{Test set
+#'   mean squared error if \code{exp_family = "gaussion"} or test set Area under
+#'   the curve if \code{exp_family = "binomial"} calculated using the
+#'   \code{\link[pROC]{roc}} function} \item{RMSE}{Square root of the mse. Only
+#'   applicable if \code{exp_family = "gaussion"}} \item{Shat}{Number of
+#'   non-zero estimated regression coefficients. The non-zero estimated
+#'   regression coefficients are referred to as being selected by the model}
+#'   \item{TPR}{true positive rate} \item{FPR}{false positive rate}
+#'   \item{Correct Sparsity}{Correct true positives + correct true negative
+#'   coefficients divided by the total number of features}
+#'   \item{CorrectZeroMain}{Proportion of correct true negative main effects}
+#'   \item{CorrectZeroInter}{Proportion of correct true negative interactions}
+#'   \item{IncorrectZeroMain}{Proportion of incorrect true negative main
+#'   effects} \item{IncorrectZeroInter}{Proportion of incorrect true negative
+#'   interaction effects}
+#' @details The stability of feature importance is defined as the variability of
+#'   feature weights under perturbations of the training set, i.e., small
+#'   modifications in the training set should not lead to considerable changes
+#'   in the set of important covariates (Toloşi, L., & Lengauer, T. (2011)). A
+#'   feature selection algorithm produces a weight, a ranking, and a subset of
+#'   features. In the CLUST and ECLUST methods, we defined a predictor to be
+#'   non-zero if its corresponding cluster representative weight was non-zero.
+#'   Using 10-fold cross validation (CV), we evaluated the similarity between
+#'   two features and their rankings using Pearson and Spearman correlation,
+#'   respectively. For each CV fold we re-ran the models and took the average
+#'   Pearson/Spearman correlation of the 10 choose 2 combinations of estimated
+#'   coefficients vectors. To measure the similarity between two subsets of
+#'   features we took the average of the Jaccard distance in each fold. A
+#'   Jaccard distance of 1 indicates perfect agreement between two sets while no
+#'   agreement will result in a distance of 0.
+#' @references Toloşi, L., & Lengauer, T. (2011). \emph{Classification with
+#'   correlated features: unreliability of feature ranking and solutions.
+#'   Bioinformatics, 27(14), 1986-1994.}
+#' @references Bhatnagar, SR., Yang, Y., Blanchette, M., Bouchard, L.,
+#'   Khundrakpam, B., Evans, A., Greenwood, CMT. (2016+). \emph{An analytic
+#'   approach for interpretable predictive models in high dimensional data, in
+#'   the presence of interactions with exposures
+#'   \href{http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf}{Preprint}}
+#' @references Langfelder, P., Zhang, B., & Horvath, S. (2008). \emph{Defining
+#'   clusters from a hierarchical cluster tree: the Dynamic Tree Cut package for
+#'   R. Bioinformatics, 24(5), 719-720.}
+#' @references Friedman, J., Hastie, T. and Tibshirani, R. (2008)
+#'   \emph{Regularization Paths for Generalized Linear Models via Coordinate
+#'   Descent, \url{http://www.stanford.edu/~hastie/Papers/glmnet.pdf}}
+#' @references Breheny, P. and Huang, J. (2011) \emph{Coordinate descent
+#'   algorithms for nonconvex penalized regression, with applications to
+#'   biological feature selection. Ann. Appl. Statist., 5: 232-253.}
+#' @importFrom pacman p_load
+#' @import data.table
+#' @import magrittr
+#' @export
+#'
+#' @examples
+#' asfsf
+s_pen_reg <- function(x_train,
+                      x_test,
+                      y_train,
+                      y_test,
+                      s0,
+                      expFamily = c("gaussian","binomial"),
+                      model = c("lasso", "elasticnet", "scad", "mcp"),
+                      topgenes = NULL,
+                      stability = F,
+                      filter = F,
+                      include_E = T,
+                      include_interaction = T){
+
+  # stability = F; x_train = result[["X_train"]] ; x_test = result[["X_test"]] ;
+  # y_train = result[["Y_train"]] ; y_test = result[["Y_test"]];
+  # filter = F; filter_var = F; include_E = T; include_interaction = F;
+  # s0 = result[["S0"]]; p = p ;
+  # model = "lasso"; topgenes = NULL; true_beta = result[["beta_truth"]]
+
+  # stability = F; x_train = result_interaction[["X_train"]] ; x_test = result_interaction[["X_test"]] ;
+  # y_train = result_interaction[["Y_train"]] ; y_test = result_interaction[["Y_test"]];
+  # filter = F; filter_var = F; include_E = T; include_interaction = T;
+  # s0 = result_interaction[["S0"]]; p = 1000 ;
+  # model = "scad"; topgenes = NULL; true_beta = result_interaction[["beta_truth"]]
+
+  # result[["clustersAddon"]] %>% print(nrows=Inf)
+  # result[["clustersAddon"]][, table(cluster, module)]
+  # result %>% names
+  # stability = F; gene_groups = result[["clustersAll"]];
+  # x_train = result[["X_train"]] ; x_test = result[["X_test"]];
+  # y_train = result[["Y_train"]] ; y_test = result[["Y_test"]];
+  # filter = F; filter_var = F; include_E = T; include_interaction = T;
+  # s0 = result[["S0"]]; p = p ;true_beta = result[["beta_truth"]]
+  # model = "lasso"; summary = "pc"; topgenes = NULL; clust_type="clust"; nPC = 1
+
+  # model: "scad", "mcp", "lasso", "elasticnet", "ridge"
+  # filter: T or F based on univariate filter
+  expFamily <- match.arg(expFamily)
+
+  print(paste(model,"filter = ",
+              filter, "filter_var = ",
+              include_E, "include_interaction = ",
+              include_interaction, sep = " "))
+
+  if (include_E == F & include_interaction == T) stop("include_E needs to be
+                                                      TRUE if you want to include
+                                                      interactions")
+  #   if (filter == F & include_interaction == T) stop("Interaction can only be run
+  #                                                      if filter is TRUE.
+  #                                                      This is to avoid exceedingly
+  #                                                      large models")
+  if (is.null(topgenes) & filter == T) stop("Argument topgenes is missing but
+                                            filter is TRUE. You need to provide
+                                            a filtered list of genes if filter
+                                            is TRUE")
+
+  #gene.names <- colnames(x_train)[which(colnames(x_train) %ni% "E")]
+
+  # penalization model
+  pen_model <- switch(model,
+                      {
+                        pacman::p_load(char = "glmnet")
+                        lasso = glmnet::cv.glmnet(x = if (!include_E) as.matrix(x_train[,-grep("E", colnames(x_train))]) else
+                        as.matrix(x_train), y = y_train, alpha = 1, family = expFamily)
+                        },
+                      elasticnet = {
+                        pacman::p_load(char = "glmnet")
+                        glmnet::cv.glmnet(x = if (!include_E) as.matrix(x_train[,-grep("E", colnames(x_train))]) else
+                        as.matrix(x_train), y = y_train, alpha = 0.5, family = expFamily)
+                        },
+                      ridge = {
+                        pacman::p_load(char = "glmnet")
+                        glmnet::cv.glmnet(x = if (!include_E) as.matrix(x_train[,-grep("E", colnames(x_train))]) else
+                        as.matrix(x_train), y = y_train, alpha = 0, family = expFamily)
+                        },
+                      scad = {
+                        pacman::p_load(char = "ncvreg")
+                        ncvreg::cv.ncvreg(X = if (!include_E) as.matrix(x_train[,-grep("E", colnames(x_train))]) else
+                        as.matrix(x_train), y = y_train,
+                        family = "gaussian", penalty = "SCAD")},
+                      mcp = {
+                        pacman::p_load(char = "ncvreg")
+                        ncvreg::cv.ncvreg(X = if (!include_E) as.matrix(x_train[,-grep("E", colnames(x_train))]) else
+                        as.matrix(x_train), y = y_train,
+                        family = "gaussian", penalty = "MCP")}
+  )
+
+  # here we give the coefficient stability on the individual genes
+  coefs <- coef(pen_model, s = "lambda.min") %>%
+    as.matrix %>%
+    data.table::as.data.table(keep.rownames = TRUE) %>%
+    magrittr::set_colnames(c("Gene","coef.est")) %>%
+    magrittr::extract(-1,)
+
+
+  if (stability) {
+    # remove intercept for stability measures
+    return(coefs)
+  } else {
+
+    pen.S.hat <- coefs[coef.est != 0] %>% magrittr::use_series("Gene")
+    pen.S.hat.interaction <- grep(":", pen.S.hat, value = T)
+    pen.S.hat.main <- setdiff(pen.S.hat, pen.S.hat.interaction)
+
+    pen.pred <- if (model %in% c("lasso","elasticnet","ridge")) {
+      predict(pen_model, newx =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
+        as.matrix(x_test), s = "lambda.min") } else if (model %in% c("scad","mcp")) {
+          predict(pen_model, X =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
+            as.matrix(x_test),
+            lambda = pen_model$lambda.min)
+        }
+
+    # True Positive Rate
+    pen.TPR <- length(intersect(pen.S.hat, s0))/length(s0)
+
+    # True negatives
+    trueNegs <- setdiff(colnames(x_train), s0)
+
+    # these are the terms which the model identified as zero
+    modelIdentifyZero <- setdiff(colnames(x_train),pen.S.hat)
+
+    # how many of the terms identified by the model as zero, were actually zero
+    # use to calculate correct sparsity as defined by Witten et al in the
+    # Cluster Elastic Net paper Technometrics 2013
+    C1 <- sum(modelIdentifyZero %in% trueNegs)
+    C2 <- length(intersect(pen.S.hat, s0))
+    correct_sparsity <- (C1 + C2)/(ncol(x_train))
+
+    # this is from Interaction Screening for Ultrahigh Dimensional Data by ning hao and hao helen zhang
+    true.interaction_names <- grep(":", s0, value = T)
+    true.main_effect_names <- setdiff(s0, true.interaction_names)
+
+    all.interaction_names <- grep(":", colnames(x_train), value = T)
+    all.main_effect_names <- setdiff(colnames(x_train), all.interaction_names)
+
+    true.negative_main_effects <- setdiff(all.main_effect_names, true.main_effect_names)
+    true.negative_interaction_effects <- setdiff(all.interaction_names, true.interaction_names)
+
+    (pen.correct_zeros_main_effects <- sum(setdiff(all.main_effect_names, pen.S.hat.main) %in% true.negative_main_effects)/ length(true.negative_main_effects))
+    (pen.correct_zeros_interaction_effects <- sum(setdiff(all.interaction_names, pen.S.hat.interaction) %in% true.negative_interaction_effects)/ length(true.negative_interaction_effects))
+
+    (pen.incorrect_zeros_main_effects <- sum(setdiff(all.main_effect_names, pen.S.hat) %in% true.main_effect_names)/ length(true.main_effect_names))
+    (pen.incorrect_zeros_interaction_effects <- sum(setdiff(all.interaction_names, pen.S.hat.interaction) %in% true.interaction_names)/ length(true.interaction_names))
+
+    # False Positive Rate = FP/(FP + TN) = FP / True number of 0 coefficients
+    (pen.FPR <- sum(pen.S.hat %ni% s0)/(sum(pen.S.hat %ni% s0) + sum(modelIdentifyZero %in% trueNegs)))
+
+
+    # Mean Squared Error
+    (pen.mse <- crossprod(pen.pred - y_test)/length(y_test))
+
+    # Root Mean Squared Error
+    (pen.RMSE <- sqrt(crossprod(pen.pred - y_test)/length(y_test)))
+
+    # mse.null
+    mse_null <- crossprod(mean(y_test) - y_test)/length(y_test)
+
+    if (expFamily == "binomial") {
+      pred_response <- predict(pen_model, newx =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
+        as.matrix(x_test), s = "lambda.min", type = "response")
+
+      pen.AUC <- pROC::roc(y_test,as.numeric(pred_response))$auc %>% as.numeric()
+
+    }
+
+    ls <- if (expFamily == "binomial") {
+      list(pen.mse = as.numeric(pen.mse),
+           pen.RMSE = as.numeric(pen.RMSE),
+           pen.AUC = pen.AUC,
+           pen.S.hat = length(pen.S.hat),
+           pen.TPR = pen.TPR,
+           pen.FPR = pen.FPR,
+           correct_sparsity,
+           pen.correct_zeros_main_effects,
+           pen.correct_zeros_interaction_effects,
+           pen.incorrect_zeros_main_effects,
+           pen.incorrect_zeros_interaction_effects
+      ) } else if (expFamily=="gaussian") {
+
+        list(pen.mse = as.numeric(pen.mse),
+             pen.RMSE = as.numeric(pen.RMSE),
+             pen.S.hat = length(pen.S.hat),
+             pen.TPR = pen.TPR,
+             pen.FPR = pen.FPR,
+             correct_sparsity,
+             pen.correct_zeros_main_effects,
+             pen.correct_zeros_interaction_effects,
+             pen.incorrect_zeros_main_effects,
+             pen.incorrect_zeros_interaction_effects
+        )
+      }
+
+    names(ls) <- if (expFamily == "binomial") {
+      c(paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_AUC"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_Shat"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_TPR"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_FPR"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectSparsity"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroMain"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroInter"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroMain"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroInter"))
+    } else if (expFamily=="gaussian") {
+      c(paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_Shat"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_TPR"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_FPR"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectSparsity"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroMain"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroInter"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroMain"),
+        paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroInter"))
+    }
+
+    return(ls)
+  }
+
+}
+
+
+
+
+
+
+#' Fit Multivariate Adaptive Regression Splines on Simulated Data
+#'
+#' @description This function can run Friedman's MARS models on the
+#'   untransformed design matrix. To be used with simulated data where the
+#'   'truth' is known i.e., you know which features are associated with the
+#'   response. This function was used to produce the simulation results in
+#'   Bhatnagar et al. 2016. Uses caret functions to tune the degree and the
+#'   nprune parameters
+#'
+#' @param x_train
+#' @param x_test
+#' @param y_train
+#' @param y_test
+#' @param s0
+#' @param model
+#' @param expFamily
+#' @param true_beta
+#' @param topgenes
+#' @param stability
+#' @param filter
+#' @param include_E
+#' @param include_interaction
+#' @param p
+#' @param filter_var
+#' @param ... other parameters passed to \code{\link[caret]{trainControl}}
+#'   function
+#' @inheritParams s_clust_reg
+#' @return
+#' @export
+#'
+#' @examples
+s_mars_reg <- function(x_train,
+                       x_test,
+                       y_train,
+                       y_test,
+                       s0,
+                       model = c("MARS"),
+                       expFamily = c("gaussian", "binomial"),
+                       topgenes = NULL,
+                       stability = F,
+                       filter = F,
+                       include_E = T,
+                       include_interaction = T, ...){
+
+  # stability = F; x_train = result[["X_train"]] ; x_test = result[["X_test"]] ;
+  # y_train = result[["Y_train"]] ; y_test = result[["Y_test"]];
+  # filter = F; filter_var = F; include_E = T; include_interaction = T;
+  # s0 = result[["S0"]]; p = p ;
+  # model = "MARS"; topgenes = NULL; true_beta = result[["beta_truth"]]
+
+  # stability = F; x_train = result_interaction[["X_train"]] ; x_test = result_interaction[["X_test"]] ;
+  # y_train = result_interaction[["Y_train"]] ; y_test = result_interaction[["Y_test"]];
+  # filter = F; filter_var = F; include_E = T; include_interaction = T;
+  # s0 = result_interaction[["S0"]]; p = 1000 ;
+  # model = "scad"; topgenes = NULL; true_beta = result_interaction[["beta_truth"]]
+
+  # result[["clustersAddon"]] %>% print(nrows=Inf)
+  # result[["clustersAddon"]][, table(cluster, module)]
+  # result %>% names
+  # stability = F; gene_groups = result[["clustersAll"]];
+  # x_train = result[["X_train"]] ; x_test = result[["X_test"]];
+  # y_train = result[["Y_train"]] ; y_test = result[["Y_test"]];
+  # filter = F; filter_var = F; include_E = T; include_interaction = T;
+  # s0 = result[["S0"]]; p = p ;true_beta = result[["beta_truth"]]
+  # model = "lasso"; summary = "pc"; topgenes = NULL; clust_type="clust"; nPC = 1
+
+  # model: "scad", "mcp", "lasso", "elasticnet", "ridge"
+  # filter: T or F based on univariate filter
+
+  expFamily <- match.arg(expFamily)
+
+  print(paste(model,"filter = ", filter, "include_E = ",
+              include_E, "include_interaction = ", include_interaction, sep = " "))
+
+  if (include_E == F & include_interaction == T) stop("include_E needs to be
+                                                      TRUE if you want to include
+                                                      interactions")
+  #   if (filter == F & include_interaction == T) stop("Interaction can only be run
+  #                                                      if filter is TRUE.
+  #                                                      This is to avoid exceedingly
+  #                                                      large models")
+  if (is.null(topgenes) & filter == T) stop("Argument topgenes is missing but
+                                            filter is TRUE. You need to provide
+                                            a filtered list of genes if filter
+                                            is TRUE")
+
+  #gene.names <- colnames(x_train)[which(colnames(x_train) %ni% "E")]
+
+  # mars model
+  mars_model <- switch(model,
+                       MARS = {
+                         pacman::p_load(char = "caret")
+                         pacman::p_load(char = "earth")
+
+                         fitControl <-  caret::trainControl(method = "cv",
+                                                            verboseIter = FALSE, ...)
+
+                         marsGrid <- expand.grid(.degree = 1:2, .nprune = 1000)
+
+                         switch(expFamily,
+                                gaussian = {
+                                  mars_tuned <- caret::train(as.matrix(x_train),
+                                                             y_train,
+                                                             method = "earth",
+                                                             trace = 1, nk = 1000, keepxy = TRUE, pmethod = "backward",
+                                                             tuneGrid = marsGrid,
+                                                             trControl = fitControl)
+
+                                  earth::earth(x = as.matrix(x_train),
+                                               y = y_train,
+                                               keepxy = TRUE,
+                                               pmethod = "backward",
+                                               nk = 1000,
+                                               degree = mars_tuned$bestTune$degree,
+                                               trace = 1, nfold = 10) },
+                                binomial = {
+
+                                  mars_tuned <- caret::train(as.matrix(x_train),
+                                                             as.factor(y_train),
+                                                             method = "earth",
+                                                             trace = 1, nk = 1000, keepxy = TRUE, pmethod = "backward",
+                                                             glm=list(family=binomial),
+                                                             tuneGrid = marsGrid,
+                                                             trControl = fitControl)
+
+                                  earth::earth(x = as.matrix(x_train),
+                                               y = as.factor(y_train),
+                                               keepxy = TRUE,
+                                               pmethod = "backward",
+                                               nk = 1000,
+                                               glm=list(family=binomial),
+                                               degree = mars_tuned$bestTune$degree,
+                                               trace = 1, nfold = 10)
+                                })
+                       }
+  )
+
+
+  # selected genes
+  # coef(mars_model)
+  # get.used.pred.names(mars_model)
+  #
+  # plot(mars_model, which=1, col.rsq=0) # which=1 for Model Selection plot only (optional)
+  # plot.earth.models(mars_model$cv.list, which=1)
+  # plot(mars_model)
+  # plot(mars_model, which=1,
+  #      col.mean.infold.rsq="blue", col.infold.rsq="lightblue",
+  #      col.grsq=0, col.rsq=0, col.vline=0, col.oof.vline=0)
+
+
+  # ONLY Jaccard index can be calculated for MARS
+  # since get.used.pred.names returns only the non-zero coefficients,
+  # we give a coefficient of 1 here so that the stability calculation works
+  # because it takes non-zero coef estimates
+
+  coefs <- data.frame(get.used.pred.names(mars_model), rep(1, length(get.used.pred.names(mars_model))), stringsAsFactors = FALSE) %>%
+    data.table::as.data.table(keep.rownames = FALSE) %>%
+    magrittr::set_colnames(c("Gene","coef.est"))
+
+  if (stability) {
+    # remove intercept for stability measures
+    return(coefs)
+  } else {
+
+    mars.S.hat <- get.used.pred.names(mars_model)
+    mars.S.hat.interaction <- grep(":", mars.S.hat, value = T)
+    mars.S.hat.main <- setdiff(mars.S.hat, mars.S.hat.interaction)
+
+    mars.pred <- predict(mars_model, newdata = x_test, trace = 4)
+
+    if (expFamily == "binomial") {
+      pred_response <- predict(mars_model, newdata = x_test, trace = 4,
+                               type = "response")
+
+      mars.AUC <- pROC::roc(y_test,as.numeric(pred_response))$auc %>% as.numeric()
+
+    }
+
+    # True Positive Rate
+    mars.TPR <- length(intersect(mars.S.hat, s0))/length(s0)
+
+    # True negatives
+    trueNegs <- setdiff(colnames(x_train), s0)
+
+    # these are the terms which the model identified as zero
+    modelIdentifyZero <- setdiff(colnames(x_train),mars.S.hat)
+
+    # how many of the terms identified by the model as zero, were actually zero
+    # use to calculate correct sparsity as defined by Witten et al in the
+    # Cluster Elastic Net paper Technometrics 2013
+    C1 <- sum(modelIdentifyZero %in% trueNegs)
+    C2 <- length(intersect(mars.S.hat, s0))
+    correct_sparsity <- (C1 + C2)/(ncol(x_train))
+
+    # this is from Interaction Screening for Ultrahigh Dimensional Data by ning hao and hao helen zhang
+    true.interaction_names <- grep(":", s0, value = T)
+    true.main_effect_names <- setdiff(s0, true.interaction_names)
+
+    all.interaction_names <- grep(":", colnames(x_train), value = T)
+    all.main_effect_names <- setdiff(colnames(x_train), all.interaction_names)
+
+    true.negative_main_effects <- setdiff(all.main_effect_names, true.main_effect_names)
+    true.negative_interaction_effects <- setdiff(all.interaction_names, true.interaction_names)
+
+    (mars.correct_zeros_main_effects <- sum(setdiff(all.main_effect_names, mars.S.hat.main) %in% true.negative_main_effects)/ length(true.negative_main_effects))
+    (mars.correct_zeros_interaction_effects <- sum(setdiff(all.interaction_names, mars.S.hat.interaction) %in% true.negative_interaction_effects)/ length(true.negative_interaction_effects))
+
+    (mars.incorrect_zeros_main_effects <- sum(setdiff(all.main_effect_names, mars.S.hat) %in% true.main_effect_names)/ length(true.main_effect_names))
+    (mars.incorrect_zeros_interaction_effects <- sum(setdiff(all.interaction_names, mars.S.hat.interaction) %in% true.interaction_names)/ length(true.interaction_names))
+
+    # False Positive Rate = FP/(FP + TN) = FP / True number of 0 coefficients
+    (mars.FPR <- sum(mars.S.hat %ni% s0)/(sum(mars.S.hat %ni% s0) + sum(modelIdentifyZero %in% trueNegs)))
+
+    # # False Positive Rate
+    # mars.FPR <- sum(mars.S.hat %ni% s0)/(p - length(s0))
+
+    # Mean Squared Error
+    (mars.mse <- crossprod(mars.pred - y_test)/length(y_test))
+
+    # Root Mean Squared Error
+    (mars.RMSE <- sqrt(crossprod(mars.pred - y_test)/length(y_test)))
+
+    # mse.null
+    mse_null <- crossprod(mean(y_test) - y_test)/length(y_test)
+
+    ls <- switch(expFamily,
+                 gaussian = {list(mars.mse = as.numeric(mars.mse),
+                                  mars.RMSE = as.numeric(mars.RMSE),
+                                  mars.S.hat = length(mars.S.hat),
+                                  mars.TPR = mars.TPR,
+                                  mars.FPR = mars.FPR,
+                                  correct_sparsity,
+                                  mars.correct_zeros_main_effects,
+                                  mars.correct_zeros_interaction_effects,
+                                  mars.incorrect_zeros_main_effects,
+                                  mars.incorrect_zeros_interaction_effects)},
+                 binomial = {list(mars.mse = as.numeric(mars.mse),
+                                  mars.RMSE = as.numeric(mars.RMSE),
+                                  mars.AUC = mars.AUC,
+                                  mars.S.hat = length(mars.S.hat),
+                                  mars.TPR = mars.TPR,
+                                  mars.FPR = mars.FPR,
+                                  correct_sparsity,
+                                  mars.correct_zeros_main_effects,
+                                  mars.correct_zeros_interaction_effects,
+                                  mars.incorrect_zeros_main_effects,
+                                  mars.incorrect_zeros_interaction_effects)
+
+                 })
+
+    names(ls) <- switch(expFamily,
+                        gaussian = {
+                          c(paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_Shat"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_TPR"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_FPR"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectSparsity"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroMain"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroInter"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroMain"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroInter"))},
+                        binomial = {
+                          c(paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_AUC"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_Shat"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_TPR"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_FPR"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectSparsity"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroMain"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroInter"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroMain"),
+                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroInter"))
+                        })
+    return(ls)
+  }
+}
+
+
+

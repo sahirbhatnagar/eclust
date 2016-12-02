@@ -15,18 +15,21 @@ BugReports: https://github.com/sahirbhatnagar/eclust/issues
 Encoding: UTF-8
 LazyData: true
 Suggests:
+    cluster,
+    earth,
+    ncvreg,
     knitr,
     rmarkdown,
-    protoclust,
-    cluster,
-    ncvreg
+    protoclust
 VignetteBuilder: knitr
 Imports:
+    caret,
     data.table,
     dynamicTreeCut,
-    earth,
     glmnet,
     magrittr,
     pacman,
-    WGCNA
+    WGCNA,
+    earth,
+    pROC
 RoxygenNote: 5.0.1
