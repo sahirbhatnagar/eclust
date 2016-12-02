@@ -1,4 +1,4 @@
-[![Travis-CI Build Status](https://travis-ci.org/sahirbhatnagar/manhattanly.svg?branch=master)](https://travis-ci.org/sahirbhatnagar/manhattanly)
+[![Travis-CI Build Status](https://travis-ci.org/sahirbhatnagar/eclust.svg?branch=master)](https://travis-ci.org/sahirbhatnagar/eclust)
 
 <!--
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/manhattanly)](https://cran.r-project.org/package=manhattanly)
@@ -7,9 +7,11 @@
 -->
 
 
+**This package is under active development**
+
 # eclust
 
-The `eclust` package implements the methods developped in the paper *A model for interpretable high dimensional interactions*. Breifly, `eclust` is a two-step procedure: 1a) a clustering stage where variables are clustered based on some measure of similarity, 1b) a dimension reduction stage where a summary measure is created for each of the  clusters, and 2) a simultaneous variable selection and regression stage on the summarized cluster measures.
+The `eclust` package implements the methods developped in the paper *An analytic approach for interpretable predictive models in high dimensional data, in the presence of interactions with exposures (2016+)* [Preprint](http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf). Breifly, `eclust` is a two-step procedure: 1a) a clustering stage where variables are clustered based on some measure of similarity, 1b) a dimension reduction stage where a summary measure is created for each of the  clusters, and 2) a simultaneous variable selection and regression stage on the summarized cluster measures.
 
 ## Installation
 
@@ -24,7 +26,7 @@ You can install the development version of `eclust` from [GitHub](https://github
 
 ```R
 install.packages("devtools")
-devtools::install_github("sahirbhatnagar/eclust", build_vignettes = TRUE)
+devtools::install_github("sahirbhatnagar/eclust")
 ```
 
 
