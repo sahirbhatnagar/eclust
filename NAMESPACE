@@ -2,9 +2,10 @@
 
 export(cluster_similarity)
 export(generate_data)
-export(s_clust_reg)
-export(s_mars_reg)
-export(s_pen_reg)
+export(s_mars_clust)
+export(s_mars_separate)
+export(s_pen_clust)
+export(s_pen_separate)
 export(sim_data)
 export(sim_data_mars)
 import(data.table)
