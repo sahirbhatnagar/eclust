@@ -5,7 +5,7 @@
 \title{Fit MARS Models on Simulated Cluster Summaries}
 \usage{
 s_mars_clust(x_train, x_test, y_train, y_test, s0, summary = c("pc", "avg"),
-  model = c("MARS"), expFamily = c("gaussian", "binomial"), gene_groups,
+  model = c("MARS"), exp_family = c("gaussian", "binomial"), gene_groups,
   true_beta = NULL, topgenes = NULL, stability = F, filter = F,
   include_E = F, include_interaction = F, clust_type = c("clust",
   "Eclust", "Addon"), nPC = 1)
@@ -45,6 +45,9 @@ components can be chosen.}
 
 \item{model}{Type of non-linear model to be fit. Currently only Friedman's
 MARS is supported.}
+
+\item{exp_family}{Response type. See details for \code{y_train} argument
+above.}
 
 \item{gene_groups}{data.frame that contains the group membership for each
 feature. The first column is called 'gene' and the second column should be

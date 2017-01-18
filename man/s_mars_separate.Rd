@@ -5,7 +5,7 @@
 \title{Fit Multivariate Adaptive Regression Splines on Simulated Data}
 \usage{
 s_mars_separate(x_train, x_test, y_train, y_test, s0, model = c("MARS"),
-  expFamily = c("gaussian", "binomial"), topgenes = NULL, stability = F,
+  exp_family = c("gaussian", "binomial"), topgenes = NULL, stability = F,
   filter = F, include_E = T, include_interaction = T, ...)
 }
 \arguments{
@@ -38,6 +38,9 @@ factor, the last level in alphabetical order is the target class).}
 
 \item{model}{Type of non-linear model to be fit. Currently only Friedman's
 MARS is supported.}
+
+\item{exp_family}{Response type. See details for \code{y_train} argument
+above.}
 
 \item{topgenes}{List of features to keep if \code{filter=TRUE}. Default is
 \code{topgenes = NULL} which means all features are kept for the analysis}

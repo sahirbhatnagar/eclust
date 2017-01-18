@@ -4,10 +4,10 @@
 \alias{s_pen_separate}
 \title{Fit Penalized Regression Models on Simulated Data}
 \usage{
-s_pen_separate(x_train, x_test, y_train, y_test, s0, expFamily = c("gaussian",
-  "binomial"), model = c("lasso", "elasticnet", "scad", "mcp"),
-  topgenes = NULL, stability = F, filter = F, include_E = T,
-  include_interaction = T)
+s_pen_separate(x_train, x_test, y_train, y_test, s0,
+  exp_family = c("gaussian", "binomial"), model = c("lasso", "elasticnet",
+  "scad", "mcp"), topgenes = NULL, stability = F, filter = F,
+  include_E = T, include_interaction = T)
 }
 \arguments{
 \item{x_train}{\code{ntrain x p} matrix of simulated training set where
@@ -36,6 +36,9 @@ factor, the last level in alphabetical order is the target class).}
 
 \item{s0}{chracter vector of the active feature names, i.e., the features in
 \code{x_train} that are truly associated with the response.}
+
+\item{exp_family}{Response type. See details for \code{y_train} argument
+above.}
 
 \item{model}{Regression model to be fit on cluster summaries. Default is
 \code{model="lasso"} which corresponds to glmnet mixing parameter

@@ -20,7 +20,8 @@ Suggests:
     ncvreg,
     knitr,
     rmarkdown,
-    protoclust
+    protoclust,
+    factoextra
 VignetteBuilder: knitr
 Imports:
     caret,

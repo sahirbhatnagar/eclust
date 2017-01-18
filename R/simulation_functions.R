@@ -200,7 +200,7 @@ s_pen_clust <- function(x_train,
   }
 
   # these are only derived on the main effects genes.. E is only included in the model
-  PC_and_avg <- extractPC(x_train = x_train_mod[,gene_groups$gene],
+  PC_and_avg <- u_extract_summary(x_train = x_train_mod[,gene_groups$gene],
                           colors = gene_groups$cluster,
                           x_test = x_test_mod[,gene_groups$gene],
                           number_pc = number_pc)
@@ -626,7 +626,7 @@ s_pen_separate <- function(x_train,
                       y_train,
                       y_test,
                       s0,
-                      expFamily = c("gaussian","binomial"),
+                      exp_family = c("gaussian","binomial"),
                       model = c("lasso", "elasticnet", "scad", "mcp"),
                       topgenes = NULL,
                       stability = F,
@@ -658,7 +658,7 @@ s_pen_separate <- function(x_train,
 
   # model: "scad", "mcp", "lasso", "elasticnet", "ridge"
   # filter: T or F based on univariate filter
-  expFamily <- match.arg(expFamily)
+  exp_family <- match.arg(exp_family)
 
   print(paste(model,"filter = ",
               filter, "filter_var = ",
@@ -684,17 +684,17 @@ s_pen_separate <- function(x_train,
                       {
                         pacman::p_load(char = "glmnet")
                         lasso = glmnet::cv.glmnet(x = if (!include_E) as.matrix(x_train[,-grep("E", colnames(x_train))]) else
-                        as.matrix(x_train), y = y_train, alpha = 1, family = expFamily)
+                        as.matrix(x_train), y = y_train, alpha = 1, family = exp_family)
                         },
                       elasticnet = {
                         pacman::p_load(char = "glmnet")
                         glmnet::cv.glmnet(x = if (!include_E) as.matrix(x_train[,-grep("E", colnames(x_train))]) else
-                        as.matrix(x_train), y = y_train, alpha = 0.5, family = expFamily)
+                        as.matrix(x_train), y = y_train, alpha = 0.5, family = exp_family)
                         },
                       ridge = {
                         pacman::p_load(char = "glmnet")
                         glmnet::cv.glmnet(x = if (!include_E) as.matrix(x_train[,-grep("E", colnames(x_train))]) else
-                        as.matrix(x_train), y = y_train, alpha = 0, family = expFamily)
+                        as.matrix(x_train), y = y_train, alpha = 0, family = exp_family)
                         },
                       scad = {
                         pacman::p_load(char = "ncvreg")
@@ -778,7 +778,7 @@ s_pen_separate <- function(x_train,
     # mse.null
     mse_null <- crossprod(mean(y_test) - y_test)/length(y_test)
 
-    if (expFamily == "binomial") {
+    if (exp_family == "binomial") {
       pred_response <- predict(pen_model, newx =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
         as.matrix(x_test), s = "lambda.min", type = "response")
 
@@ -786,7 +786,7 @@ s_pen_separate <- function(x_train,
 
     }
 
-    ls <- if (expFamily == "binomial") {
+    ls <- if (exp_family == "binomial") {
       list(pen.mse = as.numeric(pen.mse),
            pen.RMSE = as.numeric(pen.RMSE),
            pen.AUC = pen.AUC,
@@ -798,7 +798,7 @@ s_pen_separate <- function(x_train,
            pen.correct_zeros_interaction_effects,
            pen.incorrect_zeros_main_effects,
            pen.incorrect_zeros_interaction_effects
-      ) } else if (expFamily=="gaussian") {
+      ) } else if (exp_family=="gaussian") {
 
         list(pen.mse = as.numeric(pen.mse),
              pen.RMSE = as.numeric(pen.RMSE),
@@ -813,7 +813,7 @@ s_pen_separate <- function(x_train,
         )
       }
 
-    names(ls) <- if (expFamily == "binomial") {
+    names(ls) <- if (exp_family == "binomial") {
       c(paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
         paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
         paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_AUC"),
@@ -825,7 +825,7 @@ s_pen_separate <- function(x_train,
         paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroInter"),
         paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroMain"),
         paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroInter"))
-    } else if (expFamily=="gaussian") {
+    } else if (exp_family=="gaussian") {
       c(paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
         paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
         paste0("pen_na_",model,ifelse(include_interaction,"_yes","_no"),"_Shat"),
@@ -902,7 +902,7 @@ s_mars_separate <- function(x_train,
                        y_test,
                        s0,
                        model = c("MARS"),
-                       expFamily = c("gaussian", "binomial"),
+                       exp_family = c("gaussian", "binomial"),
                        topgenes = NULL,
                        stability = F,
                        filter = F,
@@ -934,7 +934,7 @@ s_mars_separate <- function(x_train,
   # model: "scad", "mcp", "lasso", "elasticnet", "ridge"
   # filter: T or F based on univariate filter
 
-  expFamily <- match.arg(expFamily)
+  exp_family <- match.arg(exp_family)
 
   print(paste(model,"filter = ", filter, "include_E = ",
               include_E, "include_interaction = ", include_interaction, sep = " "))
@@ -964,7 +964,7 @@ s_mars_separate <- function(x_train,
 
                          marsGrid <- expand.grid(.degree = 1:2, .nprune = 1000)
 
-                         switch(expFamily,
+                         switch(exp_family,
                                 gaussian = {
                                   mars_tuned <- caret::train(as.matrix(x_train),
                                                              y_train,
@@ -1005,7 +1005,7 @@ s_mars_separate <- function(x_train,
 
   # selected genes
   # coef(mars_model)
-  # get.used.pred.names(mars_model)
+  # u_extract_selected_earth(mars_model)
   #
   # plot(mars_model, which=1, col.rsq=0) # which=1 for Model Selection plot only (optional)
   # plot.earth.models(mars_model$cv.list, which=1)
@@ -1016,11 +1016,11 @@ s_mars_separate <- function(x_train,
 
 
   # ONLY Jaccard index can be calculated for MARS
-  # since get.used.pred.names returns only the non-zero coefficients,
+  # since u_extract_selected_earth returns only the non-zero coefficients,
   # we give a coefficient of 1 here so that the stability calculation works
   # because it takes non-zero coef estimates
 
-  coefs <- data.frame(get.used.pred.names(mars_model), rep(1, length(get.used.pred.names(mars_model))), stringsAsFactors = FALSE) %>%
+  coefs <- data.frame(u_extract_selected_earth(mars_model), rep(1, length(u_extract_selected_earth(mars_model))), stringsAsFactors = FALSE) %>%
     data.table::as.data.table(keep.rownames = FALSE) %>%
     magrittr::set_colnames(c("Gene","coef.est"))
 
@@ -1029,13 +1029,13 @@ s_mars_separate <- function(x_train,
     return(coefs)
   } else {
 
-    mars.S.hat <- get.used.pred.names(mars_model)
+    mars.S.hat <- u_extract_selected_earth(mars_model)
     mars.S.hat.interaction <- grep(":", mars.S.hat, value = T)
     mars.S.hat.main <- setdiff(mars.S.hat, mars.S.hat.interaction)
 
     mars.pred <- predict(mars_model, newdata = x_test, trace = 4)
 
-    if (expFamily == "binomial") {
+    if (exp_family == "binomial") {
       pred_response <- predict(mars_model, newdata = x_test, trace = 4,
                                type = "response")
 
@@ -1090,7 +1090,7 @@ s_mars_separate <- function(x_train,
     # mse.null
     mse_null <- crossprod(mean(y_test) - y_test)/length(y_test)
 
-    ls <- switch(expFamily,
+    ls <- switch(exp_family,
                  gaussian = {list(mars.mse = as.numeric(mars.mse),
                                   mars.RMSE = as.numeric(mars.RMSE),
                                   mars.S.hat = length(mars.S.hat),
@@ -1115,7 +1115,7 @@ s_mars_separate <- function(x_train,
 
                  })
 
-    names(ls) <- switch(expFamily,
+    names(ls) <- switch(exp_family,
                         gaussian = {
                           c(paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
                             paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
@@ -1199,7 +1199,7 @@ s_mars_clust <- function(x_train,
                          s0,
                          summary = c("pc","avg"),
                          model = c("MARS"),
-                         expFamily = c("gaussian","binomial"),
+                         exp_family = c("gaussian","binomial"),
                          gene_groups,
                          true_beta = NULL,
                          topgenes = NULL,
@@ -1220,12 +1220,12 @@ s_mars_clust <- function(x_train,
   # filter = F; filter_var = F; include_E = T; include_interaction = F;
   # s0 = result[["S0"]]; p = p ;true_beta = result[["beta_truth"]]
   # model = "MARS"; summary = "pc"; topgenes = NULL; clust_type="Eclust"; nPC = 1
-  # expFamily = "binomial"
+  # exp_family = "binomial"
 
   clust_type <- match.arg(clust_type)
   summary <- match.arg(summary)
   model <- match.arg(model)
-  expFamily <- match.arg(expFamily)
+  exp_family <- match.arg(exp_family)
 
   message(sprintf("Summary measure: %s, Model: %s, Cluster Type: %s",
                   summary, model, clust_type))
@@ -1263,7 +1263,7 @@ s_mars_clust <- function(x_train,
   }
 
   # these are only derived on the main effects genes.. E is only included in the model
-  PC_and_avg <- extractPC(x_train = x_train_mod[,gene_groups$gene],
+  PC_and_avg <- u_extract_summary(x_train = x_train_mod[,gene_groups$gene],
                           colors = gene_groups$cluster,
                           x_test = x_test_mod[,gene_groups$gene],
                           nPC = nPC)
@@ -1310,7 +1310,7 @@ s_mars_clust <- function(x_train,
 
                                 marsGrid <- expand.grid(.degree = 1:2, .nprune = 1000)
 
-                                switch(expFamily,
+                                switch(exp_family,
                                        gaussian = {
                                          mars_tuned <- train(X.model.formula,
                                                              y_train,
@@ -1351,11 +1351,11 @@ s_mars_clust <- function(x_train,
 
   # summary(clust_train_model)
   # ONLY Jaccard index can be calculated for MARS
-  # since get.used.pred.names returns only the non-zero coefficients,
+  # since u_extract_selected_earth returns only the non-zero coefficients,
   # we give a coefficient of 1 here so that the stability calculation works
   # because it takes non-zero coef estimates
 
-  coefs <- data.frame(get.used.pred.names(clust_train_model), rep(1, length(get.used.pred.names(clust_train_model))), stringsAsFactors = F) %>%
+  coefs <- data.frame(u_extract_selected_earth(clust_train_model), rep(1, length(u_extract_selected_earth(clust_train_model))), stringsAsFactors = F) %>%
     as.data.table(keep.rownames = FALSE) %>%
     magrittr::set_colnames(c("Gene","coef.est"))
 
@@ -1506,7 +1506,7 @@ s_mars_clust <- function(x_train,
     # mse.null
     (mse_null <- crossprod(mean(y_test) - y_test)/length(y_test))
 
-    if (expFamily == "binomial") {
+    if (exp_family == "binomial") {
       pred_response <- predict(clust_train_model, newdata = X.model.formula_test, trace = 4,
                                type = "response")
 
@@ -1521,7 +1521,7 @@ s_mars_clust <- function(x_train,
     # clust.adj.r2 <- 1 - (1 - clust.r2)*(nrow(x_test) - 1)/(nrow(x_test) - n.non_zero_clusters - 1)
 
 
-    ls <- switch(expFamily,
+    ls <- switch(exp_family,
                  gaussian = {list(clust.mse = as.numeric(clust.mse),
                                   clust.RMSE = as.numeric(clust.RMSE),
                                   clust.S.hat = length(clust.S.hat),
@@ -1546,7 +1546,7 @@ s_mars_clust <- function(x_train,
 
                  })
 
-    names(ls) <- switch(expFamily,
+    names(ls) <- switch(exp_family,
                         gaussian = {
                           c(paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
                             paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
@@ -1575,3 +1575,973 @@ s_mars_clust <- function(x_train,
 
   }
 }
+
+
+
+#' Simulate Covariates With Exposure Dependent Correlations
+#'
+#' @description This is a wrapper of the \code{\link[WGCNA]{simulateDatExpr}}
+#'   function which simulates data in a modular structure (i.e. in blocks). This
+#'   function simulates data in 5 blocks referred to as Turquoise, Blue, Red,
+#'   Green and Yellow, separately for exposed (E=1) and unexposed (E=0)
+#'   observations.
+#'
+#' @param n number of observations
+#' @param p total number of predictors to simulate
+#' @param exposed binary numeric vector of length \code{n} with 0 for unexposed
+#'   and 1 for exposed
+#' @param rho numeric value representing the expected correlation between green
+#'   module and red module
+#' @param ... arguments passed to the \code{\link[WGCNA]{simulateDatExpr}} function
+#' @return \code{n x p} matrix of simulated data
+#' @examples
+#' d0 <- simModule(n = 100, p = 1000, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- simModule(n = 100, p = 1000, rho = 0.90, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'  magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'  magrittr::set_rownames(paste0("Subject",1:n))
+#' dim(X)
+
+s_modules <- function(n, p, rho, exposed, ...) {
+
+  if (exposed) {
+    #Step 1: simulate the seed module eigengenes
+    sMEturquoise <- rnorm(n)
+
+    #expected cor(sMEblue,sMEturquoise) = 0.60
+    sMEblue <- 0.60 * sMEturquoise + sqrt(1 - 0.60 ^ 2) * rnorm(n)
+
+    sMEyellow <- rnorm(n)
+
+    sMEgreen <- rnorm(n)
+
+    #expected cor(e.continuous,seed.ME)=0.95
+    temp0 <- rho[1] * sMEgreen + sqrt(1 - rho[1] ^ 2) * rnorm(n)
+
+    #expected cor(y.continuous,seed.ME) <- -0.95
+    sMEred <- rho[1] * temp0 + sqrt(1 - rho[1] ^ 2) * rnorm(n)
+
+    datsME <- data.frame(sMEturquoise,sMEblue,sMEred,sMEgreen,sMEyellow)
+
+    dat1 <- WGCNA::simulateDatExpr(eigengenes = datsME, nGenes = p, ...)
+  } else {
+
+    #Step 1: simulate the seed module eigengenes
+    sMEturquoise <- rnorm(n)
+
+    #expected cor(sMEblue,sMEturquoise) = 0.60
+    sMEblue <- 0.60 * sMEturquoise + sqrt(1 - 0.60 ^ 2) * rnorm(n)
+
+    sMEyellow <- rnorm(n)
+
+    sMEgreen <- rnorm(n)
+
+    #expected cor(e.continuous,seed.ME)=0.95
+    temp0 <- rho[1] * sMEgreen + sqrt(1 - rho[1] ^ 2) * rnorm(n)
+
+    #expected cor(y.continuous,seed.ME) <- -0.95
+    sMEred <- rho[1] * temp0 + sqrt(1 - rho[1] ^ 2) * rnorm(n)
+
+    datsME <- data.frame(sMEturquoise,sMEblue,sMEred,sMEgreen,sMEyellow)
+
+    dat1 <- WGCNA::simulateDatExpr(eigengenes = datsME, nGenes = p, ...)
+
+  }
+
+  return(dat1)
+}
+
+
+
+#' Generate linear response data and test and training sets for simulation study
+#'
+#' @description create a function that takes as input, the number of genes, the
+#'   true beta vector, the gene expression matrix created from the
+#'   generate_blocks function and returns a list of data matrix, as well as
+#'   correlation matrices, TOM matrices, cluster information, training and test
+#'   data
+#' @note this function calls the \code{s_response} to generate phenotype as a
+#'   function of the gene expression data. This function also returns other
+#'   information derived from the simulated data including the test and training
+#'   sets, the correlation and TOM matrices and the clusters.
+#' @note the PCs and averages need to be calculated in the fitting functions,
+#'   because these will change based on the CV fold
+#' @return list of (in the following order) \describe{ \item{beta_truth}{}
+#'   \item{distance}{} \item{DT}{data.table of simulated data from the
+#'   \code{s_response} function} \item{Y}{} \item{X0}{} \item{X1}{}
+#'   \item{X_train}{} \item{X_test}{} \item{Y_train}{} \item{Y_test}{}
+#'   \item{DT_train}{} \item{DT_test}{} \item{S0}{} \item{n_clusters}{}
+#'   \item{clustered_genes_train}{} \item{clustered_genes_test}{}
+#'   \item{clusters}{} \item{tom_train_all}{} \item{tom_train_diff}{}
+#'   \item{tom_train_e1}{} \item{tom_train_e0}{} \item{corr_train_all}{}
+#'   \item{corr_train_diff}{} \item{corr_train_e1}{} \item{corr_train_e0}{}
+#'   \item{mse_null}{} }
+#' @param agglomeration_method the agglomeration method to be used. This should
+#'   be (an unambiguous abbreviation of) one of "ward.D", "ward.D2", "single",
+#'   "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC)
+#'   or "centroid" (= UPGMC).
+#' @param p number of genes in design matrix
+#' @param X gene expression matrix of size n x p using the
+#'   \code{generate_blocks} function
+#' @param beta true beta coefficient vector
+#' @param n total number of subjects
+#' @param n0 total number of subjects with E=0
+#' @param signal_to_noise_ratio signal to noise ratio, default is 1
+#' @param cluster_distance character representing which matrix from the training
+#'   set that you want to use to cluster the genes. Must be one of the following
+#'   \itemize{ \item corr, corr0, corr1, tom, tom0, tom1, diffcorr, difftom,
+#'   corScor, tomScor, fisherScore }
+#' @param eclust_distance character representing which matrix from the training
+#'   set that you want to use to cluster the genes based on the environment. See
+#'   \code{cluster_distance} for avaialble options. Should be different from
+#'   \code{cluster_distance}. For example, if \code{cluster_distance=corr} and
+#'   \code{EclustDistance=fisherScore}. That is, one should be based on
+#'   correlations ignoring the environment, and the other should be based on
+#'   correlations accounting for the environment. This function will always
+#'   return this add on
+#' @param distance_method  one of "euclidean","maximum","manhattan", "canberra",
+#'   "binary","minkowski" to be passed to \code{\link[stats]{dist}} function.
+#' @param include_interaction Should an interaction with the environment be
+#'   generated as part of the response. Default is FALSE.
+#' @param cluster_method Cluster the data using hierarchical clustering or
+#'   prototype clustering. Defaults \code{clustMethod="hclust"}. Other option is
+#'   \code{\link[protoclust]{protoclust}}, however this package must be
+#'   installed before proceeding with this option
+#' @param cut_method what method to use to cut the dendrogram. \code{'dynamic'}
+#'   refers to \code{\link[dynamicTreeCut]{}} library. \code{'gap'} is
+#'   Tibshirani's gap statistic \code{\link[cluster]{clusGap}} using the
+#'   \code{'Tibs2001SEmax'} rule. \code{'fixed'} is a fixed number specified by
+#'   the \code{n_clusters} argument
+#' @param nPC number of principal components to extract from each cluster.
+#'   Default is 1. Only 1 or 2 is allowed.
+#' @inheritParams u_cluster_similarity
+#' @examples
+#' \dontrun{
+#' p = 1000
+#' n=200;n0=100
+#' beta_genes <- c(runif(50,0.9,1.1),
+#'                 runif(50, -1.1,-0.9),
+#'                 rep(0,900))
+#' # gene expression matrix used in s_response function
+#' X <- mapply(generate_blocks,
+#'             rho_E0 = c(-0.70, runif(8, 0.01,0.05), 0.70),
+#'             rho_E1 = c(0.70, runif(8, 0.01, 0.05), 0.70),
+#'             MoreArgs = list(block_size = 100, n = n, n0 = n0), SIMPLIFY = F) %>%
+#'   do.call(cbind, . ) %>%
+#'   magrittr::set_colnames(paste0("Gene", 1:1000)) %>%
+#'   magrittr::set_rownames(paste0("Subject",1:200))
+#'
+#' cluster_distance <- "corr"
+#' generate_data(p = p, n = n, n0 = n0, X = X, beta_genes = beta_genes, cluster_distance = "corr")
+#' }
+#' @export
+
+s_generate_data <- function(p, X, beta,
+                            cluster_distance = c("corr", "corr0", "corr1", "tom",
+                                                 "tom0", "tom1", "diffcorr",
+                                                 "difftom","corScor", "tomScor",
+                                                 "fisherScore"),
+                            n, n0, include_interaction = F,
+                            signal_to_noise_ratio = 1,
+                            eclust_distance = c("fisherScore", "corScor", "diffcorr",
+                                                "difftom"),
+                            cluster_method = c("hclust", "protoclust"),
+                            cut_method = c("dynamic","gap", "fixed"),
+                            distance_method = c("euclidean","maximum", "manhattan",
+                                                "canberra", "binary", "minkowski"),
+                            n_clusters,
+                            agglomeration_method = c("complete", "average", "ward.D2",
+                                                     "single", "ward.D", "mcquitty",
+                                                     "median", "centroid"),
+                            nPC = 1,
+                            K.max = 10, B = 10) {
+
+  # p = p; X = X ; beta = beta
+  # n = n; n0 = n0
+  # cluster_distance = "corr"
+  # include_interaction = F
+  # signal_to_noise_ratio = 0.5
+  # cluster_method = "hclust" ; cut_method = "dynamic";agglomeration_method="complete";
+  # distance_method = "euclidean"
+  # eclust_distance = "diffcorr"; nPC = 1
+
+
+  agglomeration_method <- match.arg(agglomeration_method)
+  cut_method <- match.arg(cut_method)
+  cluster_method <- match.arg(cluster_method)
+  distance_method <- match.arg(distance_method)
+  cluster_distance <- match.arg(cluster_distance)
+  eclust_distance <- match.arg(eclust_distance)
+
+
+  names(beta) <- if (include_interaction) {
+    c(paste0("Gene",1:p),"E", paste0("Gene",1:p,":E"))
+  } else c(paste0("Gene",1:p),"E")
+
+  # total true beta vector: this includes all the betas for the genes, then the
+  # environment beta, then their interactions if interaction is true.
+  # This is used to calculate the model error. This is the same as beta,
+  # but in matrix form
+  beta_truth <- as.matrix(beta)
+
+  # Gene names belonging to the active set
+  S0 <- names(beta)[which(beta != 0)]
+
+  n1 <- n - n0
+
+  message("Creating data and simulating response")
+
+  DT <- as.data.frame(s_response(n = n, n0 = n0, p = p, genes = X,
+                               include_interaction = include_interaction,
+                               E = c(rep(0,n0), rep(1, n1)),
+                               beta = beta,
+                               signal_to_noise_ratio = signal_to_noise_ratio))
+  dim(DT)
+
+  Y <- as.matrix(DT[,"Y"])
+
+  #remove response from X0 and X1
+  X0 <- as.matrix(DT[which(DT$E == 0),-1])
+  X1 <- as.matrix(DT[which(DT$E == 1),-1])
+
+  # partition-data
+  trainIndex <- caret::createDataPartition(DT$E, p = .5, list = FALSE, times = 1)
+  DT_train <- DT[trainIndex,]
+  DT_test <- DT[-trainIndex,]
+
+  # X_train and X_test contain the environment variable
+  X_train <- DT_train[,-1] %>% as.matrix
+  Y_train <- DT_train[, 1]
+  X_test <- DT_test[,-1] %>% as.matrix
+  Y_test <- DT_test[, 1]
+
+  mse_null <- crossprod(mean(Y_test) - Y_test)/length(Y_test)
+
+  # gene expression data
+  genes_e0 <- DT_train[which(DT_train$E == 0),paste0("Gene",1:p)] %>% as.matrix
+  genes_e1 <- DT_train[which(DT_train$E == 1),paste0("Gene",1:p)] %>% as.matrix
+  genes_all <- rbind(genes_e0,genes_e1)
+
+  message("Calculating similarity matrices")
+
+  # gene expression data
+  genes_all_test <- DT_test[,paste0("Gene",1:p)] %>% as.matrix
+
+  corr_train_e0 <- WGCNA::cor(genes_e0)
+  corr_train_e1 <- WGCNA::cor(genes_e1)
+  corr_train_diff <- abs(corr_train_e1 - corr_train_e0)
+  corr_train_all <- WGCNA::cor(genes_all)
+
+  tom_train_e0 <- WGCNA::TOMsimilarityFromExpr(genes_e0)
+  dimnames(tom_train_e0)[[1]] <- dimnames(corr_train_all)[[1]]
+  dimnames(tom_train_e0)[[2]] <- dimnames(corr_train_all)[[2]]
+
+  tom_train_e1 <- WGCNA::TOMsimilarityFromExpr(genes_e1)
+  dimnames(tom_train_e1)[[1]] <- dimnames(corr_train_all)[[1]]
+  dimnames(tom_train_e1)[[2]] <- dimnames(corr_train_all)[[2]]
+
+  tom_train_diff <- abs(tom_train_e1 - tom_train_e0)
+  dimnames(tom_train_diff)[[1]] <- dimnames(corr_train_all)[[1]]
+  dimnames(tom_train_diff)[[2]] <- dimnames(corr_train_all)[[2]]
+
+  tom_train_all <- WGCNA::TOMsimilarityFromExpr(genes_all)
+  dimnames(tom_train_all)[[1]] <- dimnames(corr_train_all)[[1]]
+  dimnames(tom_train_all)[[2]] <- dimnames(corr_train_all)[[2]]
+
+
+  # corScor and Fisher Score matrices
+  alpha <- 2
+  Scorr <- abs(corr_train_e0 + corr_train_e1 - alpha * corr_train_all)
+  class(Scorr) <- c("similarity", class(Scorr))
+
+  # Stom <- abs(tom_train_e1 + tom_train_e0 - alpha * tom_train_all)
+  # class(Stom) <- c("similarity", class(Stom))
+
+  fisherScore <- u_fisherZ(n0 = n0, cor0 = corr_train_e0,
+                         n1 = n1, cor1 = corr_train_e1)
+
+  # class(tom_train_all) <- append(class(tom_train_all), "similarity")
+  # class(tom_train_diff) <- append(class(tom_train_diff), "similarity")
+  # class(tom_train_e1) <- append(class(tom_train_e1), "similarity")
+  # class(tom_train_e0) <- append(class(tom_train_e0), "similarity")
+  class(corr_train_all) <- append(class(corr_train_all), "similarity")
+  class(corr_train_diff) <- append(class(corr_train_diff), "similarity")
+  class(corr_train_e1) <- append(class(corr_train_e1), "similarity")
+  class(corr_train_e0) <- append(class(corr_train_e0), "similarity")
+
+  message("Creating CV folds from training data")
+
+  # Folds for Cross validation
+  folds_train <- caret::createFolds(Y_train, k = 10, list = T)
+  DT_train_folds <- lapply(folds_train, function(i) DT_train[-i,])
+  X_train_folds <- lapply(DT_train_folds, function(i) i[,-grep("Y",colnames(i))])
+  Y_train_folds <- lapply(DT_train_folds, function(i) i[,grep("Y",colnames(i))])
+
+  message(sprintf("Calculating number of clusters based on %s using %s with %s
+                  linkage and the %s to determine the number of clusters",
+                  cluster_distance, cluster_method, agglomeration_method, cut_method))
+
+  # clusters based on cluster_distance argument
+  similarity <- switch(cluster_distance,
+                       corr = corr_train_all,
+                       corr0 = corr_train_e0,
+                       corr1 = corr_train_e1,
+                       diffcorr = corr_train_diff,
+                       difftom = tom_train_diff,
+                       tom0 = tom_train_e0,
+                       tom1 = tom_train_e1,
+                       tom = tom_train_all,
+                       corScor = Scorr,
+                       tomScor = Stom,
+                       fisherScore = fisherScore)
+
+  # results for clustering, PCs and averages for each block
+  # the only difference here is the distance_method arg
+  res <- if (cluster_distance %in% c("diffcorr","difftom",
+                                     "corScor", "tomScor","fisherScore")) {
+    u_cluster_similarity(x = similarity,
+                       expr = genes_all,
+                       exprTest = genes_all_test,
+                       distanceMethod = distance_method,
+                       clustMethod = cluster_method,
+                       cutMethod = cut_method,
+                       method = agglomeration_method,
+                       K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
+  } else {
+    u_cluster_similarity(x = similarity,
+                       expr = genes_all,
+                       exprTest = genes_all_test,
+                       clustMethod = cluster_method,
+                       cutMethod = cut_method,
+                       method = agglomeration_method,
+                       K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
+  }
+
+  message(paste("Calculating number of environment clusters based on ",
+                eclust_distance))
+
+  # clusters based on eclust_distance
+  similarityEclust <- switch(eclust_distance,
+                             corr = corr_train_all,
+                             corr0 = corr_train_e0,
+                             corr1 = corr_train_e1,
+                             diffcorr = corr_train_diff,
+                             difftom = tom_train_diff,
+                             tom0 = tom_train_e0,
+                             tom1 = tom_train_e1,
+                             tom = tom_train_all,
+                             corScor = Scorr,
+                             tomScor = Stom,
+                             fisherScore = fisherScore)
+
+
+  resEclust <- if (eclust_distance %in% c("diffcorr","difftom",
+                                          "corScor", "tomScor","fisherScore")) {
+    u_cluster_similarity(x = similarityEclust,
+                       expr = genes_all,
+                       exprTest = genes_all_test,
+                       distanceMethod = distance_method,
+                       clustMethod = cluster_method,
+                       cutMethod = cut_method,
+                       method = agglomeration_method,
+                       K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
+  } else {
+    u_cluster_similarity(x = similarityEclust,
+                       expr = genes_all,
+                       exprTest = genes_all_test,
+                       clustMethod = cluster_method,
+                       cutMethod = cut_method,
+                       method = agglomeration_method,
+                       K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
+  }
+
+
+  # we need to combine the cluster information here
+  # this is based on cluster_distance only
+  clustersAll <- copy(res$clusters)
+  n_clusters_All <- res$pcInfo$nclusters
+
+  message(sprintf("There are %d clusters derived from the %s similarity matrix",
+                  n_clusters_All, cluster_distance))
+
+  # this is based on eclust_distance only
+  n_clusters_Eclust <- resEclust$pcInfo$nclusters
+  clustersEclust <- copy(resEclust$clusters)
+
+  message(sprintf("There are %d clusters derived from the %s environment similarity matrix",
+                  n_clusters_Eclust, eclust_distance))
+
+  # this is based on both
+  n_clusters_Addon <- n_clusters_All + n_clusters_Eclust
+
+  message(sprintf("There are a total of %d clusters derived from the %s
+                  similarity matrix and the %s environment similarity matrix",
+                  n_clusters_Addon,cluster_distance,eclust_distance))
+
+  # check if any of the cluster numbers in clustersEclust are 0
+  # if there are, then add n_clusters+1 to each module number in
+  # clustersEclust, else just add n_clusters. this is to control for the
+  # situation where there are some clusters numbers of 0 which would cause
+  # identical cluster numbers in the clusters and clustersEclust data
+  if (clustersEclust[,any(cluster==0)]) {
+    clustersEclust[,cluster := cluster + n_clusters_All + 1 ]
+  } else {
+    clustersEclust[,cluster := cluster + n_clusters_All ]
+  }
+
+  # this contains the clusters from the cluster_distance (e.g. corr matrix)
+  # and the clusters from the eclust_distance (e.g. fisherScore)
+  clustersAddon <- rbindlist(list(clustersAll, clustersEclust))
+
+  # need to calculate penalty factors for group lasso
+  # I put all main effects and interactions of a given module in the same group
+  # and the size of the penalty factor is sqrt(size of module), where the
+  # size of the module includes both main and interaction effects
+  # environment should get penalized, in the original simulation 1
+  # it was not being penalized which is maybe why it was performing well
+  if (include_interaction) {
+
+    gene_groups = copy(clustersAll)
+    gene_groups[, gene := paste0(gene,":E")]
+    gene_groups <- rbind(clustersAll,gene_groups) %>% setkey(cluster)
+
+    pf_temp <- gene_groups[,.N, by = cluster][,pf := sqrt(N)] %>% setkey(cluster)
+
+    gene_groups_inter <- rbind(pf_temp[gene_groups],
+                               data.table(cluster = n_clusters_All, N = 1,
+                                          pf = 1, gene = "E", module = "empty"))
+    # gglasso needs groups number consecutively 1, 2,3 ...
+    gene_groups_inter[, cluster:=cluster+1]
+    setkey(gene_groups_inter, cluster)
+
+    gene_groups_Addon = copy(clustersAddon)
+    gene_groups_Addon[, gene := paste0(gene,":E")]
+    gene_groups_Addon <- rbind(clustersAddon, gene_groups_Addon) %>% setkey(cluster)
+
+    pf_temp_Addon <- gene_groups_Addon[,.N, by = cluster][,pf := sqrt(N)] %>% setkey(cluster)
+
+    gene_groups_inter_Addon <- rbind(pf_temp_Addon[gene_groups_Addon],
+                                     data.table(cluster = n_clusters_Addon, N = 1,
+                                                pf = 1, gene = "E", module = "empty"))
+    # gglasso needs groups number consecutively 1, 2,3 ...
+    gene_groups_inter_Addon[, cluster:=cluster+1]
+    setkey(gene_groups_inter_Addon, cluster)
+  }
+
+  DT <- DT %>% as.matrix
+  class(DT) <- append(class(DT),"eset")
+
+  result <- list(beta_truth = beta_truth,
+                 similarity = similarity,
+                 similarityEclust = similarityEclust,
+                 DT = DT,
+                 Y = Y, X0 = X0, X1 = X1, X_train = X_train, X_test = X_test,
+                 Y_train = Y_train, Y_test = Y_test, DT_train = DT_train,
+                 DT_test = DT_test, S0 = S0,
+                 n_clusters_All = n_clusters_All,
+                 n_clusters_Eclust = n_clusters_Eclust,
+                 n_clusters_Addon = n_clusters_Addon,
+                 clustersAll = clustersAll,
+                 clustersAddon = clustersAddon,
+                 clustersEclust = clustersEclust,
+                 gene_groups_inter = if (include_interaction) gene_groups_inter else NULL,
+                 gene_groups_inter_Addon = if (include_interaction) gene_groups_inter_Addon else NULL,
+                 tom_train_all = tom_train_all, tom_train_diff = tom_train_diff,
+                 tom_train_e1 = tom_train_e1,tom_train_e0 = tom_train_e0,
+                 corr_train_all = corr_train_all,
+                 corr_train_diff = corr_train_diff,
+                 corr_train_e1 = corr_train_e1, corr_train_e0 = corr_train_e0,
+                 fisherScore = fisherScore,
+                 corScor = Scorr,
+                 # corTom = Stom,
+                 mse_null = mse_null, DT_train_folds = DT_train_folds,
+                 X_train_folds = X_train_folds, Y_train_folds = Y_train_folds)
+  return(result)
+}
+
+
+
+#' Generate non linear response and test and training sets for non-linear
+#' simulation study
+#'
+#' @description create a function that takes as input, the number of genes, the
+#'   true beta vector, the gene expression matrix created from the
+#'   generate_blocks function and returns a list of data matrix, as well as
+#'   correlation matrices, TOM matrices, cluster information, training and test
+#'   data
+#'
+#' @param truemodule numeric vector of the true module membership used in the
+#'   \code{s_response_mars} function. Modules 3 and 4 are active in the
+#'   response. See \code{s_response_mars} function for details.
+#' @param nActive number of active genes in the response used in the
+#'   \code{s_response_mars}
+#' @inheritParams u_cluster_similarity
+#' @inheritParams s_generate_data
+#' @return list of (in the following order) \describe{ \item{beta_truth}{}
+#'   \item{distance}{} \item{DT}{data.table of simulated data from the
+#'   \code{s_response} function} \item{Y}{} \item{X0}{} \item{X1}{}
+#'   \item{X_train}{} \item{X_test}{} \item{Y_train}{} \item{Y_test}{}
+#'   \item{DT_train}{} \item{DT_test}{} \item{S0}{} \item{n_clusters}{}
+#'   \item{clustered_genes_train}{} \item{clustered_genes_test}{}
+#'   \item{clusters}{} \item{tom_train_all}{} \item{tom_train_diff}{}
+#'   \item{tom_train_e1}{} \item{tom_train_e0}{} \item{corr_train_all}{}
+#'   \item{corr_train_diff}{} \item{corr_train_e1}{} \item{corr_train_e0}{}
+#'   \item{mse_null}{} }
+#' @export
+#'
+s_generate_data_mars <- function(p, X, beta,
+                                 truemodule,
+                                 nActive,
+                                 cluster_distance = c("corr", "corr0", "corr1", "tom",
+                                                      "tom0", "tom1", "diffcorr",
+                                                      "difftom","corScor", "tomScor",
+                                                      "fisherScore"),
+                                 n, n0, include_interaction = F,
+                                 signal_to_noise_ratio = 1,
+                                 eclust_distance = c("fisherScore", "corScor", "diffcorr",
+                                                     "difftom"),
+                                 cluster_method = c("hclust", "protoclust"),
+                                 cut_method = c("dynamic","gap", "fixed"),
+                                 distance_method = c("euclidean","maximum", "manhattan",
+                                                     "canberra", "binary", "minkowski"),
+                                 n_clusters,
+                                 agglomeration_method = c("complete", "average", "ward.D2",
+                                                          "single", "ward.D", "mcquitty",
+                                                          "median", "centroid"),
+                                 nPC = 1,
+                                 K.max = 10, B = 10) {
+
+  # p = p; X = X ; beta = beta
+  # n = n; n0 = n0
+  # cluster_distance = "corr"
+  # include_interaction = F
+  # signal_to_noise_ratio = 0.5
+  # cluster_method = "hclust" ; cut_method = "dynamic";agglomeration_method="complete";
+  # distance_method = "euclidean"
+  # eclust_distance = "diffcorr"; nPC = 1
+
+
+  agglomeration_method <- match.arg(agglomeration_method)
+  cut_method <- match.arg(cut_method)
+  cluster_method <- match.arg(cluster_method)
+  distance_method <- match.arg(distance_method)
+  cluster_distance <- match.arg(cluster_distance)
+  eclust_distance <- match.arg(eclust_distance)
+
+
+  names(beta) <- if (include_interaction) {
+    c(paste0("Gene",1:p),"E", paste0("Gene",1:p,":E"))
+  } else c(paste0("Gene",1:p),"E")
+
+  # total true beta vector: this includes all the betas for the genes, then the
+  # environment beta, then their interactions if interaction is true.
+  # This is used to calculate the model error. This is the same as beta,
+  # but in matrix form
+  beta_truth <- as.matrix(beta)
+
+  # Gene names belonging to the active set
+  S0 <- names(beta)[which(beta != 0)]
+
+  n1 <- n - n0
+
+  message("Creating data and simulating response for MARS model")
+
+  DT <- as.data.frame(s_response_mars(n = n, n0 = n0, p = p, genes = X,
+                                    truemodule = truemodule,
+                                    nActive = nActive,
+                                    E = c(rep(0,n0), rep(1, n1)),
+                                    signal_to_noise_ratio = signal_to_noise_ratio))
+  dim(DT)
+
+  Y <- as.matrix(DT[,"Y"])
+
+  #remove response from X0 and X1
+  X0 <- as.matrix(DT[which(DT$E == 0),-1])
+  X1 <- as.matrix(DT[which(DT$E == 1),-1])
+
+  # partition-data
+  trainIndex <- caret::createDataPartition(DT$E, p = .5, list = FALSE, times = 1)
+  DT_train <- DT[trainIndex,]
+  DT_test <- DT[-trainIndex,]
+
+  # X_train and X_test contain the environment variable
+  X_train <- DT_train[,-1] %>% as.matrix
+  Y_train <- DT_train[, 1]
+  X_test <- DT_test[,-1] %>% as.matrix
+  Y_test <- DT_test[, 1]
+
+  mse_null <- crossprod(mean(Y_test) - Y_test)/length(Y_test)
+
+  # gene expression data
+  genes_e0 <- DT_train[which(DT_train$E == 0),paste0("Gene",1:p)] %>% as.matrix
+  genes_e1 <- DT_train[which(DT_train$E == 1),paste0("Gene",1:p)] %>% as.matrix
+  genes_all <- rbind(genes_e0,genes_e1)
+
+  message("Calculating similarity matrices")
+
+  # gene expression data
+  genes_all_test <- DT_test[,paste0("Gene",1:p)] %>% as.matrix
+
+  corr_train_e0 <- WGCNA::cor(genes_e0)
+  corr_train_e1 <- WGCNA::cor(genes_e1)
+  corr_train_diff <- abs(corr_train_e1 - corr_train_e0)
+  corr_train_all <- WGCNA::cor(genes_all)
+
+  tom_train_e0 <- WGCNA::TOMsimilarityFromExpr(genes_e0)
+  dimnames(tom_train_e0)[[1]] <- dimnames(corr_train_all)[[1]]
+  dimnames(tom_train_e0)[[2]] <- dimnames(corr_train_all)[[2]]
+
+  tom_train_e1 <- WGCNA::TOMsimilarityFromExpr(genes_e1)
+  dimnames(tom_train_e1)[[1]] <- dimnames(corr_train_all)[[1]]
+  dimnames(tom_train_e1)[[2]] <- dimnames(corr_train_all)[[2]]
+
+  tom_train_diff <- abs(tom_train_e1 - tom_train_e0)
+  dimnames(tom_train_diff)[[1]] <- dimnames(corr_train_all)[[1]]
+  dimnames(tom_train_diff)[[2]] <- dimnames(corr_train_all)[[2]]
+
+  tom_train_all <- WGCNA::TOMsimilarityFromExpr(genes_all)
+  dimnames(tom_train_all)[[1]] <- dimnames(corr_train_all)[[1]]
+  dimnames(tom_train_all)[[2]] <- dimnames(corr_train_all)[[2]]
+
+
+
+
+  # corScor and Fisher Score matrices
+  alpha <- 2
+  Scorr <- abs(corr_train_e0 + corr_train_e1 - alpha * corr_train_all)
+  class(Scorr) <- c("similarity", class(Scorr))
+
+  # Stom <- abs(tom_train_e1 + tom_train_e0 - alpha * tom_train_all)
+  # class(Stom) <- c("similarity", class(Stom))
+
+  fisherScore <- u_fisherZ(n0 = n0, cor0 = corr_train_e0,
+                         n1 = n1, cor1 = corr_train_e1)
+
+  # class(tom_train_all) <- append(class(tom_train_all), "similarity")
+  # class(tom_train_diff) <- append(class(tom_train_diff), "similarity")
+  # class(tom_train_e1) <- append(class(tom_train_e1), "similarity")
+  # class(tom_train_e0) <- append(class(tom_train_e0), "similarity")
+  class(corr_train_all) <- append(class(corr_train_all), "similarity")
+  class(corr_train_diff) <- append(class(corr_train_diff), "similarity")
+  class(corr_train_e1) <- append(class(corr_train_e1), "similarity")
+  class(corr_train_e0) <- append(class(corr_train_e0), "similarity")
+
+  message("Creating CV folds from training data")
+
+  # Folds for Cross validation
+  folds_train <- caret::createFolds(Y_train, k = 10, list = T)
+  DT_train_folds <- lapply(folds_train, function(i) DT_train[-i,])
+  X_train_folds <- lapply(DT_train_folds, function(i) i[,-grep("Y",colnames(i))])
+  Y_train_folds <- lapply(DT_train_folds, function(i) i[,grep("Y",colnames(i))])
+
+  message(sprintf("Calculating number of clusters based on %s using %s with %s
+                  linkage and the %s to determine the number of clusters",
+                  cluster_distance, cluster_method, agglomeration_method, cut_method))
+
+  # clusters based on cluster_distance argument
+  similarity <- switch(cluster_distance,
+                       corr = corr_train_all,
+                       corr0 = corr_train_e0,
+                       corr1 = corr_train_e1,
+                       diffcorr = corr_train_diff,
+                       difftom = tom_train_diff,
+                       tom0 = tom_train_e0,
+                       tom1 = tom_train_e1,
+                       tom = tom_train_all,
+                       corScor = Scorr,
+                       tomScor = Stom,
+                       fisherScore = fisherScore)
+
+  # results for clustering, PCs and averages for each block
+  # the only difference here is the distance_method arg
+  res <- if (cluster_distance %in% c("diffcorr","difftom",
+                                     "corScor", "tomScor","fisherScore")) {
+    u_cluster_similarity(x = similarity,
+                         expr = genes_all,
+                         exprTest = genes_all_test,
+                         distanceMethod = distance_method,
+                         clustMethod = cluster_method,
+                         cutMethod = cut_method,
+                         method = agglomeration_method,
+                         K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
+  } else {
+    u_cluster_similarity(x = similarity,
+                         expr = genes_all,
+                         exprTest = genes_all_test,
+                         clustMethod = cluster_method,
+                         cutMethod = cut_method,
+                         method = agglomeration_method,
+                         K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
+  }
+
+  message(paste("Calculating number of environment clusters based on ",
+                eclust_distance))
+
+  # clusters based on eclust_distance
+  similarityEclust <- switch(eclust_distance,
+                             corr = corr_train_all,
+                             corr0 = corr_train_e0,
+                             corr1 = corr_train_e1,
+                             diffcorr = corr_train_diff,
+                             difftom = tom_train_diff,
+                             tom0 = tom_train_e0,
+                             tom1 = tom_train_e1,
+                             tom = tom_train_all,
+                             corScor = Scorr,
+                             tomScor = Stom,
+                             fisherScore = fisherScore)
+
+
+  resEclust <- if (eclust_distance %in% c("diffcorr","difftom",
+                                          "corScor", "tomScor","fisherScore")) {
+    u_cluster_similarity(x = similarityEclust,
+                         expr = genes_all,
+                         exprTest = genes_all_test,
+                         distanceMethod = distance_method,
+                         clustMethod = cluster_method,
+                         cutMethod = cut_method,
+                         method = agglomeration_method,
+                         K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
+  } else {
+    u_cluster_similarity(x = similarityEclust,
+                         expr = genes_all,
+                         exprTest = genes_all_test,
+                         clustMethod = cluster_method,
+                         cutMethod = cut_method,
+                         method = agglomeration_method,
+                         K.max = K.max, B = B, nClusters = nClusters, nPC = nPC)
+  }
+
+
+  # we need to combine the cluster information here
+  # this is based on cluster_distance only
+  clustersAll <- copy(res$clusters)
+  n_clusters_All <- res$pcInfo$nclusters
+
+  message(sprintf("There are %d clusters derived from the %s similarity matrix",
+                  n_clusters_All, cluster_distance))
+
+  # this is based on eclust_distance only
+  n_clusters_Eclust <- resEclust$pcInfo$nclusters
+  clustersEclust <- copy(resEclust$clusters)
+
+  message(sprintf("There are %d clusters derived from the %s environment similarity matrix",
+                  n_clusters_Eclust, eclust_distance))
+
+  # this is based on both
+  n_clusters_Addon <- n_clusters_All + n_clusters_Eclust
+
+  message(sprintf("There are a total of %d clusters derived from the %s
+                  similarity matrix and the %s environment similarity matrix",
+                  n_clusters_Addon,cluster_distance,eclust_distance))
+
+  # check if any of the cluster numbers in clustersEclust are 0
+  # if there are, then add n_clusters+1 to each module number in
+  # clustersEclust, else just add n_clusters. this is to control for the
+  # situation where there are some clusters numbers of 0 which would cause
+  # identical cluster numbers in the clusters and clustersEclust data
+  if (clustersEclust[,any(cluster==0)]) {
+    clustersEclust[,cluster := cluster + n_clusters_All + 1 ]
+  } else {
+    clustersEclust[,cluster := cluster + n_clusters_All ]
+  }
+
+  # this contains the clusters from the cluster_distance (e.g. corr matrix)
+  # and the clusters from the eclust_distance (e.g. fisherScore)
+  clustersAddon <- rbindlist(list(clustersAll, clustersEclust))
+
+  # need to calculate penalty factors for group lasso
+  # I put all main effects and interactions of a given module in the same group
+  # and the size of the penalty factor is sqrt(size of module), where the
+  # size of the module includes both main and interaction effects
+  # environment should get penalized, in the original simulation 1
+  # it was not being penalized which is maybe why it was performing well
+  if (include_interaction) {
+
+    gene_groups = copy(clustersAll)
+    gene_groups[, gene := paste0(gene,":E")]
+    gene_groups <- rbind(clustersAll,gene_groups) %>% setkey(cluster)
+
+    pf_temp <- gene_groups[,.N, by = cluster][,pf := sqrt(N)] %>% setkey(cluster)
+
+    gene_groups_inter <- rbind(pf_temp[gene_groups],
+                               data.table(cluster = n_clusters_All, N = 1,
+                                          pf = 1, gene = "E", module = "empty"))
+    # gglasso needs groups number consecutively 1, 2,3 ...
+    gene_groups_inter[, cluster:=cluster+1]
+    setkey(gene_groups_inter, cluster)
+
+    gene_groups_Addon = copy(clustersAddon)
+    gene_groups_Addon[, gene := paste0(gene,":E")]
+    gene_groups_Addon <- rbind(clustersAddon, gene_groups_Addon) %>% setkey(cluster)
+
+    pf_temp_Addon <- gene_groups_Addon[,.N, by = cluster][,pf := sqrt(N)] %>% setkey(cluster)
+
+    gene_groups_inter_Addon <- rbind(pf_temp_Addon[gene_groups_Addon],
+                                     data.table(cluster = n_clusters_Addon, N = 1,
+                                                pf = 1, gene = "E", module = "empty"))
+    # gglasso needs groups number consecutively 1, 2,3 ...
+    gene_groups_inter_Addon[, cluster:=cluster+1]
+    setkey(gene_groups_inter_Addon, cluster)
+  }
+
+  DT <- DT %>% as.matrix
+  class(DT) <- append(class(DT),"eset")
+
+  result <- list(beta_truth = beta_truth,
+                 similarity = similarity,
+                 similarityEclust = similarityEclust,
+                 DT = DT,
+                 Y = Y, X0 = X0, X1 = X1, X_train = X_train, X_test = X_test,
+                 Y_train = Y_train, Y_test = Y_test, DT_train = DT_train,
+                 DT_test = DT_test, S0 = S0,
+                 n_clusters_All = n_clusters_All,
+                 n_clusters_Eclust = n_clusters_Eclust,
+                 n_clusters_Addon = n_clusters_Addon,
+                 clustersAll = clustersAll,
+                 clustersAddon = clustersAddon,
+                 clustersEclust = clustersEclust,
+                 gene_groups_inter = if (include_interaction) gene_groups_inter else NULL,
+                 gene_groups_inter_Addon = if (include_interaction) gene_groups_inter_Addon else NULL,
+                 tom_train_all = tom_train_all, tom_train_diff = tom_train_diff,
+                 tom_train_e1 = tom_train_e1,tom_train_e0 = tom_train_e0,
+                 corr_train_all = corr_train_all,
+                 corr_train_diff = corr_train_diff,
+                 corr_train_e1 = corr_train_e1, corr_train_e0 = corr_train_e0,
+                 fisherScore = fisherScore,
+                 corScor = Scorr,
+                 # corTom = Stom,
+                 mse_null = mse_null, DT_train_folds = DT_train_folds,
+                 X_train_folds = X_train_folds, Y_train_folds = Y_train_folds)
+  return(result)
+}
+
+
+
+
+
+#' Generate True Response vector for Linear Simulation
+#'
+#' Given the true beta vector, covariates and environment variable this function
+#' generates the linear response with specified signal to noise ratio.
+#'
+#'
+#' @param n Total number of subjects
+#' @param n0 Total number of unexposed subjects
+#' @param p Total number of genes (or covariates)
+#' @param genes nxp matrix of the genes or covariates
+#' @param E binary 0,1, vector of the exposure/environment variable
+#' @param signal_to_noise_ratio a numeric variable for the signal to noise ratio
+#' @param include_interaction Logical. Should the response include the
+#'   interaction between E and the genes (for the non-zero \code{beta}
+#'   coefficient vector)
+#' @param beta true beta coefficient vector. Assumes this vector is in the same
+#'   order as the \code{genes}.
+#' @return a data.frame/data.table containing the response and the design
+#'   matrix. Also an object of class \code{expression}
+#' @inheritParams s_generate_data
+#' @export
+s_response <- function(n , n0 , p , genes,
+                       E, signal_to_noise_ratio = 1,
+                       include_interaction = F,
+                       beta = NULL) {
+
+  # number of subjects with E=1
+  #n1 = n - n0
+
+  # not used for now
+  # The coefficients are constructed to have alternating signs and to be exponentially
+  # decreasing. (Friedman et al 2010, Journal of Statistical Software)
+  # beta <- (-1)^{1:p} * exp(-(2*1:p-1)/100)
+  # beta <- (-1)^{1:p} * exp(-(2*1:p - 1 )/600)*sin(1:p)
+
+  #   genes = X
+  #   signal_to_noise_ratio = 4
+  #   n0 = n1 = 100
+  #   E = c(rep(0,n0),rep(1, n1))
+  #   beta = c(rnorm(1000),0, rep(0,1000));include_interaction = T
+  #   beta = c(rnorm(1000));include_interaction = F
+
+  if (include_interaction) {
+    DT <- cbind(genes,E) %>% as.data.table()
+    alloc.col(DT,2*p + 1) %>% invisible()
+    indx <- grep('Gene', colnames(DT))
+
+    for (j in indx){
+      set(DT, i = NULL, j = paste0("Gene",j,":E"), value = DT[[j]]*DT[['E']])
+    }
+  } else {
+    DT <- cbind(genes,E) %>% as.data.table()
+  }
+
+  y.star <- {DT %>% as.matrix()} %*% beta
+  error <- rnorm(n)
+  k <- sqrt(var(y.star)/(signal_to_noise_ratio*var(error)))
+
+  y <- y.star + k*error
+
+  result <- if (include_interaction) as.matrix(cbind(y,DT)) else as.matrix(cbind(y,DT))
+  colnames(result)[1] <- "Y"
+  class(result) <- append(class(result), "expression")
+
+  return(result)
+}
+
+
+#' Generate True Response vector for Non-Linear Simulation
+#'
+#' Given the covariates and environment variable this function
+#' generates the nonlinear response with specified signal to noise ratio.
+#' @inheritParams s_generate_data_mars
+#' @note See Bhatnagar et al (2017+) for details on how the response is simulated.
+#' @return a data.frame/data.table containing the response and the design
+#'   matrix. Also an object of class \code{expression}
+#' @export
+s_response_mars <- function(n , n0 , p , genes,
+                            E, signal_to_noise_ratio = 1,
+                            truemodule, nActive) {
+
+  # nActive
+  # truemodule = truemodule1
+  # genes = X
+  # E = c(rep(0,n0),rep(1, n1))
+
+  DT <- cbind(genes,E) %>% as.data.table()
+
+  x1 <- genes[,which(truemodule %in% 3)[1:(nActive/2)]]
+  u1 <- svd(x1)$u[,1]
+
+  x2 <- genes[,which(truemodule %in% 4)[1:(nActive/2)]]
+  u2 <- svd(x2)$u[,1]
+
+  y.star <- 0.1*(u1 + u2 + E) + 4 * pmax(u1-0.01, 0) * pmax(u2-0.05, 0) * E
+  error <- rnorm(n)
+  k <- sqrt(var(y.star)/(signal_to_noise_ratio*var(error)))
+
+  y <- y.star + k*error
+
+  result <- as.matrix(cbind(y,DT))
+  colnames(result)[1] <- "Y"
+  class(result) <- append(class(result), "expression")
+
+  return(result)
+}
+
+
