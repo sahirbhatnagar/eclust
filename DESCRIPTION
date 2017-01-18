@@ -2,7 +2,7 @@ Package: eclust
 Type: Package
 Title: Environment Based Clustering for Interpretable Predictive Models in High Dimensional Data
 Version: 0.1.0
-Authors@R: c(person("Sahir", "Bhatnagar", email = "sahir.bhatnagar@gmail.com",
+Authors@R: c(person("Sahir Rai", "Bhatnagar", email = "sahir.bhatnagar@gmail.com",
     role = c("aut", "cre"), comment = "http://sahirbhatnagar.com/"))
 Description: Companion package to the paper An analytic approach for 
     interpretable predictive models in high dimensional data, in the presence of 
@@ -21,16 +21,17 @@ Suggests:
     knitr,
     rmarkdown,
     protoclust,
-    factoextra
+    factoextra,
+    glmnet
 VignetteBuilder: knitr
 Imports:
     caret,
     data.table,
     dynamicTreeCut,
-    glmnet,
     magrittr,
     pacman,
     WGCNA,
-    earth,
-    pROC
+    pROC,
+    stringr,
+    stats
 RoxygenNote: 5.0.1

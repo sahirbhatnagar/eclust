@@ -55,7 +55,7 @@ components can be chosen.}
 \code{model="lasso"} which corresponds to glmnet mixing parameter
 \code{alpha=1}. \code{model="elasticnet"} corresponds to glmnet mixing
 parameter \code{alpha=0.5}, \code{model="mcp"} and \code{model="scad"} are
-the non-convex models from the \code{\link[ncvreg]{}} package}
+the non-convex models from the \code{\link[ncvreg]{ncvreg}} package}
 
 \item{exp_family}{Response type. See details for \code{y_train} argument
 above.}
@@ -140,9 +140,6 @@ The stability of feature importance is defined as the variability of
 \note{
 \code{number_pc=2} will not work if there is only one feature in an
   estimated cluster
-}
-\examples{
-
 }
 \references{
 Toloşi, L., & Lengauer, T. (2011). \emph{Classification with

@@ -7,7 +7,7 @@
 \usage{
 u_fisherZ(n0, cor0, n1, cor1)
 
-fisherTransform(n1, r1, n2, r2)
+fisherTransform(n_1, r1, n_2, r2)
 }
 \arguments{
 \item{n0}{number of unexposed subjects}
@@ -20,7 +20,11 @@ dimension pxp}
 \item{cor1}{correlation matrix of exposed covariate values. Should be
 dimension pxp}
 
+\item{n_1}{number of unexposed subjects}
+
 \item{r1}{correlation for unexposed}
+
+\item{n_2}{number of exposed subjects}
 
 \item{r2}{correlation for exposed}
 }

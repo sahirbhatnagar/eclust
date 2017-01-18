@@ -14,6 +14,10 @@ s_response_mars(n, n0, p, genes, E, signal_to_noise_ratio = 1, truemodule,
 
 \item{p}{number of genes in design matrix}
 
+\item{genes}{nxp matrix of the genes or covariates}
+
+\item{E}{binary 0,1, vector of the exposure/environment variable}
+
 \item{signal_to_noise_ratio}{signal to noise ratio, default is 1}
 
 \item{truemodule}{numeric vector of the true module membership used in the

@@ -30,7 +30,10 @@ This is a wrapper of the \code{\link[WGCNA]{simulateDatExpr}}
   observations.
 }
 \examples{
-d0 <- simModule(n = 100, p = 1000, rho = 0, exposed = FALSE,
+library(magrittr)
+p <- 1000
+n <- 200
+d0 <- s_modules(n = 100, p = 1000, rho = 0, exposed = FALSE,
                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
                 minCor = 0.01,
                 maxCor = 1,
@@ -40,7 +43,7 @@ d0 <- simModule(n = 100, p = 1000, rho = 0, exposed = FALSE,
                 signed = FALSE,
                 leaveOut = 1:4)
 
-d1 <- simModule(n = 100, p = 1000, rho = 0.90, exposed = TRUE,
+d1 <- s_modules(n = 100, p = 1000, rho = 0.90, exposed = TRUE,
                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
                 minCor = 0.4,
                 maxCor = 1,

@@ -44,7 +44,7 @@ above.}
 \code{model="lasso"} which corresponds to glmnet mixing parameter
 \code{alpha=1}. \code{model="elasticnet"} corresponds to glmnet mixing
 parameter \code{alpha=0.5}, \code{model="mcp"} and \code{model="scad"} are
-the non-convex models from the \code{\link[ncvreg]{}} package}
+the non-convex models from the \code{\link[ncvreg]{ncvreg}} package}
 
 \item{topgenes}{List of features to keep if \code{filter=TRUE}. Default is
 \code{topgenes = NULL} which means all features are kept for the analysis}

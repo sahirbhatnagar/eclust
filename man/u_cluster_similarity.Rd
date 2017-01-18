@@ -32,7 +32,7 @@ prototype clustering. Defaults \code{clustMethod="hclust"}. Other option is
 installed before proceeding with this option}
 
 \item{cutMethod}{what method to use to cut the dendrogram. \code{'dynamic'}
-refers to \code{\link[dynamicTreeCut]{}} library. \code{'gap'} is
+refers to \code{\link[dynamicTreeCut]{cutreeDynamicTree}} library. \code{'gap'} is
 Tibshirani's gap statistic \code{\link[cluster]{clusGap}} using the
 \code{'Tibs2001SEmax'} rule. \code{'fixed'} is a fixed number specified by
 the \code{nClusters} argument}

@@ -36,7 +36,7 @@
 #'   \code{model="lasso"} which corresponds to glmnet mixing parameter
 #'   \code{alpha=1}. \code{model="elasticnet"} corresponds to glmnet mixing
 #'   parameter \code{alpha=0.5}, \code{model="mcp"} and \code{model="scad"} are
-#'   the non-convex models from the \code{\link[ncvreg]{}} package
+#'   the non-convex models from the \code{\link[ncvreg]{ncvreg}} package
 #' @param exp_family Response type. See details for \code{y_train} argument
 #'   above.
 #' @param gene_groups data.frame that contains the group membership for each
@@ -128,7 +128,6 @@
 #'   \code{\link[dynamicTreeCut]{cutreeDynamic}} function}
 #' @export
 #'
-#' @examples
 #'
 s_pen_clust <- function(x_train,
                         x_test,
@@ -159,6 +158,7 @@ s_pen_clust <- function(x_train,
   # model = "lasso"; summary = "pc"; topgenes = NULL; clust_type="clust"; number_pc = 1
   # exp_family="binomial"
 
+  coef.est = cluster = gene = NULL
   clust_type <- match.arg(clust_type)
   summary <- match.arg(summary)
   model <- match.arg(model)
@@ -203,7 +203,7 @@ s_pen_clust <- function(x_train,
   PC_and_avg <- u_extract_summary(x_train = x_train_mod[,gene_groups$gene],
                           colors = gene_groups$cluster,
                           x_test = x_test_mod[,gene_groups$gene],
-                          number_pc = number_pc)
+                          nPC = number_pc)
 
   n.clusters <- PC_and_avg$nclusters
 
@@ -213,25 +213,25 @@ s_pen_clust <- function(x_train,
                        pc = PC_and_avg$PC)
 
   ml.formula <- if (include_interaction & include_E) {
-    paste0("y_train ~","(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% as.formula
+    paste0("y_train ~","(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% stats::as.formula
   } else if (!include_interaction & include_E) {
-    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+"),"+E") %>% as.formula
+    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+"),"+E") %>% stats::as.formula
   } else if (!include_interaction & !include_E) {
-    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+")) %>% as.formula
+    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+")) %>% stats::as.formula
   }
 
   # this is the same as ml.formula, except without the response.. this is used for
   # functions that have the x = and y = input instead of a formula input
   model.formula <- if (include_interaction & include_E) {
-    paste0("~ 0+(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% as.formula
+    paste0("~ 0+(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% stats::as.formula
   } else if (!include_interaction & include_E) {
-    paste0("~0+",paste0(colnames(clust_data), collapse = "+"),"+E") %>% as.formula
+    paste0("~0+",paste0(colnames(clust_data), collapse = "+"),"+E") %>% stats::as.formula
   } else if (!include_interaction & !include_E) {
-    paste0("~0+",paste0(colnames(clust_data), collapse = "+")) %>% as.formula
+    paste0("~0+",paste0(colnames(clust_data), collapse = "+")) %>% stats::as.formula
   }
 
   # this is the design matrix based on model.formula
-  X.model.formula <- model.matrix(model.formula, data = if (include_E) {
+  X.model.formula <- stats::model.matrix(model.formula, data = if (include_E) {
     cbind(clust_data,x_train_mod[,"E", drop = F])
   } else clust_data %>% as.data.frame)
 
@@ -275,7 +275,7 @@ s_pen_clust <- function(x_train,
                     dat <- data.table::data.table(Gene = colnames(X.model.formula),
                                                   coef.est = rep(0, ncol(X.model.formula)))
                     if (n.clusters != 1) {
-                      coef(clust_train_model, s = "lambda.min") %>%
+                      stats::coef(clust_train_model, s = "lambda.min") %>%
                         as.matrix %>%
                         data.table::as.data.table(keep.rownames = TRUE) %>%
                         magrittr::set_colnames(c("Gene","coef.est"))
@@ -287,7 +287,7 @@ s_pen_clust <- function(x_train,
                     dat <- data.table::data.table(Gene = colnames(X.model.formula),
                                                   coef.est = rep(0, ncol(X.model.formula)))
                     if (n.clusters != 1) {
-                      coef(clust_train_model, s = "lambda.min") %>%
+                      stats::coef(clust_train_model, s = "lambda.min") %>%
                         as.matrix %>%
                         data.table::as.data.table(keep.rownames = TRUE) %>%
                         magrittr::set_colnames(c("Gene","coef.est"))
@@ -300,7 +300,7 @@ s_pen_clust <- function(x_train,
                                                   coef.est = rep(0, ncol(X.model.formula)))
                     if (n.clusters != 1) {
 
-                      coef(clust_train_model, lambda = clust_train_model$lambda.min) %>%
+                      stats::coef(clust_train_model, lambda = clust_train_model$lambda.min) %>%
                         as.matrix %>%
                         data.table::as.data.table(keep.rownames = TRUE) %>%
                         magrittr::set_colnames(c("Gene","coef.est"))
@@ -313,7 +313,7 @@ s_pen_clust <- function(x_train,
                                                   coef.est = rep(0, ncol(X.model.formula)))
                     if (n.clusters != 1) {
 
-                      coef(clust_train_model, lambda = clust_train_model$lambda.min) %>%
+                      stats::coef(clust_train_model, lambda = clust_train_model$lambda.min) %>%
                         as.matrix %>%
                         data.table::as.data.table(keep.rownames = TRUE) %>%
                         magrittr::set_colnames(c("Gene","coef.est"))
@@ -406,16 +406,16 @@ s_pen_clust <- function(x_train,
 
     # need intercept for prediction
     model.formula_test <- if (include_interaction & include_E) {
-      paste0("~ 1+(",paste0(colnames(clust_data_test), collapse = "+"),")*E") %>% as.formula
+      paste0("~ 1+(",paste0(colnames(clust_data_test), collapse = "+"),")*E") %>% stats::as.formula
     } else if (!include_interaction & include_E) {
-      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+"),"+E") %>% as.formula
+      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+"),"+E") %>% stats::as.formula
     } else if (!include_interaction & !include_E) {
-      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+")) %>% as.formula
+      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+")) %>% stats::as.formula
     }
 
 
     # this includes the intercept!
-    X.model.formula_test <- model.matrix(model.formula_test,
+    X.model.formula_test <- stats::model.matrix(model.formula_test,
                                          data = if (include_E) {
                                            cbind(clust_data_test,x_test_mod[,"E", drop = F])
                                          } else clust_data_test %>% as.data.frame)
@@ -461,7 +461,7 @@ s_pen_clust <- function(x_train,
 
 
     if (exp_family == "binomial") {
-      pred_response <- predict(clust_train_model, newx = X.model.formula_test[,-which(colnames(X.model.formula_test)=="(Intercept)")],
+      pred_response <- stats::predict(clust_train_model, newx = X.model.formula_test[,-which(colnames(X.model.formula_test)=="(Intercept)")],
                                type = "response", s = "lambda.min")
 
       clust.AUC <- pROC::roc(y_test,as.numeric(pred_response))$auc %>% as.numeric()
@@ -658,6 +658,8 @@ s_pen_separate <- function(x_train,
 
   # model: "scad", "mcp", "lasso", "elasticnet", "ridge"
   # filter: T or F based on univariate filter
+
+  coef.est = NULL
   exp_family <- match.arg(exp_family)
 
   print(paste(model,"filter = ",
@@ -709,7 +711,7 @@ s_pen_separate <- function(x_train,
   )
 
   # here we give the coefficient stability on the individual genes
-  coefs <- coef(pen_model, s = "lambda.min") %>%
+  coefs <- stats::coef(pen_model, s = "lambda.min") %>%
     as.matrix %>%
     data.table::as.data.table(keep.rownames = TRUE) %>%
     magrittr::set_colnames(c("Gene","coef.est")) %>%
@@ -726,9 +728,9 @@ s_pen_separate <- function(x_train,
     pen.S.hat.main <- setdiff(pen.S.hat, pen.S.hat.interaction)
 
     pen.pred <- if (model %in% c("lasso","elasticnet","ridge")) {
-      predict(pen_model, newx =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
+      stats::predict(pen_model, newx =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
         as.matrix(x_test), s = "lambda.min") } else if (model %in% c("scad","mcp")) {
-          predict(pen_model, X =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
+          stats::predict(pen_model, X =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
             as.matrix(x_test),
             lambda = pen_model$lambda.min)
         }
@@ -779,7 +781,7 @@ s_pen_separate <- function(x_train,
     mse_null <- crossprod(mean(y_test) - y_test)/length(y_test)
 
     if (exp_family == "binomial") {
-      pred_response <- predict(pen_model, newx =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
+      pred_response <- stats::predict(pen_model, newx =  if (!include_E) as.matrix(x_test[,-grep("E", colnames(x_test))]) else
         as.matrix(x_test), s = "lambda.min", type = "response")
 
       pen.AUC <- pROC::roc(y_test,as.numeric(pred_response))$auc %>% as.numeric()
@@ -934,6 +936,7 @@ s_mars_separate <- function(x_train,
   # model: "scad", "mcp", "lasso", "elasticnet", "ridge"
   # filter: T or F based on univariate filter
 
+
   exp_family <- match.arg(exp_family)
 
   print(paste(model,"filter = ", filter, "include_E = ",
@@ -986,7 +989,7 @@ s_mars_separate <- function(x_train,
                                                              as.factor(y_train),
                                                              method = "earth",
                                                              trace = 1, nk = 1000, keepxy = TRUE, pmethod = "backward",
-                                                             glm=list(family=binomial),
+                                                             glm=list(family="binomial"),
                                                              tuneGrid = marsGrid,
                                                              trControl = fitControl)
 
@@ -995,7 +998,7 @@ s_mars_separate <- function(x_train,
                                                keepxy = TRUE,
                                                pmethod = "backward",
                                                nk = 1000,
-                                               glm=list(family=binomial),
+                                               glm=list(family="binomial"),
                                                degree = mars_tuned$bestTune$degree,
                                                trace = 1, nfold = 10)
                                 })
@@ -1033,10 +1036,10 @@ s_mars_separate <- function(x_train,
     mars.S.hat.interaction <- grep(":", mars.S.hat, value = T)
     mars.S.hat.main <- setdiff(mars.S.hat, mars.S.hat.interaction)
 
-    mars.pred <- predict(mars_model, newdata = x_test, trace = 4)
+    mars.pred <- stats::predict(mars_model, newdata = x_test, trace = 4)
 
     if (exp_family == "binomial") {
-      pred_response <- predict(mars_model, newdata = x_test, trace = 4,
+      pred_response <- stats::predict(mars_model, newdata = x_test, trace = 4,
                                type = "response")
 
       mars.AUC <- pROC::roc(y_test,as.numeric(pred_response))$auc %>% as.numeric()
@@ -1157,6 +1160,9 @@ s_mars_separate <- function(x_train,
 #'
 #' @param model Type of non-linear model to be fit. Currently only Friedman's
 #'   MARS is supported.
+#' @param true_beta numeric vector of true beta coefficients
+#' @param nPC Number of principal components if \code{summary = "pc"}.
+#'   Default is \code{nPC = 1}. Can be either 1 or 2.
 #' @inheritParams s_pen_clust
 #' @details This function first does 10 fold cross-validation to tune the degree
 #'   (either 1 or 2) using the \code{\link[caret]{train}} function with
@@ -1222,6 +1228,7 @@ s_mars_clust <- function(x_train,
   # model = "MARS"; summary = "pc"; topgenes = NULL; clust_type="Eclust"; nPC = 1
   # exp_family = "binomial"
 
+  coef.est = cluster = gene = NULL
   clust_type <- match.arg(clust_type)
   summary <- match.arg(summary)
   model <- match.arg(model)
@@ -1276,25 +1283,25 @@ s_mars_clust <- function(x_train,
                        pc = PC_and_avg$PC)
 
   ml.formula <- if (include_interaction & include_E) {
-    paste0("y_train ~","(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% as.formula
+    paste0("y_train ~","(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% stats::as.formula
   } else if (!include_interaction & include_E) {
-    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+"),"+E") %>% as.formula
+    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+"),"+E") %>% stats::as.formula
   } else if (!include_interaction & !include_E) {
-    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+")) %>% as.formula
+    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+")) %>% stats::as.formula
   }
 
   # this is the same as ml.formula, except without the response.. this is used for
   # functions that have the x = and y = input instead of a formula input
   model.formula <- if (include_interaction & include_E) {
-    paste0("~ 0+(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% as.formula
+    paste0("~ 0+(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% stats::as.formula
   } else if (!include_interaction & include_E) {
-    paste0("~0+",paste0(colnames(clust_data), collapse = "+"),"+E") %>% as.formula
+    paste0("~0+",paste0(colnames(clust_data), collapse = "+"),"+E") %>% stats::as.formula
   } else if (!include_interaction & !include_E) {
-    paste0("~0+",paste0(colnames(clust_data), collapse = "+")) %>% as.formula
+    paste0("~0+",paste0(colnames(clust_data), collapse = "+")) %>% stats::as.formula
   }
 
   # this is the design matrix based on model.formula
-  X.model.formula <- model.matrix(model.formula, data = if (include_E) {
+  X.model.formula <- stats::model.matrix(model.formula, data = if (include_E) {
     cbind(clust_data,x_train_mod[,"E", drop = F])
   } else clust_data %>% as.data.frame)
 
@@ -1303,7 +1310,7 @@ s_mars_clust <- function(x_train,
   clust_train_model <- switch(model,
                               MARS = {
 
-                                fitControl <-  trainControl(method = "cv",
+                                fitControl <-  caret::trainControl(method = "cv",
                                                             # number = 25,
                                                             # repeats = 3,
                                                             verboseIter = FALSE)
@@ -1312,12 +1319,13 @@ s_mars_clust <- function(x_train,
 
                                 switch(exp_family,
                                        gaussian = {
-                                         mars_tuned <- train(X.model.formula,
-                                                             y_train,
-                                                             method = "earth",
-                                                             trace = 1, nk = 1000, keepxy = TRUE, pmethod = "backward",
-                                                             tuneGrid = marsGrid,
-                                                             trControl = fitControl)
+                                         mars_tuned <- caret::train(X.model.formula,
+                                                                    y_train,
+                                                                    method = "earth",
+                                                                    trace = 1, nk = 1000,
+                                                                    keepxy = TRUE, pmethod = "backward",
+                                                                    tuneGrid = marsGrid,
+                                                                    trControl = fitControl)
 
                                          earth::earth(x = X.model.formula,
                                                       y = y_train,
@@ -1328,11 +1336,11 @@ s_mars_clust <- function(x_train,
                                                       trace = 4, nfold = 10) },
                                        binomial = {
 
-                                         mars_tuned <- train(X.model.formula,
+                                         mars_tuned <- caret::train(X.model.formula,
                                                              as.factor(y_train),
                                                              method = "earth",
                                                              trace = 1, nk = 1000, keepxy = TRUE, pmethod = "backward",
-                                                             glm=list(family=binomial),
+                                                             glm=list(family="binomial"),
                                                              tuneGrid = marsGrid,
                                                              trControl = fitControl)
 
@@ -1341,7 +1349,7 @@ s_mars_clust <- function(x_train,
                                                       keepxy = TRUE,
                                                       pmethod = "backward",
                                                       nk = 1000,
-                                                      glm=list(family=binomial),
+                                                      glm=list(family="binomial"),
                                                       degree = mars_tuned$bestTune$degree,
                                                       trace = 4, nfold = 10)
                                        })
@@ -1434,16 +1442,16 @@ s_mars_clust <- function(x_train,
 
     # need intercept for prediction
     model.formula_test <- if (include_interaction & include_E) {
-      paste0("~ 1+(",paste0(colnames(clust_data_test), collapse = "+"),")*E") %>% as.formula
+      paste0("~ 1+(",paste0(colnames(clust_data_test), collapse = "+"),")*E") %>% stats::as.formula
     } else if (!include_interaction & include_E) {
-      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+"),"+E") %>% as.formula
+      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+"),"+E") %>% stats::as.formula
     } else if (!include_interaction & !include_E) {
-      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+")) %>% as.formula
+      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+")) %>% stats::as.formula
     }
 
 
     # this includes the intercept!
-    X.model.formula_test <- model.matrix(model.formula_test,
+    X.model.formula_test <- stats::model.matrix(model.formula_test,
                                          data = if (include_E) {
                                            cbind(clust_data_test,x_test_mod[,"E", drop = F])
                                          } else clust_data_test %>% as.data.frame)
@@ -1491,7 +1499,7 @@ s_mars_clust <- function(x_train,
     # mars.pred1 <- predict(clust_train_model, newdata = X.model.formula_test[,-1], trace = 4)
     # mars.pred2 <- predict(clust_train_model, newdata = X.model.formula_test, trace = 4)
     # plot(mars.pred1, mars.pred2) ; identical(mars.pred1,mars.pred2)
-    mars.pred <- predict(clust_train_model, newdata = X.model.formula_test, trace = 4)
+    mars.pred <- stats::predict(clust_train_model, newdata = X.model.formula_test, trace = 4)
 
     # Mean Squared Error
     (clust.mse <- crossprod(mars.pred - y_test)/length(y_test))
@@ -1507,7 +1515,7 @@ s_mars_clust <- function(x_train,
     (mse_null <- crossprod(mean(y_test) - y_test)/length(y_test))
 
     if (exp_family == "binomial") {
-      pred_response <- predict(clust_train_model, newdata = X.model.formula_test, trace = 4,
+      pred_response <- stats::predict(clust_train_model, newdata = X.model.formula_test, trace = 4,
                                type = "response")
 
       clust.AUC <- pROC::roc(y_test,as.numeric(pred_response))$auc %>% as.numeric()
@@ -1594,8 +1602,12 @@ s_mars_clust <- function(x_train,
 #'   module and red module
 #' @param ... arguments passed to the \code{\link[WGCNA]{simulateDatExpr}} function
 #' @return \code{n x p} matrix of simulated data
+#' @export
 #' @examples
-#' d0 <- simModule(n = 100, p = 1000, rho = 0, exposed = FALSE,
+#' library(magrittr)
+#' p <- 1000
+#' n <- 200
+#' d0 <- s_modules(n = 100, p = 1000, rho = 0, exposed = FALSE,
 #'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
 #'                 minCor = 0.01,
 #'                 maxCor = 1,
@@ -1605,7 +1617,7 @@ s_mars_clust <- function(x_train,
 #'                 signed = FALSE,
 #'                 leaveOut = 1:4)
 #'
-#' d1 <- simModule(n = 100, p = 1000, rho = 0.90, exposed = TRUE,
+#' d1 <- s_modules(n = 100, p = 1000, rho = 0.90, exposed = TRUE,
 #'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
 #'                 minCor = 0.4,
 #'                 maxCor = 1,
@@ -1623,20 +1635,20 @@ s_modules <- function(n, p, rho, exposed, ...) {
 
   if (exposed) {
     #Step 1: simulate the seed module eigengenes
-    sMEturquoise <- rnorm(n)
+    sMEturquoise <- stats::rnorm(n)
 
     #expected cor(sMEblue,sMEturquoise) = 0.60
-    sMEblue <- 0.60 * sMEturquoise + sqrt(1 - 0.60 ^ 2) * rnorm(n)
+    sMEblue <- 0.60 * sMEturquoise + sqrt(1 - 0.60 ^ 2) * stats::rnorm(n)
 
-    sMEyellow <- rnorm(n)
+    sMEyellow <- stats::rnorm(n)
 
-    sMEgreen <- rnorm(n)
+    sMEgreen <- stats::rnorm(n)
 
     #expected cor(e.continuous,seed.ME)=0.95
-    temp0 <- rho[1] * sMEgreen + sqrt(1 - rho[1] ^ 2) * rnorm(n)
+    temp0 <- rho[1] * sMEgreen + sqrt(1 - rho[1] ^ 2) * stats::rnorm(n)
 
     #expected cor(y.continuous,seed.ME) <- -0.95
-    sMEred <- rho[1] * temp0 + sqrt(1 - rho[1] ^ 2) * rnorm(n)
+    sMEred <- rho[1] * temp0 + sqrt(1 - rho[1] ^ 2) * stats::rnorm(n)
 
     datsME <- data.frame(sMEturquoise,sMEblue,sMEred,sMEgreen,sMEyellow)
 
@@ -1644,20 +1656,20 @@ s_modules <- function(n, p, rho, exposed, ...) {
   } else {
 
     #Step 1: simulate the seed module eigengenes
-    sMEturquoise <- rnorm(n)
+    sMEturquoise <- stats::rnorm(n)
 
     #expected cor(sMEblue,sMEturquoise) = 0.60
-    sMEblue <- 0.60 * sMEturquoise + sqrt(1 - 0.60 ^ 2) * rnorm(n)
+    sMEblue <- 0.60 * sMEturquoise + sqrt(1 - 0.60 ^ 2) * stats::rnorm(n)
 
-    sMEyellow <- rnorm(n)
+    sMEyellow <- stats::rnorm(n)
 
-    sMEgreen <- rnorm(n)
+    sMEgreen <- stats::rnorm(n)
 
     #expected cor(e.continuous,seed.ME)=0.95
-    temp0 <- rho[1] * sMEgreen + sqrt(1 - rho[1] ^ 2) * rnorm(n)
+    temp0 <- rho[1] * sMEgreen + sqrt(1 - rho[1] ^ 2) * stats::rnorm(n)
 
     #expected cor(y.continuous,seed.ME) <- -0.95
-    sMEred <- rho[1] * temp0 + sqrt(1 - rho[1] ^ 2) * rnorm(n)
+    sMEred <- rho[1] * temp0 + sqrt(1 - rho[1] ^ 2) * stats::rnorm(n)
 
     datsME <- data.frame(sMEturquoise,sMEblue,sMEred,sMEgreen,sMEyellow)
 
@@ -1721,14 +1733,16 @@ s_modules <- function(n, p, rho, exposed, ...) {
 #' @param include_interaction Should an interaction with the environment be
 #'   generated as part of the response. Default is FALSE.
 #' @param cluster_method Cluster the data using hierarchical clustering or
-#'   prototype clustering. Defaults \code{clustMethod="hclust"}. Other option is
-#'   \code{\link[protoclust]{protoclust}}, however this package must be
+#'   prototype clustering. Defaults \code{cluster_method="hclust"}. Other option
+#'   is \code{\link[protoclust]{protoclust}}, however this package must be
 #'   installed before proceeding with this option
 #' @param cut_method what method to use to cut the dendrogram. \code{'dynamic'}
-#'   refers to \code{\link[dynamicTreeCut]{}} library. \code{'gap'} is
-#'   Tibshirani's gap statistic \code{\link[cluster]{clusGap}} using the
-#'   \code{'Tibs2001SEmax'} rule. \code{'fixed'} is a fixed number specified by
-#'   the \code{n_clusters} argument
+#'   refers to \code{dynamicTreeCut} library. \code{'gap'} is Tibshirani's gap
+#'   statistic \code{\link[cluster]{clusGap}} using the \code{'Tibs2001SEmax'}
+#'   rule. \code{'fixed'} is a fixed number specified by the \code{n_clusters}
+#'   argument
+#' @param n_clusters Number of clusters specified by the user. Only applicable
+#'   when \code{cut_method="fixed"}
 #' @param nPC number of principal components to extract from each cluster.
 #'   Default is 1. Only 1 or 2 is allowed.
 #' @inheritParams u_cluster_similarity
@@ -1782,7 +1796,7 @@ s_generate_data <- function(p, X, beta,
   # distance_method = "euclidean"
   # eclust_distance = "diffcorr"; nPC = 1
 
-
+  Stom = nClusters = cluster = gene = pf = N = NULL
   agglomeration_method <- match.arg(agglomeration_method)
   cut_method <- match.arg(cut_method)
   cluster_method <- match.arg(cluster_method)
@@ -2138,6 +2152,8 @@ s_generate_data_mars <- function(p, X, beta,
   # eclust_distance = "diffcorr"; nPC = 1
 
 
+  Stom = nClusters = cluster = gene = pf = N = NULL
+
   agglomeration_method <- match.arg(agglomeration_method)
   cut_method <- match.arg(cut_method)
   cluster_method <- match.arg(cluster_method)
@@ -2492,8 +2508,8 @@ s_response <- function(n , n0 , p , genes,
   }
 
   y.star <- {DT %>% as.matrix()} %*% beta
-  error <- rnorm(n)
-  k <- sqrt(var(y.star)/(signal_to_noise_ratio*var(error)))
+  error <- stats::rnorm(n)
+  k <- sqrt(stats::var(y.star)/(signal_to_noise_ratio*stats::var(error)))
 
   y <- y.star + k*error
 
@@ -2510,6 +2526,7 @@ s_response <- function(n , n0 , p , genes,
 #' Given the covariates and environment variable this function
 #' generates the nonlinear response with specified signal to noise ratio.
 #' @inheritParams s_generate_data_mars
+#' @inheritParams s_response
 #' @note See Bhatnagar et al (2017+) for details on how the response is simulated.
 #' @return a data.frame/data.table containing the response and the design
 #'   matrix. Also an object of class \code{expression}
@@ -2532,8 +2549,8 @@ s_response_mars <- function(n , n0 , p , genes,
   u2 <- svd(x2)$u[,1]
 
   y.star <- 0.1*(u1 + u2 + E) + 4 * pmax(u1-0.01, 0) * pmax(u2-0.05, 0) * E
-  error <- rnorm(n)
-  k <- sqrt(var(y.star)/(signal_to_noise_ratio*var(error)))
+  error <- stats::rnorm(n)
+  k <- sqrt(stats::var(y.star)/(signal_to_noise_ratio*stats::var(error)))
 
   y <- y.star + k*error
 

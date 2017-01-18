@@ -56,18 +56,21 @@ correlations accounting for the environment. This function will always
 return this add on}
 
 \item{cluster_method}{Cluster the data using hierarchical clustering or
-prototype clustering. Defaults \code{clustMethod="hclust"}. Other option is
-\code{\link[protoclust]{protoclust}}, however this package must be
+prototype clustering. Defaults \code{cluster_method="hclust"}. Other option
+is \code{\link[protoclust]{protoclust}}, however this package must be
 installed before proceeding with this option}
 
 \item{cut_method}{what method to use to cut the dendrogram. \code{'dynamic'}
-refers to \code{\link[dynamicTreeCut]{}} library. \code{'gap'} is
-Tibshirani's gap statistic \code{\link[cluster]{clusGap}} using the
-\code{'Tibs2001SEmax'} rule. \code{'fixed'} is a fixed number specified by
-the \code{n_clusters} argument}
+refers to \code{dynamicTreeCut} library. \code{'gap'} is Tibshirani's gap
+statistic \code{\link[cluster]{clusGap}} using the \code{'Tibs2001SEmax'}
+rule. \code{'fixed'} is a fixed number specified by the \code{n_clusters}
+argument}
 
 \item{distance_method}{one of "euclidean","maximum","manhattan", "canberra",
 "binary","minkowski" to be passed to \code{\link[stats]{dist}} function.}
+
+\item{n_clusters}{Number of clusters specified by the user. Only applicable
+when \code{cut_method="fixed"}}
 
 \item{agglomeration_method}{the agglomeration method to be used. This should
 be (an unambiguous abbreviation of) one of "ward.D", "ward.D2", "single",

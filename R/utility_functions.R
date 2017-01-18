@@ -22,7 +22,7 @@
 #'   \code{\link[protoclust]{protoclust}}, however this package must be
 #'   installed before proceeding with this option
 #' @param cutMethod what method to use to cut the dendrogram. \code{'dynamic'}
-#'   refers to \code{\link[dynamicTreeCut]{}} library. \code{'gap'} is
+#'   refers to \code{\link[dynamicTreeCut]{cutreeDynamicTree}} library. \code{'gap'} is
 #'   Tibshirani's gap statistic \code{\link[cluster]{clusGap}} using the
 #'   \code{'Tibs2001SEmax'} rule. \code{'fixed'} is a fixed number specified by
 #'   the \code{nClusters} argument
@@ -52,14 +52,14 @@ u_cluster_similarity <- function(x,
   # x = corrX ; expr = X
   # exprTest = X[sample(seq_len(nrow(X)),nrow(X), replace = TRUE ),]
   # dim(X) ; dim(expr) ; dim(exprTest)
-  # clustMethod = c("hclust")
+  # clustMetho .0d = c("hclust")
   # cutMethod = c("dynamic")
   # nClusters = 6
   # method = c("complete")
   # summary = c("pca")
   # K.max = 10; B = 50
   # distance = as.dist(1 - x)
-
+  module = cluster = NULL
   geneNames <- dimnames(x)[[1]]
   p <- nrow(x)
   method <- match.arg(method)
@@ -83,15 +83,15 @@ u_cluster_similarity <- function(x,
 
 
   distance <- if (missing(distanceMethod)) {
-    as.dist(1 - x)
-  } else dist(x = x, method = distanceMethod)
+    stats::as.dist(1 - x)
+  } else stats::dist(x = x, method = distanceMethod)
 
   hc <- switch(clustMethod,
                hclust = {
-                 hclust(distance, method = method)
+                 stats::hclust(distance, method = method)
                },
                protoclust = {
-                 protoclust(distance)
+                 protoclust::protoclust(distance)
                }
   )
 
@@ -106,15 +106,15 @@ u_cluster_similarity <- function(x,
              hclust = {
                function(xMat,k) list(cluster = {
                  as.numeric(
-                   cutree(
-                     hclust(as.dist(xMat), method = method), k = k
+                   stats::cutree(
+                     stats::hclust(stats::as.dist(xMat), method = method), k = k
                    )
                  )
                })
              },
              protoclust = {
                function(xMat,k) list(cluster = {
-                 as.numeric(protoclust::protocut(protoclust(as.dist(xMat)),
+                 as.numeric(protoclust::protocut(protoclust::protoclust(stats::as.dist(xMat)),
                                                  k = k)$cl)})
              }
       )
@@ -122,13 +122,13 @@ u_cluster_similarity <- function(x,
       switch(clustMethod,
              hclust = {
                function(xMat,k) list(cluster = {
-                 as.numeric(cutree(hclust(dist(xMat, method = distanceMethod),
+                 as.numeric(stats::cutree(stats::hclust(stats::dist(xMat, method = distanceMethod),
                                           method = method), k = k))})
              },
              protoclust = {
                function(xMat,k) list(cluster = {
                  as.numeric(protoclust::protocut(
-                   protoclust(dist(xMat, method = distanceMethod)),
+                   protoclust::protoclust(stats::dist(xMat, method = distanceMethod)),
                    k = k)$cl)})
              }
       )
@@ -171,7 +171,7 @@ u_cluster_similarity <- function(x,
                                                             SE.f = gapResult$Tab[, "SE.sim"],
                                                             method = "Tibs2001SEmax",
                                                             SE.factor = 1)
-                                cutree(hc, nClustGap)
+                                stats::cutree(hc, nClustGap)
 
                               } else {
                                 gapResult <- cluster::clusGap(1 - x,
@@ -182,12 +182,12 @@ u_cluster_similarity <- function(x,
                                                             SE.f = gapResult$Tab[, "SE.sim"],
                                                             method = "Tibs2001SEmax",
                                                             SE.factor = 1)
-                                protocut(hc, k = nClustGap)[["cl"]]
+                                protoclust::protocut(hc, k = nClustGap)[["cl"]]
                               }
                             },
                             fixed = {
                               if (clustMethod == "hclust") {
-                                cutree(hc, nClusters)
+                                stats::cutree(hc, nClusters)
                               } else protoclust::protocut(hc, k = nClusters)[["cl"]]
                             }
   )
@@ -305,9 +305,11 @@ u_fisherZ <- function(n0, cor0, n1, cor1) {
 #' @note \code{fisherTransform} is called internally by \code{u_fisherZ} function
 #' @param r1 correlation for unexposed
 #' @param r2 correlation for exposed
+#' @param n_1 number of unexposed subjects
+#' @param n_2 number of exposed subjects
 #' @inheritParams u_fisherZ
 #' @rdname u_fisherZ
-fisherTransform <- function (n1, r1, n2, r2) {
+fisherTransform <- function (n_1, r1, n_2, r2) {
   num1a <- which(r1 >= 0.99)
   num2a <- which(r2 >= 0.99)
   r1[num1a] <- 0.99
@@ -320,8 +322,8 @@ fisherTransform <- function (n1, r1, n2, r2) {
   # 0.5 * log(1+r)/log(1-r) , for r < 1
   z1 <- atanh(r1)
   z2 <- atanh(r2)
-  dz <- (z1 - z2)/sqrt(1/(n1 - 3) + (1/(n2 - 3)))
-  pv <- 2 * (1 - pnorm(abs(dz)))
+  dz <- (z1 - z2)/sqrt(1/(n_1 - 3) + (1/(n_2 - 3)))
+  pv <- 2 * (1 - stats::pnorm(abs(dz)))
   return(list(diff = dz, pval = pv))
 }
 
@@ -400,7 +402,6 @@ fisherTransform <- function (n1, r1, n2, r2) {
 #' @details This function is called internally by the
 #'   \code{\link{u_cluster_similarity}} function
 #'
-#' @importFrom factoextra get_eigenvalue
 #' @return A list with the following components:
 #'   \describe{\item{eigengenes}{Module eigengenes in a dataframe, with each
 #'   column corresponding to one eigengene}\item{averageExpr}{the average
@@ -443,6 +444,7 @@ u_extract_summary <- function(x_train,
   # excludeGrey = FALSE; grey = if (is.numeric(colors)) 0 else "grey";
   # subHubs = TRUE; trapErrors = FALSE; returnValidOnly = trapErrors;
   # softPower = 6; scale = TRUE; verbose = 0; indent = 0;
+  spaces <- dynamicTreeCut::indentSpaces(indent)
 
   if (is.null(x_train)) {
     stop("moduleEigengenes: Error: x_train is NULL. ")
@@ -540,12 +542,12 @@ u_extract_summary <- function(x_train,
   for (i in seq_len(length(modlevels))) {
     # i=2
     if (verbose > 1)
-      printFlush(paste("moduleEigengenes : Working on ME for module",
+      dynamicTreeCut::printFlush(paste("moduleEigengenes : Working on ME for module",
                        modlevels[i]))
     modulename = modlevels[i]
     restrict1 = as.character(colors) == as.character(modulename)
     if (verbose > 2)
-      printFlush(paste(spaces, " ...", sum(restrict1),
+      dynamicTreeCut::printFlush(paste(spaces, " ...", sum(restrict1),
                        "genes"))
 
     datModule <- as.matrix(x_train[, restrict1])
@@ -559,7 +561,7 @@ u_extract_summary <- function(x_train,
     # dim(x_train)
 
     # using prcomp first (need to use untransposed data!)
-    prcompObj[[i]] <- prcomp(datModule, center = scale, scale. = scale)
+    prcompObj[[i]] <- stats::prcomp(datModule, center = scale, scale. = scale)
 
     # plsObj[[i]] <- pls::plsr(Y ~ ., ncomp = nPC, data = xy_train, validation = "CV")
 
@@ -582,11 +584,11 @@ u_extract_summary <- function(x_train,
       # if (!is.finite(corAve)) corAve = 0
       # if (corAve < 0) prcompObj[[i]]$rotation[,1] = -prcompObj[[i]]$rotation[,1]
 
-      PC[, i] <- predict(prcompObj[[i]])[,1]
-      PCTest[, i] <- predict(prcompObj[[i]], newdata = datModuleTest)[,1]
+      PC[, i] <- stats::predict(prcompObj[[i]])[,1]
+      PCTest[, i] <- stats::predict(prcompObj[[i]], newdata = datModuleTest)[,1]
 
-      # PLS[, i] <- predict(plsObj[[i]], ncomp = nPC, type = "scores")
-      # PLSTest[, i] <- predict(plsObj[[i]], ncomp = nPC, type = "scores", newdata = xy_test)[,1]
+      # PLS[, i] <- stats::predict(plsObj[[i]], ncomp = nPC, type = "scores")
+      # PLSTest[, i] <- stats::predict(plsObj[[i]], ncomp = nPC, type = "scores", newdata = xy_test)[,1]
 
     } else if (nPC == 2) {
       eigenVectors[[2*i-1]] <- prcompObj[[i]]$rotation[,1, drop = F]
@@ -601,10 +603,10 @@ u_extract_summary <- function(x_train,
       # if (!is.finite(corAve)) corAve = 0
       # if (corAve < 0) prcompObj[[i]]$rotation[,1] = -prcompObj[[i]]$rotation[,1]
 
-      PC[, 2*i-1] <- predict(prcompObj[[i]])[,1]
-      PC[, 2*i] <- predict(prcompObj[[i]])[,2]
-      # PCTest[, 2*i-1] <- predict(prcompObj[[i]], newdata = datModuleTest)[,1]
-      # PCTest[, 2*i] <- predict(prcompObj[[i]], newdata = datModuleTest)[,2]
+      PC[, 2*i-1] <- stats::predict(prcompObj[[i]])[,1]
+      PC[, 2*i] <- stats::predict(prcompObj[[i]])[,2]
+      # PCTest[, 2*i-1] <- stats::predict(prcompObj[[i]], newdata = datModuleTest)[,1]
+      # PCTest[, 2*i] <- stats::predict(prcompObj[[i]], newdata = datModuleTest)[,2]
 
       # plot(PC[, i], prcompObj[[i]]$x[,1])
       #means[i] <- prcompObj[[i]]$center

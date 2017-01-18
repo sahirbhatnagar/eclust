@@ -73,6 +73,8 @@ r_cluster_data <- function(data,
   #   response <- Y
 
   # ==================================================================
+
+  cluster = NULL
   args <- list(...)
   xtrain <- data[train_index,]
   xtest <- data[test_index,]
@@ -126,11 +128,9 @@ r_cluster_data <- function(data,
   # because it is calculated in the clust_fun fitting function
   # we just need to provide the clust_fun function the group membership for all the data
   res <- u_cluster_similarity(x = similarity,
-                              x_train = xtrain,
-                              x_test = xtest,
-                              y_train = ytrain,
-                              y_test = ytest,
-                              distance = dist(x = similarity, method = distance_method), ...)
+                              expr = xtrain,
+                              exprTest = xtest,
+                              distanceMethod = stats::dist(x = similarity, method = distance_method), ...)
 
   #############################################################################
   #               ECLUST CLUSTERS                                             #
@@ -185,17 +185,13 @@ r_cluster_data <- function(data,
 
   resEclust <- if (eclust_distance %in% c("diffcorr","difftom","fisherScore")) {
     u_cluster_similarity(x = similarityEclust,
-                         x_train = xtrain,
-                         x_test = xtest,
-                         y_train = ytrain,
-                         y_test = ytest, ...)
+                         expr = xtrain,
+                         exprTest = xtest, ...)
   } else {
     u_cluster_similarity(x = similarityEclust,
-                         x_train = xtrain,
-                         x_test = xtest,
-                         y_train = ytrain,
-                         y_test = ytest,
-                         distance = dist(x = similarity, method = distance_method), ...)
+                         expr = xtrain,
+                         exprTest = xtest,
+                         distanceMethod = stats::dist(x = similarity, method = distance_method), ...)
   }
 
   # we need to combine the cluster information here
@@ -314,7 +310,7 @@ r_prepare_data <- function(data, response = "Y", exposure = "E", probe_names) {
   colnames(data)[which(colnames(data) == response)] <- "Y"
   colnames(data)[which(colnames(data) == exposure)] <- "E"
 
-  x_mat <- model.matrix(as.formula(paste0("~(", paste0(probe_names, collapse="+"), ")*E - 1")), data = data)
+  x_mat <- stats::model.matrix(stats::as.formula(paste0("~(", paste0(probe_names, collapse="+"), ")*E - 1")), data = data)
 
 
   # reformulate(paste0("~(", paste0(colnames(pcTrain)[1:5], collapse="+"), ")*E"))

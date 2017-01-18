@@ -57,6 +57,8 @@ column is a numeric integer indicating the cluster group membership.  A
 cluster group membership of 0 implies the feature did not cluster into any
 group.}
 
+\item{true_beta}{numeric vector of true beta coefficients}
+
 \item{topgenes}{List of features to keep if \code{filter=TRUE}. Default is
 \code{topgenes = NULL} which means all features are kept for the analysis}
 
@@ -78,6 +80,9 @@ naming the output only and has no consequence for the results.
 \code{clust_type = "CLUST"} is the default which means that the environment
 varible was not used in the clustering step. \code{clust_type = "ECLUST"}
 means that the environment variable was used in the clustering aspect.}
+
+\item{nPC}{Number of principal components if \code{summary = "pc"}.
+Default is \code{nPC = 1}. Can be either 1 or 2.}
 }
 \value{
 This function has two different outputs depending on whether
