@@ -4,9 +4,10 @@
 \alias{s_generate_data}
 \title{Generate linear response data and test and training sets for simulation study}
 \usage{
-s_generate_data(p, X, beta, cluster_distance = c("corr", "corr0", "corr1",
-  "tom", "tom0", "tom1", "diffcorr", "difftom", "corScor", "tomScor",
-  "fisherScore"), n, n0, include_interaction = F, signal_to_noise_ratio = 1,
+s_generate_data(p, X, beta, binary_outcome = FALSE,
+  cluster_distance = c("corr", "corr0", "corr1", "tom", "tom0", "tom1",
+  "diffcorr", "difftom", "corScor", "tomScor", "fisherScore"), n, n0,
+  include_interaction = F, signal_to_noise_ratio = 1,
   eclust_distance = c("fisherScore", "corScor", "diffcorr", "difftom"),
   cluster_method = c("hclust", "protoclust"), cut_method = c("dynamic",
   "gap", "fixed"), distance_method = c("euclidean", "maximum", "manhattan",
@@ -22,6 +23,9 @@ s_generate_data(p, X, beta, cluster_distance = c("corr", "corr0", "corr1",
 \code{generate_blocks} function}
 
 \item{beta}{true beta coefficient vector}
+
+\item{binary_outcome}{Logical. Should a binary outcome be generated. Default
+is \code{FALSE}. See details on how a binary outcome is generated}
 
 \item{cluster_distance}{character representing which matrix from the training
 set that you want to use to cluster the genes. Must be one of the following
@@ -96,6 +100,11 @@ create a function that takes as input, the number of genes, the
   correlation matrices, TOM matrices, cluster information, training and test
   data
 }
+\details{
+To generate a binary outcome we first generate a continuous outcome
+  Y which is \eqn{X^T \beta}, defined p = 1/(1 + exp(−Y )) and used this to
+  generate a two-class outcome z with Pr(z = 1) = p and Pr(z = 0) = 1 − p.
+}
 \note{
 this function calls the \code{s_response} to generate phenotype as a
   function of the gene expression data. This function also returns other
@@ -106,23 +115,69 @@ the PCs and averages need to be calculated in the fitting functions,
   because these will change based on the CV fold
 }
 \examples{
-\dontrun{
-p = 1000
-n=200;n0=100
-beta_genes <- c(runif(50,0.9,1.1),
-                runif(50, -1.1,-0.9),
-                rep(0,900))
-# gene expression matrix used in s_response function
-X <- mapply(generate_blocks,
-            rho_E0 = c(-0.70, runif(8, 0.01,0.05), 0.70),
-            rho_E1 = c(0.70, runif(8, 0.01, 0.05), 0.70),
-            MoreArgs = list(block_size = 100, n = n, n0 = n0), SIMPLIFY = F) \%>\%
-  do.call(cbind, . ) \%>\%
-  magrittr::set_colnames(paste0("Gene", 1:1000)) \%>\%
-  magrittr::set_rownames(paste0("Subject",1:200))
+library(magrittr)
 
-cluster_distance <- "corr"
-generate_data(p = p, n = n, n0 = n0, X = X, beta_genes = beta_genes, cluster_distance = "corr")
-}
+# simulation parameters
+rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+cutMethod = "dynamic"; agglomerationMethod = "average"
+
+#in this simulation its blocks 3 and 4 that are important
+#leaveOut:  optional specification of modules that should be left out
+#of the simulation, that is their genes will be simulated as unrelated
+#("grey"). This can be useful when simulating several sets, in some which a module
+#is present while in others it is absent.
+d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+                modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+                minCor = 0.01,
+                maxCor = 1,
+                corPower = 1,
+                propNegativeCor = 0.3,
+                backgroundNoise = 0.5,
+                signed = FALSE,
+                leaveOut = 1:4)
+
+d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+                modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+                minCor = 0.4,
+                maxCor = 1,
+                corPower = 0.3,
+                propNegativeCor = 0.3,
+                backgroundNoise = 0.5,
+                signed = FALSE)
+
+truemodule1 <- d1$setLabels
+
+X <- rbind(d0$datExpr, d1$datExpr) \%>\%
+  magrittr::set_colnames(paste0("Gene", 1:p)) \%>\%
+  magrittr::set_rownames(paste0("Subject",1:n))
+
+betaMainEffect <- vector("double", length = p)
+betaMainInteractions <- vector("double", length = p)
+
+# the first nActive/2 in the 3rd block are active
+betaMainEffect[which(truemodule1 \%in\% 3)[1:(nActive/2)]] <- runif(
+  nActive/2, betaMean - 0.1, betaMean + 0.1)
+
+# the first nActive/2 in the 4th block are active
+betaMainEffect[which(truemodule1 \%in\% 4)[1:(nActive/2)]] <- runif(
+  nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+betaMainInteractions[which(betaMainEffect!=0)] <- runif(nActive, alphaMean - 0.1, alphaMean + 0.1)
+beta <- c(betaMainEffect, betaE, betaMainInteractions)
+
+result <- s_generate_data(p = p, X = X,
+                          beta = beta,
+                          include_interaction = TRUE,
+                          cluster_distance = cluster_distance,
+                          n = n, n0 = n0,
+                          eclust_distance = Ecluster_distance,
+                          signal_to_noise_ratio = SNR,
+                          distance_method = distanceMethod,
+                          cluster_method = clustMethod,
+                          cut_method = cutMethod,
+                          agglomeration_method = agglomerationMethod,
+                          nPC = 1)
+names(result)
 }
 

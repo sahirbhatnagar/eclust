@@ -7,7 +7,7 @@
 s_pen_separate(x_train, x_test, y_train, y_test, s0,
   exp_family = c("gaussian", "binomial"), model = c("lasso", "elasticnet",
   "scad", "mcp"), topgenes = NULL, stability = F, filter = F,
-  include_E = T, include_interaction = T)
+  include_E = T, include_interaction = F)
 }
 \arguments{
 \item{x_train}{\code{ntrain x p} matrix of simulated training set where
@@ -113,7 +113,79 @@ The stability of feature importance is defined as the variability of
   agreement will result in a distance of 0.
 }
 \examples{
-\dontrun{hello}
+library(magrittr)
+
+# simulation parameters
+rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+cutMethod = "dynamic"; agglomerationMethod = "average"
+
+#in this simulation its blocks 3 and 4 that are important
+#leaveOut:  optional specification of modules that should be left out
+#of the simulation, that is their genes will be simulated as unrelated
+#("grey"). This can be useful when simulating several sets, in some which a module
+#is present while in others it is absent.
+d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+                modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+                minCor = 0.01,
+                maxCor = 1,
+                corPower = 1,
+                propNegativeCor = 0.3,
+                backgroundNoise = 0.5,
+                signed = FALSE,
+                leaveOut = 1:4)
+
+d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+                modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+                minCor = 0.4,
+                maxCor = 1,
+                corPower = 0.3,
+                propNegativeCor = 0.3,
+                backgroundNoise = 0.5,
+                signed = FALSE)
+
+truemodule1 <- d1$setLabels
+
+X <- rbind(d0$datExpr, d1$datExpr) \%>\%
+  magrittr::set_colnames(paste0("Gene", 1:p)) \%>\%
+  magrittr::set_rownames(paste0("Subject",1:n))
+
+betaMainEffect <- vector("double", length = p)
+betaMainInteractions <- vector("double", length = p)
+
+# the first nActive/2 in the 3rd block are active
+betaMainEffect[which(truemodule1 \%in\% 3)[1:(nActive/2)]] <- runif(
+  nActive/2, betaMean - 0.1, betaMean + 0.1)
+
+# the first nActive/2 in the 4th block are active
+betaMainEffect[which(truemodule1 \%in\% 4)[1:(nActive/2)]] <- runif(
+  nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+betaMainInteractions[which(betaMainEffect!=0)] <- runif(nActive, alphaMean - 0.1, alphaMean + 0.1)
+beta <- c(betaMainEffect, betaE, betaMainInteractions)
+
+result <- s_generate_data(p = p, X = X,
+                          beta = beta,
+                          include_interaction = TRUE,
+                          cluster_distance = cluster_distance,
+                          n = n, n0 = n0,
+                          eclust_distance = Ecluster_distance,
+                          signal_to_noise_ratio = SNR,
+                          distance_method = distanceMethod,
+                          cluster_method = clustMethod,
+                          cut_method = cutMethod,
+                          agglomeration_method = agglomerationMethod,
+                          nPC = 1)
+
+pen_res <- s_pen_separate(x_train = result[["X_train"]],
+                          x_test = result[["X_test"]],
+                          y_train = result[["Y_train"]],
+                          y_test = result[["Y_test"]],
+                          s0 = result[["S0"]],
+                          model = "lasso",
+                          exp_family = "gaussian",
+                          include_interaction = TRUE)
+unlist(pen_res)
 }
 \references{
 Toloşi, L., & Lengauer, T. (2011). \emph{Classification with

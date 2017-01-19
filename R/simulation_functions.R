@@ -1,4 +1,4 @@
-#' Fit Penalized Regression Models on Simulated Cluster Summaries
+#' #' Fit Penalized Regression Models on Simulated Cluster Summaries
 #'
 #' @description This function creates summaries of the given clusters (e.g. 1st
 #'   PC or average), and then fits a penalized regression model on those
@@ -126,9 +126,87 @@
 #'   effects} \item{IncorrectZeroInter}{Proportion of incorrect true negative
 #'   interaction effects} \item{nclusters}{number of estimated clusters by the
 #'   \code{\link[dynamicTreeCut]{cutreeDynamic}} function}
+#'
+#' @examples
+#' library(magrittr)
+#'
+#' # simulation parameters
+#' rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+#' Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+#' alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+#' cutMethod = "dynamic"; agglomerationMethod = "average"
+#'
+#' #in this simulation its blocks 3 and 4 that are important
+#' #leaveOut:  optional specification of modules that should be left out
+#' #of the simulation, that is their genes will be simulated as unrelated
+#' #("grey"). This can be useful when simulating several sets, in some which a module
+#' #is present while in others it is absent.
+#' d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' truemodule1 <- d1$setLabels
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'   magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'   magrittr::set_rownames(paste0("Subject",1:n))
+#'
+#' betaMainEffect <- vector("double", length = p)
+#' betaMainInteractions <- vector("double", length = p)
+#'
+#' # the first nActive/2 in the 3rd block are active
+#' betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean - 0.1, betaMean + 0.1)
+#'
+#' # the first nActive/2 in the 4th block are active
+#' betaMainEffect[which(truemodule1 %in% 4)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+#' betaMainInteractions[which(betaMainEffect!=0)] <- runif(nActive, alphaMean - 0.1, alphaMean + 0.1)
+#' beta <- c(betaMainEffect, betaE, betaMainInteractions)
+#'
+#' result <- s_generate_data(p = p, X = X,
+#'                           beta = beta,
+#'                           include_interaction = TRUE,
+#'                           cluster_distance = cluster_distance,
+#'                           n = n, n0 = n0,
+#'                           eclust_distance = Ecluster_distance,
+#'                           signal_to_noise_ratio = SNR,
+#'                           distance_method = distanceMethod,
+#'                           cluster_method = clustMethod,
+#'                           cut_method = cutMethod,
+#'                           agglomeration_method = agglomerationMethod,
+#'                           nPC = 1)
+#'
+#' pen_res <- s_pen_clust(x_train = result[["X_train"]],
+#'                        x_test = result[["X_test"]],
+#'                        y_train = result[["Y_train"]],
+#'                        y_test = result[["Y_test"]],
+#'                        s0 = result[["S0"]],
+#'                        gene_groups = result[["clustersAddon"]],
+#'                        summary = "pc",
+#'                        model = "lasso",
+#'                        exp_family = "gaussian",
+#'                        clust_type = "ECLUST",
+#'                        include_interaction = TRUE)
+#' unlist(pen_res)
+#'
+#'
 #' @export
-#'
-#'
 s_pen_clust <- function(x_train,
                         x_test,
                         y_train,
@@ -142,7 +220,7 @@ s_pen_clust <- function(x_train,
                         topgenes = NULL,
                         stability = F,
                         include_E = T,
-                        include_interaction = T,
+                        include_interaction = F,
                         clust_type = c("CLUST","ECLUST"),
                         number_pc = 1) {
 
@@ -213,21 +291,21 @@ s_pen_clust <- function(x_train,
                        pc = PC_and_avg$PC)
 
   ml.formula <- if (include_interaction & include_E) {
-    paste0("y_train ~","(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% stats::as.formula
+    stats::as.formula(paste0("y_train ~","(",paste0(colnames(clust_data), collapse = "+"),")*E"))
   } else if (!include_interaction & include_E) {
-    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+"),"+E") %>% stats::as.formula
+    stats::as.formula(paste0("y_train ~",paste0(colnames(clust_data), collapse = "+"),"+E"))
   } else if (!include_interaction & !include_E) {
-    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+")) %>% stats::as.formula
+    stats::as.formula(paste0("y_train ~",paste0(colnames(clust_data), collapse = "+")))
   }
 
   # this is the same as ml.formula, except without the response.. this is used for
   # functions that have the x = and y = input instead of a formula input
   model.formula <- if (include_interaction & include_E) {
-    paste0("~ 0+(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% stats::as.formula
+    stats::as.formula(paste0("~ 0+(",paste0(colnames(clust_data), collapse = "+"),")*E"))
   } else if (!include_interaction & include_E) {
-    paste0("~0+",paste0(colnames(clust_data), collapse = "+"),"+E") %>% stats::as.formula
+    stats::as.formula(paste0("~0+",paste0(colnames(clust_data), collapse = "+"),"+E"))
   } else if (!include_interaction & !include_E) {
-    paste0("~0+",paste0(colnames(clust_data), collapse = "+")) %>% stats::as.formula
+    stats::as.formula(paste0("~0+",paste0(colnames(clust_data), collapse = "+")))
   }
 
   # this is the design matrix based on model.formula
@@ -406,11 +484,11 @@ s_pen_clust <- function(x_train,
 
     # need intercept for prediction
     model.formula_test <- if (include_interaction & include_E) {
-      paste0("~ 1+(",paste0(colnames(clust_data_test), collapse = "+"),")*E") %>% stats::as.formula
+      stats::as.formula(paste0("~ 1+(",paste0(colnames(clust_data_test), collapse = "+"),")*E"))
     } else if (!include_interaction & include_E) {
-      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+"),"+E") %>% stats::as.formula
+      stats::as.formula(paste0("~1+",paste0(colnames(clust_data_test), collapse = "+"),"+E"))
     } else if (!include_interaction & !include_E) {
-      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+")) %>% stats::as.formula
+      stats::as.formula(paste0("~1+",paste0(colnames(clust_data_test), collapse = "+")))
     }
 
 
@@ -620,19 +698,91 @@ s_pen_clust <- function(x_train,
 #' @export
 #'
 #' @examples
-#' \dontrun{hello}
+#' library(magrittr)
+#'
+#' # simulation parameters
+#' rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+#' Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+#' alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+#' cutMethod = "dynamic"; agglomerationMethod = "average"
+#'
+#' #in this simulation its blocks 3 and 4 that are important
+#' #leaveOut:  optional specification of modules that should be left out
+#' #of the simulation, that is their genes will be simulated as unrelated
+#' #("grey"). This can be useful when simulating several sets, in some which a module
+#' #is present while in others it is absent.
+#' d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' truemodule1 <- d1$setLabels
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'   magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'   magrittr::set_rownames(paste0("Subject",1:n))
+#'
+#' betaMainEffect <- vector("double", length = p)
+#' betaMainInteractions <- vector("double", length = p)
+#'
+#' # the first nActive/2 in the 3rd block are active
+#' betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean - 0.1, betaMean + 0.1)
+#'
+#' # the first nActive/2 in the 4th block are active
+#' betaMainEffect[which(truemodule1 %in% 4)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+#' betaMainInteractions[which(betaMainEffect!=0)] <- runif(nActive, alphaMean - 0.1, alphaMean + 0.1)
+#' beta <- c(betaMainEffect, betaE, betaMainInteractions)
+#'
+#' result <- s_generate_data(p = p, X = X,
+#'                           beta = beta,
+#'                           include_interaction = TRUE,
+#'                           cluster_distance = cluster_distance,
+#'                           n = n, n0 = n0,
+#'                           eclust_distance = Ecluster_distance,
+#'                           signal_to_noise_ratio = SNR,
+#'                           distance_method = distanceMethod,
+#'                           cluster_method = clustMethod,
+#'                           cut_method = cutMethod,
+#'                           agglomeration_method = agglomerationMethod,
+#'                           nPC = 1)
+#'
+#' pen_res <- s_pen_separate(x_train = result[["X_train"]],
+#'                           x_test = result[["X_test"]],
+#'                           y_train = result[["Y_train"]],
+#'                           y_test = result[["Y_test"]],
+#'                           s0 = result[["S0"]],
+#'                           model = "lasso",
+#'                           exp_family = "gaussian",
+#'                           include_interaction = TRUE)
+#' unlist(pen_res)
 s_pen_separate <- function(x_train,
-                      x_test,
-                      y_train,
-                      y_test,
-                      s0,
-                      exp_family = c("gaussian","binomial"),
-                      model = c("lasso", "elasticnet", "scad", "mcp"),
-                      topgenes = NULL,
-                      stability = F,
-                      filter = F,
-                      include_E = T,
-                      include_interaction = T){
+                           x_test,
+                           y_train,
+                           y_test,
+                           s0,
+                           exp_family = c("gaussian","binomial"),
+                           model = c("lasso", "elasticnet", "scad", "mcp"),
+                           topgenes = NULL,
+                           stability = F,
+                           filter = F,
+                           include_E = T,
+                           include_interaction = F){
 
   # stability = F; x_train = result[["X_train"]] ; x_test = result[["X_test"]] ;
   # y_train = result[["Y_train"]] ; y_test = result[["Y_test"]];
@@ -897,19 +1047,92 @@ s_pen_separate <- function(x_train,
 #' @export
 #'
 #' @examples
-#' \dontrun{hello}
+#' library(magrittr)
+#'
+#' # simulation parameters
+#' rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+#' Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+#' alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+#' cutMethod = "dynamic"; agglomerationMethod = "average"
+#'
+#' #in this simulation its blocks 3 and 4 that are important
+#' #leaveOut:  optional specification of modules that should be left out
+#' #of the simulation, that is their genes will be simulated as unrelated
+#' #("grey"). This can be useful when simulating several sets, in some which a module
+#' #is present while in others it is absent.
+#' d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' truemodule1 <- d1$setLabels
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'   magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'   magrittr::set_rownames(paste0("Subject",1:n))
+#'
+#' betaMainEffect <- vector("double", length = p)
+#'
+#' # the first nActive/2 in the 3rd block are active
+#' betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean - 0.1, betaMean + 0.1)
+#'
+#' # the first nActive/2 in the 4th block are active
+#' betaMainEffect[which(truemodule1 %in% 4)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+#' beta <- c(betaMainEffect, betaE)
+#'
+#' result <- s_generate_data_mars(p = p, X = X,
+#'                                beta = beta,
+#'                                binary_outcome = F,
+#'                                truemodule = truemodule1,
+#'                                nActive = nActive,
+#'                                include_interaction = FALSE,
+#'                                cluster_distance = cluster_distance,
+#'                                n = n, n0 = n0,
+#'                                eclust_distance = Ecluster_distance,
+#'                                signal_to_noise_ratio = SNR,
+#'                                distance_method = distanceMethod,
+#'                                cluster_method = clustMethod,
+#'                                cut_method = cutMethod,
+#'                                agglomeration_method = agglomerationMethod,
+#'                                nPC = 1)
+#'
+#'
+#' mars_res <- s_mars_separate(x_train = result[["X_train"]],
+#'                             x_test = result[["X_test"]],
+#'                             y_train = result[["Y_train"]],
+#'                             y_test = result[["Y_test"]],
+#'                             s0 = result[["S0"]],
+#'                             exp_family = "gaussian")
+#' unlist(mars_res)
+
 s_mars_separate <- function(x_train,
-                       x_test,
-                       y_train,
-                       y_test,
-                       s0,
-                       model = c("MARS"),
-                       exp_family = c("gaussian", "binomial"),
-                       topgenes = NULL,
-                       stability = F,
-                       filter = F,
-                       include_E = T,
-                       include_interaction = T, ...){
+                            x_test,
+                            y_train,
+                            y_test,
+                            s0,
+                            model = c("MARS"),
+                            exp_family = c("gaussian", "binomial"),
+                            topgenes = NULL,
+                            stability = F,
+                            filter = F,
+                            include_E = T,
+                            include_interaction = F, ...){
 
   # stability = F; x_train = result[["X_train"]] ; x_test = result[["X_test"]] ;
   # y_train = result[["Y_train"]] ; y_test = result[["Y_test"]];
@@ -1197,7 +1420,82 @@ s_mars_separate <- function(x_train,
 #' @export
 #'
 #' @examples
-#' \dontrun{hello}
+#' library(magrittr)
+#'
+#' # simulation parameters
+#' rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+#' Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+#' alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+#' cutMethod = "dynamic"; agglomerationMethod = "average"
+#'
+#' #in this simulation its blocks 3 and 4 that are important
+#' #leaveOut:  optional specification of modules that should be left out
+#' #of the simulation, that is their genes will be simulated as unrelated
+#' #("grey"). This can be useful when simulating several sets, in some which a module
+#' #is present while in others it is absent.
+#' d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' truemodule1 <- d1$setLabels
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'   magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'   magrittr::set_rownames(paste0("Subject",1:n))
+#'
+#' betaMainEffect <- vector("double", length = p)
+#'
+#' # the first nActive/2 in the 3rd block are active
+#' betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean - 0.1, betaMean + 0.1)
+#'
+#' # the first nActive/2 in the 4th block are active
+#' betaMainEffect[which(truemodule1 %in% 4)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+#' beta <- c(betaMainEffect, betaE)
+#'
+#' result <- s_generate_data_mars(p = p, X = X,
+#'                                beta = beta,
+#'                                binary_outcome = F,
+#'                                truemodule = truemodule1,
+#'                                nActive = nActive,
+#'                                include_interaction = FALSE,
+#'                                cluster_distance = cluster_distance,
+#'                                n = n, n0 = n0,
+#'                                eclust_distance = Ecluster_distance,
+#'                                signal_to_noise_ratio = SNR,
+#'                                distance_method = distanceMethod,
+#'                                cluster_method = clustMethod,
+#'                                cut_method = cutMethod,
+#'                                agglomeration_method = agglomerationMethod,
+#'                                nPC = 1)
+#'
+#'
+#' mars_res <- s_mars_clust(x_train = result[["X_train"]],
+#'                          x_test = result[["X_test"]],
+#'                          y_train = result[["Y_train"]],
+#'                          y_test = result[["Y_test"]],
+#'                          s0 = result[["S0"]],
+#'                          summary = "pc",
+#'                          exp_family = "gaussian",
+#'                          gene_groups = result[["clustersAddon"]],
+#'                          clust_type = "ECLUST")
+#' unlist(mars_res)
 s_mars_clust <- function(x_train,
                          x_test,
                          y_train,
@@ -1211,9 +1509,9 @@ s_mars_clust <- function(x_train,
                          topgenes = NULL,
                          stability = F,
                          filter = F,
-                         include_E = F,
+                         include_E = T,
                          include_interaction = F,
-                         clust_type = c("clust","Eclust","Addon"),
+                         clust_type = c("CLUST","ECLUST"),
                          nPC = 1) {
 
   # result[["clustersAddon"]] %>% print(nrows=Inf)
@@ -1283,21 +1581,21 @@ s_mars_clust <- function(x_train,
                        pc = PC_and_avg$PC)
 
   ml.formula <- if (include_interaction & include_E) {
-    paste0("y_train ~","(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% stats::as.formula
+    stats::as.formula(paste0("y_train ~","(",paste0(colnames(clust_data), collapse = "+"),")*E"))
   } else if (!include_interaction & include_E) {
-    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+"),"+E") %>% stats::as.formula
+    stats::as.formula(paste0("y_train ~",paste0(colnames(clust_data), collapse = "+"),"+E"))
   } else if (!include_interaction & !include_E) {
-    paste0("y_train ~",paste0(colnames(clust_data), collapse = "+")) %>% stats::as.formula
+    stats::as.formula(paste0("y_train ~",paste0(colnames(clust_data), collapse = "+")))
   }
 
   # this is the same as ml.formula, except without the response.. this is used for
   # functions that have the x = and y = input instead of a formula input
   model.formula <- if (include_interaction & include_E) {
-    paste0("~ 0+(",paste0(colnames(clust_data), collapse = "+"),")*E") %>% stats::as.formula
+    stats::as.formula(paste0("~ 0+(",paste0(colnames(clust_data), collapse = "+"),")*E"))
   } else if (!include_interaction & include_E) {
-    paste0("~0+",paste0(colnames(clust_data), collapse = "+"),"+E") %>% stats::as.formula
+    stats::as.formula(paste0("~0+",paste0(colnames(clust_data), collapse = "+"),"+E"))
   } else if (!include_interaction & !include_E) {
-    paste0("~0+",paste0(colnames(clust_data), collapse = "+")) %>% stats::as.formula
+    stats::as.formula(paste0("~0+",paste0(colnames(clust_data), collapse = "+")))
   }
 
   # this is the design matrix based on model.formula
@@ -1442,11 +1740,11 @@ s_mars_clust <- function(x_train,
 
     # need intercept for prediction
     model.formula_test <- if (include_interaction & include_E) {
-      paste0("~ 1+(",paste0(colnames(clust_data_test), collapse = "+"),")*E") %>% stats::as.formula
+      stats::as.formula(paste0("~ 1+(",paste0(colnames(clust_data_test), collapse = "+"),")*E"))
     } else if (!include_interaction & include_E) {
-      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+"),"+E") %>% stats::as.formula
+      stats::as.formula(paste0("~1+",paste0(colnames(clust_data_test), collapse = "+"),"+E"))
     } else if (!include_interaction & !include_E) {
-      paste0("~1+",paste0(colnames(clust_data_test), collapse = "+")) %>% stats::as.formula
+      stats::as.formula(paste0("~1+",paste0(colnames(clust_data_test), collapse = "+")))
     }
 
 
@@ -1556,28 +1854,28 @@ s_mars_clust <- function(x_train,
 
     names(ls) <- switch(exp_family,
                         gaussian = {
-                          c(paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_Shat"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_TPR"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_FPR"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectSparsity"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroMain"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroInter"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroMain"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroInter"))},
+                          c(paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_Shat"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_TPR"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_FPR"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectSparsity"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroMain"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroInter"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroMain"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroInter"))},
                         binomial = {
-                          c(paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_AUC"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_Shat"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_TPR"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_FPR"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectSparsity"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroMain"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroInter"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroMain"),
-                            paste0("mars_na_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroInter"))
+                          c(paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_mse"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_RMSE"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_AUC"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_Shat"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_TPR"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_FPR"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectSparsity"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroMain"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_CorrectZeroInter"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroMain"),
+                            paste0(clust_type,"_",summary,"_",model,ifelse(include_interaction,"_yes","_no"),"_IncorrectZeroInter"))
                         })
     return(ls)
 
@@ -1713,6 +2011,8 @@ s_modules <- function(n, p, rho, exposed, ...) {
 #' @param X gene expression matrix of size n x p using the
 #'   \code{generate_blocks} function
 #' @param beta true beta coefficient vector
+#' @param binary_outcome Logical. Should a binary outcome be generated. Default
+#'   is \code{FALSE}. See details on how a binary outcome is generated
 #' @param n total number of subjects
 #' @param n0 total number of subjects with E=0
 #' @param signal_to_noise_ratio signal to noise ratio, default is 1
@@ -1745,29 +2045,78 @@ s_modules <- function(n, p, rho, exposed, ...) {
 #'   when \code{cut_method="fixed"}
 #' @param nPC number of principal components to extract from each cluster.
 #'   Default is 1. Only 1 or 2 is allowed.
+#' @details To generate a binary outcome we first generate a continuous outcome
+#'   Y which is \eqn{X^T \beta}, defined p = 1/(1 + exp(−Y )) and used this to
+#'   generate a two-class outcome z with Pr(z = 1) = p and Pr(z = 0) = 1 − p.
 #' @inheritParams u_cluster_similarity
 #' @examples
-#' \dontrun{
-#' p = 1000
-#' n=200;n0=100
-#' beta_genes <- c(runif(50,0.9,1.1),
-#'                 runif(50, -1.1,-0.9),
-#'                 rep(0,900))
-#' # gene expression matrix used in s_response function
-#' X <- mapply(generate_blocks,
-#'             rho_E0 = c(-0.70, runif(8, 0.01,0.05), 0.70),
-#'             rho_E1 = c(0.70, runif(8, 0.01, 0.05), 0.70),
-#'             MoreArgs = list(block_size = 100, n = n, n0 = n0), SIMPLIFY = F) %>%
-#'   do.call(cbind, . ) %>%
-#'   magrittr::set_colnames(paste0("Gene", 1:1000)) %>%
-#'   magrittr::set_rownames(paste0("Subject",1:200))
+#' library(magrittr)
 #'
-#' cluster_distance <- "corr"
-#' generate_data(p = p, n = n, n0 = n0, X = X, beta_genes = beta_genes, cluster_distance = "corr")
-#' }
+#' # simulation parameters
+#' rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+#' Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+#' alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+#' cutMethod = "dynamic"; agglomerationMethod = "average"
+#'
+#' #in this simulation its blocks 3 and 4 that are important
+#' #leaveOut:  optional specification of modules that should be left out
+#' #of the simulation, that is their genes will be simulated as unrelated
+#' #("grey"). This can be useful when simulating several sets, in some which a module
+#' #is present while in others it is absent.
+#' d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' truemodule1 <- d1$setLabels
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'   magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'   magrittr::set_rownames(paste0("Subject",1:n))
+#'
+#' betaMainEffect <- vector("double", length = p)
+#' betaMainInteractions <- vector("double", length = p)
+#'
+#' # the first nActive/2 in the 3rd block are active
+#' betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean - 0.1, betaMean + 0.1)
+#'
+#' # the first nActive/2 in the 4th block are active
+#' betaMainEffect[which(truemodule1 %in% 4)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+#' betaMainInteractions[which(betaMainEffect!=0)] <- runif(nActive, alphaMean - 0.1, alphaMean + 0.1)
+#' beta <- c(betaMainEffect, betaE, betaMainInteractions)
+#'
+#' result <- s_generate_data(p = p, X = X,
+#'                           beta = beta,
+#'                           include_interaction = TRUE,
+#'                           cluster_distance = cluster_distance,
+#'                           n = n, n0 = n0,
+#'                           eclust_distance = Ecluster_distance,
+#'                           signal_to_noise_ratio = SNR,
+#'                           distance_method = distanceMethod,
+#'                           cluster_method = clustMethod,
+#'                           cut_method = cutMethod,
+#'                           agglomeration_method = agglomerationMethod,
+#'                           nPC = 1)
+#' names(result)
 #' @export
 
-s_generate_data <- function(p, X, beta,
+s_generate_data <- function(p, X, beta, binary_outcome = FALSE,
                             cluster_distance = c("corr", "corr0", "corr1", "tom",
                                                  "tom0", "tom1", "diffcorr",
                                                  "difftom","corScor", "tomScor",
@@ -1823,10 +2172,11 @@ s_generate_data <- function(p, X, beta,
   message("Creating data and simulating response")
 
   DT <- as.data.frame(s_response(n = n, n0 = n0, p = p, genes = X,
-                               include_interaction = include_interaction,
-                               E = c(rep(0,n0), rep(1, n1)),
-                               beta = beta,
-                               signal_to_noise_ratio = signal_to_noise_ratio))
+                                 binary_outcome = binary_outcome,
+                                 include_interaction = include_interaction,
+                                 E = c(rep(0,n0), rep(1, n1)),
+                                 beta = beta,
+                                 signal_to_noise_ratio = signal_to_noise_ratio))
   dim(DT)
 
   Y <- as.matrix(DT[,"Y"])
@@ -2119,8 +2469,73 @@ s_generate_data <- function(p, X, beta,
 #'   \item{corr_train_diff}{} \item{corr_train_e1}{} \item{corr_train_e0}{}
 #'   \item{mse_null}{} }
 #' @export
+#' @examples
+#' library(magrittr)
 #'
-s_generate_data_mars <- function(p, X, beta,
+#' # simulation parameters
+#' rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+#' Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+#' alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+#' cutMethod = "dynamic"; agglomerationMethod = "average"
+#'
+#' #in this simulation its blocks 3 and 4 that are important
+#' #leaveOut:  optional specification of modules that should be left out
+#' #of the simulation, that is their genes will be simulated as unrelated
+#' #("grey"). This can be useful when simulating several sets, in some which a module
+#' #is present while in others it is absent.
+#' d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' truemodule1 <- d1$setLabels
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'   magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'   magrittr::set_rownames(paste0("Subject",1:n))
+#'
+#' betaMainEffect <- vector("double", length = p)
+#'
+#' # the first nActive/2 in the 3rd block are active
+#' betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean - 0.1, betaMean + 0.1)
+#'
+#' # the first nActive/2 in the 4th block are active
+#' betaMainEffect[which(truemodule1 %in% 4)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+#' beta <- c(betaMainEffect, betaE)
+#'
+#' result <- s_generate_data_mars(p = p, X = X,
+#'                                beta = beta,
+#'                                binary_outcome = F,
+#'                                truemodule = truemodule1,
+#'                                nActive = nActive,
+#'                                include_interaction = FALSE,
+#'                                cluster_distance = cluster_distance,
+#'                                n = n, n0 = n0,
+#'                                eclust_distance = Ecluster_distance,
+#'                                signal_to_noise_ratio = SNR,
+#'                                distance_method = distanceMethod,
+#'                                cluster_method = clustMethod,
+#'                                cut_method = cutMethod,
+#'                                agglomeration_method = agglomerationMethod,
+#'                                nPC = 1)
+#' names(result)
+s_generate_data_mars <- function(p, X, beta,  binary_outcome = FALSE,
                                  truemodule,
                                  nActive,
                                  cluster_distance = c("corr", "corr0", "corr1", "tom",
@@ -2180,6 +2595,8 @@ s_generate_data_mars <- function(p, X, beta,
   message("Creating data and simulating response for MARS model")
 
   DT <- as.data.frame(s_response_mars(n = n, n0 = n0, p = p, genes = X,
+                                    binary_outcome = binary_outcome,
+                                    beta = beta,
                                     truemodule = truemodule,
                                     nActive = nActive,
                                     E = c(rep(0,n0), rep(1, n1)),
@@ -2474,7 +2891,64 @@ s_generate_data_mars <- function(p, X, beta,
 #'   matrix. Also an object of class \code{expression}
 #' @inheritParams s_generate_data
 #' @export
-s_response <- function(n , n0 , p , genes,
+#' @examples
+#' library(magrittr)
+#'
+#' # simulation parameters
+#' rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+#' Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+#' alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+#' cutMethod = "dynamic"; agglomerationMethod = "average"
+#'
+#' #in this simulation its blocks 3 and 4 that are important
+#' #leaveOut:  optional specification of modules that should be left out
+#' #of the simulation, that is their genes will be simulated as unrelated
+#' #("grey"). This can be useful when simulating several sets, in some which a module
+#' #is present while in others it is absent.
+#' d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' truemodule1 <- d1$setLabels
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'   magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'   magrittr::set_rownames(paste0("Subject",1:n))
+#'
+#' betaMainEffect <- vector("double", length = p)
+#'
+#' # the first nActive/2 in the 3rd block are active
+#' betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean - 0.1, betaMean + 0.1)
+#'
+#' # the first nActive/2 in the 4th block are active
+#' betaMainEffect[which(truemodule1 %in% 4)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+#' beta <- c(betaMainEffect, betaE)
+#'
+#' result <- s_response(n = n, n0 = n0,
+#'                      p = p, genes = X, binary_outcome = FALSE,
+#'                      E = c(rep(0,n0), rep(1, n1)), signal_to_noise_ratio = 1,
+#'                      include_interaction = F,
+#'                      beta = beta)
+#' result[1:5,1:5]
+#'
+s_response <- function(n , n0 , p , genes,  binary_outcome = FALSE,
                        E, signal_to_noise_ratio = 1,
                        include_interaction = F,
                        beta = NULL) {
@@ -2513,11 +2987,19 @@ s_response <- function(n , n0 , p , genes,
 
   y <- y.star + k*error
 
-  result <- if (include_interaction) as.matrix(cbind(y,DT)) else as.matrix(cbind(y,DT))
-  colnames(result)[1] <- "Y"
-  class(result) <- append(class(result), "expression")
-
-  return(result)
+  if (binary_outcome) {
+    prob <- 1/(1+exp(-y))
+    z <- stats::rbinom(nrow(prob),1,prob)
+    result <- if (include_interaction) as.matrix(cbind(z,DT)) else as.matrix(cbind(z,DT))
+    colnames(result)[1] <- "Y"
+    class(result) <- append(class(result), "expression")
+    return(result)
+  } else {
+    result <- if (include_interaction) as.matrix(cbind(y,DT)) else as.matrix(cbind(y,DT))
+    colnames(result)[1] <- "Y"
+    class(result) <- append(class(result), "expression")
+    return(result)
+  }
 }
 
 
@@ -2530,35 +3012,128 @@ s_response <- function(n , n0 , p , genes,
 #' @note See Bhatnagar et al (2017+) for details on how the response is simulated.
 #' @return a data.frame/data.table containing the response and the design
 #'   matrix. Also an object of class \code{expression}
+#'
+#'
+#' @examples
+#' library(magrittr)
+#'
+#' # simulation parameters
+#' rho = 0.90; p = 500 ;SNR = 1 ; n = 200; n0 = n1 = 100 ; nActive = p*0.10 ; cluster_distance = "tom";
+#' Ecluster_distance = "difftom"; rhoOther = 0.6; betaMean = 2;
+#' alphaMean = 1; betaE = 3; distanceMethod = "euclidean"; clustMethod = "hclust";
+#' cutMethod = "dynamic"; agglomerationMethod = "average"
+#'
+#' #in this simulation its blocks 3 and 4 that are important
+#' #leaveOut:  optional specification of modules that should be left out
+#' #of the simulation, that is their genes will be simulated as unrelated
+#' #("grey"). This can be useful when simulating several sets, in some which a module
+#' #is present while in others it is absent.
+#' d0 <- s_modules(n = n0, p = p, rho = 0, exposed = FALSE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.01,
+#'                 maxCor = 1,
+#'                 corPower = 1,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE,
+#'                 leaveOut = 1:4)
+#'
+#' d1 <- s_modules(n = n1, p = p, rho = rho, exposed = TRUE,
+#'                 modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+#'                 minCor = 0.4,
+#'                 maxCor = 1,
+#'                 corPower = 0.3,
+#'                 propNegativeCor = 0.3,
+#'                 backgroundNoise = 0.5,
+#'                 signed = FALSE)
+#'
+#' truemodule1 <- d1$setLabels
+#'
+#' X <- rbind(d0$datExpr, d1$datExpr) %>%
+#'   magrittr::set_colnames(paste0("Gene", 1:p)) %>%
+#'   magrittr::set_rownames(paste0("Subject",1:n))
+#'
+#' betaMainEffect <- vector("double", length = p)
+#'
+#' # the first nActive/2 in the 3rd block are active
+#' betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean - 0.1, betaMean + 0.1)
+#'
+#' # the first nActive/2 in the 4th block are active
+#' betaMainEffect[which(truemodule1 %in% 4)[1:(nActive/2)]] <- runif(
+#'   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
+#' beta <- c(betaMainEffect, betaE)
+#'
+#' result <- s_response_mars(n = n, n0 = n0,
+#'                           p = p, genes = X, binary_outcome = TRUE,
+#'                           E = c(rep(0,n0), rep(1, n1)), signal_to_noise_ratio = 1,
+#'                           truemodule = truemodule1, nActive = nActive,
+#'                           beta = beta)
+#' result[1:5,1:5]
 #' @export
-s_response_mars <- function(n , n0 , p , genes,
+s_response_mars <- function(n , n0 , p , genes, beta,  binary_outcome = FALSE,
                             E, signal_to_noise_ratio = 1,
                             truemodule, nActive) {
 
-  # nActive
   # truemodule = truemodule1
   # genes = X
   # E = c(rep(0,n0),rep(1, n1))
+  # signal_to_noise_ratio = SNR
 
   DT <- cbind(genes,E) %>% as.data.table()
 
   x1 <- genes[,which(truemodule %in% 3)[1:(nActive/2)]]
-  u1 <- svd(x1)$u[,1]
-
   x2 <- genes[,which(truemodule %in% 4)[1:(nActive/2)]]
-  u2 <- svd(x2)$u[,1]
 
-  y.star <- 0.1*(u1 + u2 + E) + 4 * pmax(u1-0.01, 0) * pmax(u2-0.05, 0) * E
+  # p causaully associated genes
+  xp <- cbind(x1,x2)
+  # all(c(colnames(x1),colnames(x2)) %in% colnames(xp))
+
+  # means of the causal genes for each subject
+  xpbar <- rowMeans(xp)
+
+  # these are equivalent
+  # apply(xp, 2, function(i) (i - xpbar)^2)[1:3,1:3]
+  # ((xp - xpbar)[1:3,1:3])^2
+
+  Qip <- (xp - xpbar)^2
+  Qi <- -1*apply(Qip, 1, max)
+
+  x_inter <- (Qi - min(Qi))/(-1 * min(Qi))
+
+  x_main <- svd(xp)$u[,1]
+
+  # plot(x_main, x_inter)
+  # x1 <- genes[,which(truemodule %in% 3)[1:(nActive/2)]]
+  # u1 <- svd(x1)$u[,1]
+  #
+  # x2 <- genes[,which(truemodule %in% 4)[1:(nActive/2)]]
+  # u2 <- svd(x2)$u[,1]
+  # y.star <- 0.1*(u1 + u2 + E) + 4 * pmax(u1-0.01, 0) * pmax(u2-0.05, 0) * E
+
+  # y.star <- x_main + E + E * x_inter
+
+  y.star <- {as.matrix(DT)} %*% beta + E * x_inter
+
   error <- stats::rnorm(n)
   k <- sqrt(stats::var(y.star)/(signal_to_noise_ratio*stats::var(error)))
 
   y <- y.star + k*error
 
-  result <- as.matrix(cbind(y,DT))
-  colnames(result)[1] <- "Y"
-  class(result) <- append(class(result), "expression")
+  if (binary_outcome) {
+    prob <- 1/(1+exp(-y))
+    z <- stats::rbinom(nrow(prob),1,prob)
 
-  return(result)
+    result <- as.matrix(cbind(z,DT))
+    colnames(result)[1] <- "Y"
+    class(result) <- append(class(result), "expression")
+    return(result)
+  } else {
+    result <- as.matrix(cbind(y,DT))
+    colnames(result)[1] <- "Y"
+    class(result) <- append(class(result), "expression")
+    return(result)
+  }
 }
 
 
