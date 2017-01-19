@@ -5,7 +5,7 @@
 \title{Generate True Response vector for Linear Simulation}
 \usage{
 s_response(n, n0, p, genes, binary_outcome = FALSE, E,
-  signal_to_noise_ratio = 1, include_interaction = F, beta = NULL)
+  signal_to_noise_ratio = 1, include_interaction = FALSE, beta = NULL)
 }
 \arguments{
 \item{n}{Total number of subjects}
@@ -91,7 +91,7 @@ beta <- c(betaMainEffect, betaE)
 result <- s_response(n = n, n0 = n0,
                      p = p, genes = X, binary_outcome = FALSE,
                      E = c(rep(0,n0), rep(1, n1)), signal_to_noise_ratio = 1,
-                     include_interaction = F,
+                     include_interaction = FALSE,
                      beta = beta)
 result[1:5,1:5]
 

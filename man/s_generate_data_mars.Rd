@@ -159,7 +159,7 @@ beta <- c(betaMainEffect, betaE)
 
 result <- s_generate_data_mars(p = p, X = X,
                                beta = beta,
-                               binary_outcome = F,
+                               binary_outcome = FALSE,
                                truemodule = truemodule1,
                                nActive = nActive,
                                include_interaction = FALSE,

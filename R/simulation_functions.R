@@ -1098,7 +1098,7 @@ s_pen_separate <- function(x_train,
 #'
 #' result <- s_generate_data_mars(p = p, X = X,
 #'                                beta = beta,
-#'                                binary_outcome = F,
+#'                                binary_outcome = FALSE,
 #'                                truemodule = truemodule1,
 #'                                nActive = nActive,
 #'                                include_interaction = FALSE,
@@ -1471,7 +1471,7 @@ s_mars_separate <- function(x_train,
 #'
 #' result <- s_generate_data_mars(p = p, X = X,
 #'                                beta = beta,
-#'                                binary_outcome = F,
+#'                                binary_outcome = FALSE,
 #'                                truemodule = truemodule1,
 #'                                nActive = nActive,
 #'                                include_interaction = FALSE,
@@ -2521,7 +2521,7 @@ s_generate_data <- function(p, X, beta, binary_outcome = FALSE,
 #'
 #' result <- s_generate_data_mars(p = p, X = X,
 #'                                beta = beta,
-#'                                binary_outcome = F,
+#'                                binary_outcome = FALSE,
 #'                                truemodule = truemodule1,
 #'                                nActive = nActive,
 #'                                include_interaction = FALSE,
@@ -2944,13 +2944,13 @@ s_generate_data_mars <- function(p, X, beta,  binary_outcome = FALSE,
 #' result <- s_response(n = n, n0 = n0,
 #'                      p = p, genes = X, binary_outcome = FALSE,
 #'                      E = c(rep(0,n0), rep(1, n1)), signal_to_noise_ratio = 1,
-#'                      include_interaction = F,
+#'                      include_interaction = FALSE,
 #'                      beta = beta)
 #' result[1:5,1:5]
 #'
 s_response <- function(n , n0 , p , genes,  binary_outcome = FALSE,
                        E, signal_to_noise_ratio = 1,
-                       include_interaction = F,
+                       include_interaction = FALSE,
                        beta = NULL) {
 
   # number of subjects with E=1
