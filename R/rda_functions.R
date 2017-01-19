@@ -15,7 +15,7 @@
 #'   correlations ignoring the environment, and the other should be based on
 #'   correlations accounting for the environment. This function will always
 #'   return this add on
-#' @param distance_method  one of "euclidean","maximum","manhattan", "canberra",
+#' @param measure_distance  one of "euclidean","maximum","manhattan", "canberra",
 #'   "binary","minkowski" to be passed to \code{\link[stats]{dist}} function for
 #'   calculating the distance for the clusters based on the corr,corr1,corr0,
 #'   tom, tom0, tom1 matrices
@@ -28,8 +28,13 @@
 #'   and the rows of \code{data} that are in the training set
 #' @param test_index numeric vector indcating the indices of \code{response} and
 #'   the rows of \code{data} that are in the test set
+#' @param minimum_cluster_size The minimum cluster size. Only applicable if
+#'   \code{cutMethod='dynamic'}. This argument is passed to the
+#'   \code{\link[dynamicTreeCut]{cutreeDynamic}} function through the
+#'   \code{\link{u_cluster_similarity}} function. Default is 50.
 #' @param ... arguments passed to the \code{\link{u_cluster_similarity}}
 #'   function
+#' @seealso \code{\link{u_cluster_similarity}}
 #' @return a list of length 3: \describe{\item{clustersAddon}{clustering results
 #'   based on the environment and not the environment. see
 #'   \code{\link{u_cluster_similarity}} for
@@ -40,6 +45,38 @@
 #'   then be passed to the \code{\link{r_prepare_data}} function which output
 #'   the appropriate X and Y matrices in the right format for regression
 #'   packages such as \code{mgcv}, \code{caret} and \code{glmnet}
+#' @examples
+#' data("tcgaov")
+#' tcgaov[1:5,1:6, with = FALSE]
+#' Y <- log(tcgaov[["OS"]])
+#' E <- tcgaov[["E"]]
+#' genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with=F])
+#' trainIndex <- drop(caret::createDataPartition(Y, p = 0.5, list = FALSE, times = 1))
+#' testIndex <- setdiff(seq_len(length(Y)),trainIndex)
+#'
+#' cluster_res <- r_cluster_data(data = genes,
+#'                               response = Y,
+#'                               exposure = E,
+#'                               train_index = trainIndex,
+#'                               test_index = testIndex,
+#'                               cluster_distance = "tom",
+#'                               eclust_distance = "difftom",
+#'                               measure_distance = "euclidean",
+#'                               clustMethod = "hclust",
+#'                               cutMethod = "dynamic",
+#'                               method = "average",
+#'                               nPC = 1,
+#'                               minimum_cluster_size = 60)
+#'
+#' # the number of clusters determined by the similarity matrices specified
+#' # in the cluster_distance and eclust_distance arguments. This will always be larger
+#' # than cluster_res$clustersAll$nclusters which is based on the similarity matrix
+#' # specified in the cluster_distance argument
+#' cluster_res$clustersAddon$nclusters
+#'
+#' # the number of clusters determined by the similarity matrices specified
+#' # in the cluster_distance argument only
+#' cluster_res$clustersAll$nclusters
 #' @export
 r_cluster_data <- function(data,
                            response,
@@ -51,31 +88,34 @@ r_cluster_data <- function(data,
                                                 "difftom", "fisherScore"),
                            eclust_distance = c("fisherScore", "corScor", "diffcorr",
                                                "difftom"),
-                           distance_method = c("euclidean","maximum","manhattan", "canberra",
-                                               "binary","minkowski"), ...) {
+                           measure_distance = c("euclidean","maximum","manhattan", "canberra",
+                                               "binary","minkowski"),
+                           minimum_cluster_size = 50, ...) {
 
-  # data <- clusters[[1]]
-  #   data <- t(placentaALL[filterd_probes[1:500],])
-  #   min_cluster_size <- 50
-  #   exposure <- E
-  #   train_index <- trainIndex
-  #   test_index <- testIndex
-  #   nPC <- 2
-  #   cluster_distance <- "tom"
-  #   cluster_method <- "hclust"
-  #   cut_method <- "dynamic"
-  #   agglomeration_method <- "average"
-  #   distance_method <- "euclidean"
-  #   eclust_add <- TRUE
-  #   eclust_distance <- "difftom"
-  #   cut_method <- "dynamic" #,"gap", "fixed")
-  #   # summary <- match.arg(summary)
-  #   response <- Y
+  # rm(list = ls())
+  # data("tcgaov")
+  # response <- log(tcgaov[["OS"]])
+  # exposure <- tcgaov[["E"]]
+  # data <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with=F])
+  # train_index <- drop(caret::createDataPartition(response, p = 0.5, list = FALSE, times = 1))
+  # test_index <- setdiff(seq_len(length(response)),train_index)
+  # cluster_distance = "tom"
+  # eclust_distance = "difftom"
+  # measure_distance = "maximum"
+  # clustMethod = "hclust"
+  # cutMethod = "dynamic"
+  # method = "average"
+  # nPC = 1
+  # minimum_cluster_size = 50
 
   # ==================================================================
 
   cluster = NULL
   args <- list(...)
+  cluster_distance <- match.arg(cluster_distance)
+  eclust_distance <- match.arg(eclust_distance)
+  measure_distance <- match.arg(measure_distance)
+
   xtrain <- data[train_index,]
   xtest <- data[test_index,]
   etrain <- exposure[train_index]
@@ -97,7 +137,8 @@ r_cluster_data <- function(data,
   #############################################################################
 
   # this cannot be based on difftom, diffcorr, fisherScore
-  if (cluster_distance %in% c("difftom", "diffcorr", "fisherScore")) stop(message("cluster_distance must be one of corr, corr0, corr1, tom, tom0, tom1"))
+  if (cluster_distance %in% c("difftom", "diffcorr", "fisherScore"))
+    stop(message("cluster_distance must be one of corr, corr0, corr1, tom, tom0, tom1"))
 
   # clusters based on cluster_distance argument
   similarity <- switch(cluster_distance,
@@ -130,7 +171,9 @@ r_cluster_data <- function(data,
   res <- u_cluster_similarity(x = similarity,
                               expr = xtrain,
                               exprTest = xtest,
-                              distanceMethod = stats::dist(x = similarity, method = distance_method), ...)
+                              minimum_cluster_size = minimum_cluster_size,
+                              distanceMethod = measure_distance, ...)
+
 
   #############################################################################
   #               ECLUST CLUSTERS                                             #
@@ -186,12 +229,14 @@ r_cluster_data <- function(data,
   resEclust <- if (eclust_distance %in% c("diffcorr","difftom","fisherScore")) {
     u_cluster_similarity(x = similarityEclust,
                          expr = xtrain,
+                         minimum_cluster_size = minimum_cluster_size,
                          exprTest = xtest, ...)
   } else {
     u_cluster_similarity(x = similarityEclust,
                          expr = xtrain,
                          exprTest = xtest,
-                         distanceMethod = stats::dist(x = similarity, method = distance_method), ...)
+                         minimum_cluster_size = minimum_cluster_size,
+                         distanceMethod = measure_distance, ...)
   }
 
   # we need to combine the cluster information here
@@ -282,7 +327,37 @@ r_cluster_data <- function(data,
 #'   response vector}\item{E}{the exposure vector}\item{main_effect_names}{the
 #'   names of the main effects including the
 #'   exposure}\item{interaction_names}{the names of the interaction effects}}
+#' @examples
+#' data("tcgaov")
+#' tcgaov[1:5,1:6, with = FALSE]
+#' Y <- log(tcgaov[["OS"]])
+#' E <- tcgaov[["E"]]
+#' genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with=F])
+#' trainIndex <- drop(caret::createDataPartition(Y, p = 0.5, list = FALSE, times = 1))
+#' testIndex <- setdiff(seq_len(length(Y)),trainIndex)
 #'
+#' cluster_res <- r_cluster_data(data = genes,
+#'                               response = Y,
+#'                               exposure = E,
+#'                               train_index = trainIndex,
+#'                               test_index = testIndex,
+#'                               cluster_distance = "tom",
+#'                               eclust_distance = "difftom",
+#'                               measure_distance = "euclidean",
+#'                               clustMethod = "hclust",
+#'                               cutMethod = "dynamic",
+#'                               method = "average",
+#'                               nPC = 1,
+#'                               minimum_cluster_size = 50)
+#'
+#' pc_eclust_interaction <- r_prepare_data(data = cbind(cluster_res$clustersAddon$PC,
+#'                                                      survival = Y[trainIndex],
+#'                                                      subtype = E[trainIndex]),
+#'                                         response = "survival", exposure = "subtype")
+#' names(pc_eclust_interaction)
+#' dim(pc_eclust_interaction$X)
+#' pc_eclust_interaction$main_effect_names
+#' pc_eclust_interaction$interaction_names
 #' @export
 
 r_prepare_data <- function(data, response = "Y", exposure = "E", probe_names) {

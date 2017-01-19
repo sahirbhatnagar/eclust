@@ -7,7 +7,8 @@
 u_cluster_similarity(x, expr, exprTest, distanceMethod,
   clustMethod = c("hclust", "protoclust"), cutMethod = c("dynamic", "gap",
   "fixed"), nClusters, method = c("complete", "average", "ward.D2", "single",
-  "ward.D", "mcquitty", "median", "centroid"), K.max = 10, B = 50, nPC)
+  "ward.D", "mcquitty", "median", "centroid"), K.max = 10, B = 50, nPC,
+  minimum_cluster_size = 50)
 }
 \arguments{
 \item{x}{similarity matrix. must have non-NULL dimnames i.e., the rows and
@@ -32,10 +33,10 @@ prototype clustering. Defaults \code{clustMethod="hclust"}. Other option is
 installed before proceeding with this option}
 
 \item{cutMethod}{what method to use to cut the dendrogram. \code{'dynamic'}
-refers to \code{\link[dynamicTreeCut]{cutreeDynamicTree}} library. \code{'gap'} is
-Tibshirani's gap statistic \code{\link[cluster]{clusGap}} using the
-\code{'Tibs2001SEmax'} rule. \code{'fixed'} is a fixed number specified by
-the \code{nClusters} argument}
+refers to \code{\link[dynamicTreeCut]{cutreeDynamicTree}} library.
+\code{'gap'} is Tibshirani's gap statistic \code{\link[cluster]{clusGap}}
+using the \code{'Tibs2001SEmax'} rule. \code{'fixed'} is a fixed number
+specified by the \code{nClusters} argument}
 
 \item{nClusters}{number of clusters. Only used if \code{cutMethod = fixed}}
 
@@ -51,11 +52,53 @@ two. Only used if \code{cutMethod='gap'}}
 \code{cutMethod='gap'}}
 
 \item{nPC}{number of principal components. Can be 1 or 2.}
+
+\item{minimum_cluster_size}{The minimum cluster size. Only applicable if
+\code{cutMethod='dynamic'}. This argument is passed to the
+\code{\link[dynamicTreeCut]{cutreeDynamic}} function. Default is 50.}
+}
+\value{
+a list of length 2: \describe{\item{clusters}{a p x 3 data.frame or
+  data.table which give the cluster membership of each gene, where p is the
+  number of genes. The first column is the gene name, the second column is
+  the cluster number (numeric) and the third column is the cluster membership
+  as a character vector of color names (these will match up exactly with the
+  cluster number)}\item{pcInfo}{a list of length
+  9:\describe{\item{eigengenes}{a list of the eigengenes i.e. the 1st (and
+  2nd if nPC=2) principal component of each module}\item{averageExpr}{a
+  data.frame of the average expression for each module for the training
+  set}\item{averageExprTest}{a data.frame of the average expression for each
+  module for the test set}\item{varExplained}{percentage of variance
+  explained by each 1st (and 2nd if nPC=2) principal component of each
+  module}\item{validColors}{cluster membership of each gene}\item{PC}{a
+  data.frame of the 1st (and 2nd if nPC=2) PC for each module for the
+  training set}\item{PCTest}{a data.frame of the 1st (and 2nd if nPC=2) PC
+  for each module for the test set}\item{prcompObj}{the \code{prcomp}
+  object}\item{nclusters}{a numeric value for the total number of
+  clusters}}}}
 }
 \description{
 Return cluster membership of each predictor. This function is
   called internally by the \code{\link{s_generate_data}} and
   \code{\link{s_generate_data_mars}} functions. Is also used by the
   \code{r_clust} function for real data analysis.
+}
+\examples{
+data("simdata")
+X = simdata[,c(-1,-2)]
+train_index <- sample(1:nrow(simdata),100)
+
+cluster_results <- u_cluster_similarity(x = cor(X),
+                                        expr = X[train_index,],
+                                        exprTest = X[-train_index,],
+                                        distanceMethod = "euclidean",
+                                        clustMethod = "hclust",
+                                        cutMethod = "dynamic",
+                                        method = "average", nPC = 2,
+                                        minimum_cluster_size = 75)
+
+cluster_results$clusters[, table(module)]
+names(cluster_results$pcInfo)
+cluster_results$pcInfo$nclusters
 }
 

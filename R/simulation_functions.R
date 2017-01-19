@@ -1047,6 +1047,7 @@ s_pen_separate <- function(x_train,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #'
 #' # simulation parameters
@@ -1120,6 +1121,7 @@ s_pen_separate <- function(x_train,
 #'                             s0 = result[["S0"]],
 #'                             exp_family = "gaussian")
 #' unlist(mars_res)
+#' }
 
 s_mars_separate <- function(x_train,
                             x_test,
@@ -1420,6 +1422,7 @@ s_mars_separate <- function(x_train,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #'
 #' # simulation parameters
@@ -1496,6 +1499,7 @@ s_mars_separate <- function(x_train,
 #'                          gene_groups = result[["clustersAddon"]],
 #'                          clust_type = "ECLUST")
 #' unlist(mars_res)
+#' }
 s_mars_clust <- function(x_train,
                          x_test,
                          y_train,

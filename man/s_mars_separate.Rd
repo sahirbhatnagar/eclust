@@ -104,6 +104,7 @@ This function first does 10 fold cross-validation to tune the degree
   from the 10-fold CV.
 }
 \examples{
+\dontrun{
 library(magrittr)
 
 # simulation parameters
@@ -177,5 +178,6 @@ mars_res <- s_mars_separate(x_train = result[["X_train"]],
                             s0 = result[["S0"]],
                             exp_family = "gaussian")
 unlist(mars_res)
+}
 }
 

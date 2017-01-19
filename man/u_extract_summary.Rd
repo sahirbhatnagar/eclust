@@ -110,6 +110,11 @@ This is a modified version of
 This function is called internally by the
   \code{\link{u_cluster_similarity}} function
 }
+\examples{
+\dontrun{
+#see u_cluster_similarity for examples
+}
+}
 \references{
 Zhang, B. and Horvath, S. (2005), "A General Framework for
   Weighted Gene Co-Expression Network Analysis", Statistical Applications in

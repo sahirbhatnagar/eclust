@@ -28,6 +28,9 @@ dimension pxp}
 
 \item{r2}{correlation for exposed}
 }
+\value{
+a pxp matrix of Fisher's Z transformation of correlations
+}
 \description{
 Calculate Fisher's Z transformation for correlations. This can
   be used as an alternative measure of similarity. Used in the
@@ -35,5 +38,19 @@ Calculate Fisher's Z transformation for correlations. This can
 }
 \note{
 \code{fisherTransform} is called internally by \code{u_fisherZ} function
+}
+\examples{
+data("simdata")
+
+X = simdata[,c(-1,-2)]
+fisherScore <- u_fisherZ(n0 = 100, cor0 = cor(X[1:100,]),
+                         n1 = 100, cor1 = cor(X[101:200,]))
+
+dim(fisherScore)
+
+fisherScore[1:5,1:5]
+}
+\references{
+\url{https://en.wikipedia.org/wiki/Fisher_transformation}
 }
 

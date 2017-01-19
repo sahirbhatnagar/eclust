@@ -126,6 +126,7 @@ This function first does 10 fold cross-validation to tune the degree
   from the 10-fold CV.
 }
 \examples{
+\dontrun{
 library(magrittr)
 
 # simulation parameters
@@ -202,5 +203,6 @@ mars_res <- s_mars_clust(x_train = result[["X_train"]],
                          gene_groups = result[["clustersAddon"]],
                          clust_type = "ECLUST")
 unlist(mars_res)
+}
 }
 
