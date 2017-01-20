@@ -1,0 +1,43 @@
+# Project information
+site_name: 'eclust'
+site_description: 'A short description of my project'
+site_author: 'Sahir Rai Bhatnagar'
+site_url: 'https://sahirbhatnagar.github.io/eclust'
+
+# Repository
+repo_name: 'eclust'
+repo_url: 'https://github.com/sahirbhatnagar/eclust'
+
+# Copyright
+copyright: 'Copyright &copy; 2017 Sahir Rai Bhatnagar'
+
+# Documentation and theme
+theme: 'material'
+
+# Options
+extra:
+  logo: 'images/dte1.png'
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+  social:
+    - type: 'github'
+      link: 'https://github.com/sahirbhatnagar'
+    - type: 'twitter'
+      link: 'https://twitter.com/syfi_24'
+
+# Google Analytics
+#google_analytics:
+#  - 'UA-XXXXXXXX-X'
+#  - 'auto'
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite(guess_lang=false)
+  - footnotes
+  - meta
+  - toc(permalink=true)

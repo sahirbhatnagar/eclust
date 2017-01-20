@@ -4,3 +4,5 @@
 ^CONDUCT\.md$
 ^cran-comments\.md$
 ^data-raw$
+^docs$
+^mkdocs\.yml$
