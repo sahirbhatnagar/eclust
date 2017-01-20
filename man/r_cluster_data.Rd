@@ -74,10 +74,10 @@ This function clusters the data. The results of this function should
 }
 \examples{
 data("tcgaov")
-tcgaov[1:5,1:6, with = F]
+tcgaov[1:5,1:6, with = FALSE]
 Y <- log(tcgaov[["OS"]])
 E <- tcgaov[["E"]]
-genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with=F])
+genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with = FALSE])
 trainIndex <- drop(caret::createDataPartition(Y, p = 0.5, list = FALSE, times = 1))
 testIndex <- setdiff(seq_len(length(Y)),trainIndex)
 

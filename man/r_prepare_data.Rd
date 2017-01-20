@@ -27,4 +27,36 @@ This function will output the appropriate X and Y matrices in
   the right format for regression packages such as \code{mgcv}, \code{caret}
   and \code{glmnet}
 }
+\examples{
+data("tcgaov")
+tcgaov[1:5,1:6, with = FALSE]
+Y <- log(tcgaov[["OS"]])
+E <- tcgaov[["E"]]
+genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with = FALSE])
+trainIndex <- drop(caret::createDataPartition(Y, p = 0.5, list = FALSE, times = 1))
+testIndex <- setdiff(seq_len(length(Y)),trainIndex)
+
+cluster_res <- r_cluster_data(data = genes,
+                              response = Y,
+                              exposure = E,
+                              train_index = trainIndex,
+                              test_index = testIndex,
+                              cluster_distance = "tom",
+                              eclust_distance = "difftom",
+                              measure_distance = "euclidean",
+                              clustMethod = "hclust",
+                              cutMethod = "dynamic",
+                              method = "average",
+                              nPC = 1,
+                              minimum_cluster_size = 50)
+
+pc_eclust_interaction <- r_prepare_data(data = cbind(cluster_res$clustersAddon$PC,
+                                                     survival = Y[trainIndex],
+                                                     subtype = E[trainIndex]),
+                                        response = "survival", exposure = "subtype")
+names(pc_eclust_interaction)
+dim(pc_eclust_interaction$X)
+pc_eclust_interaction$main_effect_names
+pc_eclust_interaction$interaction_names
+}
 
