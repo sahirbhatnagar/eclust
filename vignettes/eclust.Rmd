@@ -1,25 +1,101 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "Introduction to eclust"
+author: "Sahir Rai Bhatnagar"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Introduction to eclust}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+This is a brief introduction to the eclust package. This package clusters gene expression or DNA methylation data that is sensitive to environmental exposures. It is the companion package to the paper 
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+>  Bhatnagar, SR., Yang, Y., Blanchette, M., Bouchard, L.,
+   Khundrakpam, B., Evans, A., Greenwood, CMT. (2017+). \emph{An analytic
+   approach for interpretable predictive models in high dimensional data, in
+   the presence of interactions with exposures. [Preprint](http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf)
 
-## Vignette Info
+A more comprehensive documentation is available at [http://sahirbhatnagar.com/eclust/](http://sahirbhatnagar.com/eclust/).
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+# Installation
 
-## Styles
+You can install `eclust` from [CRAN](https://cran.r-project.org/package=eclust):
+
+```R
+install.packages("eclust")
+```
+
+Alternatively, you can install the development version of `manhattanly` from [GitHub](https://github.com/sahirbhatnagar/eclust) with:
+
+```R
+install.packages("pacman")
+pacman::p_load_gh("sahirbhatnagar/eclust", build_vignettes = TRUE)
+```
+
+
+# Overview of Functions
+
+This package has three sets of functions starting with either `r_`, `s_` or `u_` 
+
+1. `r_` (**real data functions**): related to analysis of real data. Most users will apply this set of functions to their data. 
+1. `s_` (**simulation functions**): related to the simulations conducted in the [paper](http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf). There are functions to simulate data, run the analyses on these data, and output performance metrics.
+2. `u_` (**utility functions**): functions that are used by both simulation and real data analysis functions. Not really meant to be called by the user.  
+
+## `r_`: real data analysis functions
+
+
+
+## `s_`: simulation functions
+
+```{r}
+library(eclust)
+ data("tcgaov")
+ tcgaov[1:5,1:6, with = FALSE]
+ Y <- log(tcgaov[["OS"]])
+ E <- tcgaov[["E"]]
+ genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with = FALSE])
+ trainIndex <- drop(caret::createDataPartition(Y, p = 0.5, list = FALSE, times = 1))
+ testIndex <- setdiff(seq_len(length(Y)),trainIndex)
+
+ cluster_res <- r_cluster_data(data = genes,
+                               response = Y,
+                               exposure = E,
+                               train_index = trainIndex,
+                               test_index = testIndex,
+                               cluster_distance = "tom",
+                               eclust_distance = "difftom",
+                               measure_distance = "euclidean",
+                               clustMethod = "hclust",
+                               cutMethod = "dynamic",
+                               method = "average",
+                               nPC = 1,
+                               minimum_cluster_size = 60)
+
+ # the number of clusters determined by the similarity matrices specified
+ # in the cluster_distance and eclust_distance arguments. This will always be larger
+ # than cluster_res$clustersAll$nclusters which is based on the similarity matrix
+ # specified in the cluster_distance argument
+ cluster_res$clustersAddon$nclusters
+
+ # the number of clusters determined by the similarity matrices specified
+ # in the cluster_distance argument only
+ cluster_res$clustersAll$nclusters
+```
+
+
+## `u_`: utility functions
+
+
+# Data
+
+There are two datasets included in this package that can be loaded into your `R` session via `data(tcgaov)` and `data(simdata)`:
+
+1. `tcgaov`: A dataset containing a subset of the TCGA mRNA Ovarian serous cystadenocarcinoma data generated using Affymetrix HTHGU133a arrays. 511 samples (rows) and 881 genes (columns).
+2. `simdata`: A dataset containing simulated data for example use of the `eclust` package functions. A matrix with 200 rows 1000 genes, a continuous response Y and a binary environment vector E. 
+
+
+# uick
 
 The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
 
