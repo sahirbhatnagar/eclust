@@ -17,7 +17,7 @@ cache: packages
 
 before_install:
   - Rscript -e 'update.packages(ask = FALSE)'
-  - tlmgr install index
+  - tlmgr install index inputenc
 
 ## BiocCheck
 bioc_packages:
