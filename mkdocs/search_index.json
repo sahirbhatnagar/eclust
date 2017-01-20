@@ -1,0 +1,59 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Welcome to MkDocs\n\u00b6\n\n\nFor full documentation visit \nmkdocs.org\n.\n\n\nCommands\n\u00b6\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nProject layout\n\u00b6\n\n\nmkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.\n\n\n\n\n\nbfdbfdbdfbdf",
+            "title": "Home"
+        },
+        {
+            "location": "/#welcome-to-mkdocs",
+            "text": "For full documentation visit  mkdocs.org .",
+            "title": "Welcome to MkDocs"
+        },
+        {
+            "location": "/#commands",
+            "text": "mkdocs new [dir-name]  - Create a new project.  mkdocs serve  - Start the live-reloading docs server.  mkdocs build  - Build the documentation site.  mkdocs help  - Print this help message.",
+            "title": "Commands"
+        },
+        {
+            "location": "/#project-layout",
+            "text": "mkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.  bfdbfdbdfbdf",
+            "title": "Project layout"
+        },
+        {
+            "location": "/about/",
+            "text": "Hello World\n\u00b6\n\n\nx \n<-\n rnorm\n(\n10\n)\n\n\n\n\n\n\nNew Section without code\n\u00b6\n\n\nLorem ipsum\n\n\neven more sections\n\u00b6\n\n\nghdsoaighisdhg",
+            "title": "About"
+        },
+        {
+            "location": "/about/#hello-world",
+            "text": "x  <-  rnorm ( 10 )",
+            "title": "Hello World"
+        },
+        {
+            "location": "/about/#new-section-without-code",
+            "text": "Lorem ipsum",
+            "title": "New Section without code"
+        },
+        {
+            "location": "/about/#even-more-sections",
+            "text": "ghdsoaighisdhg",
+            "title": "even more sections"
+        },
+        {
+            "location": "/rmark/",
+            "text": "R Markdown\n\u00b6\n\n\nThis is an R Markdown document. Markdown is a simple formatting syntax\nfor authoring HTML, PDF, and MS Word documents. For more details on\nusing R Markdown see \nhttp://rmarkdown.rstudio.com\n.\n\n\nWhen you click the \nKnit\n button a document will be generated that\nincludes both content as well as the output of any embedded R code\nchunks within the document. You can embed an R code chunk like this:\n\n\nsummary(cars)\n\n##      speed           dist       \n##  Min.   : 4.0   Min.   :  2.00  \n##  1st Qu.:12.0   1st Qu.: 26.00  \n##  Median :15.0   Median : 36.00  \n##  Mean   :15.4   Mean   : 42.98  \n##  3rd Qu.:19.0   3rd Qu.: 56.00  \n##  Max.   :25.0   Max.   :120.00\n\n\n\n\n\nIncluding Plots\n\u00b6\n\n\nYou can also embed plots, for example:\n\n\n\n\nNote that the \necho = FALSE\n parameter was added to the code chunk to\nprevent printing of the R code that generated the plot.",
+            "title": "Rmark"
+        },
+        {
+            "location": "/rmark/#r-markdown",
+            "text": "This is an R Markdown document. Markdown is a simple formatting syntax\nfor authoring HTML, PDF, and MS Word documents. For more details on\nusing R Markdown see  http://rmarkdown.rstudio.com .  When you click the  Knit  button a document will be generated that\nincludes both content as well as the output of any embedded R code\nchunks within the document. You can embed an R code chunk like this:  summary(cars)\n\n##      speed           dist       \n##  Min.   : 4.0   Min.   :  2.00  \n##  1st Qu.:12.0   1st Qu.: 26.00  \n##  Median :15.0   Median : 36.00  \n##  Mean   :15.4   Mean   : 42.98  \n##  3rd Qu.:19.0   3rd Qu.: 56.00  \n##  Max.   :25.0   Max.   :120.00",
+            "title": "R Markdown"
+        },
+        {
+            "location": "/rmark/#including-plots",
+            "text": "You can also embed plots, for example:   Note that the  echo = FALSE  parameter was added to the code chunk to\nprevent printing of the R code that generated the plot.",
+            "title": "Including Plots"
+        }
+    ]
+}
