@@ -17,7 +17,7 @@ cache: packages
 
 before_install:
   - Rscript -e 'update.packages(ask = FALSE)'
-  - apt-get -qq update && apt-get install -y --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra dvipng texlive-latex-recommended
+  - apt-get install texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra dvipng texlive-latex-recommended
   - tlmgr install index inputenc
 
 ## BiocCheck
