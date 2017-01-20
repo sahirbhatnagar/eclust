@@ -17,6 +17,7 @@ cache: packages
 
 before_install:
   - Rscript -e 'update.packages(ask = FALSE)'
+  - tlmgr install index
 
 ## BiocCheck
 bioc_packages:
