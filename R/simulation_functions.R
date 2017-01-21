@@ -2050,8 +2050,8 @@ s_modules <- function(n, p, rho, exposed, ...) {
 #' @param nPC number of principal components to extract from each cluster.
 #'   Default is 1. Only 1 or 2 is allowed.
 #' @details To generate a binary outcome we first generate a continuous outcome
-#'   Y which is \eqn{X^T \beta}, defined p = 1/(1 + exp(−Y )) and used this to
-#'   generate a two-class outcome z with Pr(z = 1) = p and Pr(z = 0) = 1 − p.
+#'   Y which is \eqn{X^T \beta}, defined \eqn{p = 1/(1 + exp(-Y ))} and used this to
+#'   generate a two-class outcome z with \eqn{Pr(z = 1) = p} and \eqn{Pr(z = 0) = 1 - p}.
 #' @inheritParams u_cluster_similarity
 #' @examples
 #' library(magrittr)
