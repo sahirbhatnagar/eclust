@@ -315,8 +315,8 @@ u_cluster_similarity <- function(x,
 #' data("simdata")
 #'
 #' X = simdata[,c(-1,-2)]
-#' fisherScore <- u_fisherZ(n0 = 100, cor0 = cor(X[1:100,]),
-#'                          n1 = 100, cor1 = cor(X[101:200,]))
+#' fisherScore <- u_fisherZ(n0 = 100, cor0 = cor(X[1:50,]),
+#'                          n1 = 100, cor1 = cor(X[51:100,]))
 #'
 #' dim(fisherScore)
 #'

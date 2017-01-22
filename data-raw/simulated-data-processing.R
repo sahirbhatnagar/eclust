@@ -2,10 +2,10 @@ library(eclust)
 library(magrittr)
 
 parametersDf <- expand.grid(rho = c(0.90),
-                            p = c(1000),
+                            p = c(500),
                             # SNR = c(0.2,1,2),
                             SNR = 1,
-                            n = c(200), # this is the total train + test sample size
+                            n = c(100), # this is the total train + test sample size
                             # nActive = c(300), # must be even because its being split among two modules
                             #n0 = 200,
                             cluster_distance = c("tom","corr"),
@@ -14,7 +14,7 @@ parametersDf <- expand.grid(rho = c(0.90),
                             betaMean = c(2),
                             alphaMean = c(1),
                             betaE = 3,
-                            includeInteraction = TRUE,
+                            includeInteraction = FALSE,
                             includeStability = TRUE,
                             distanceMethod = "euclidean",
                             clustMethod = "hclust",
@@ -130,7 +130,7 @@ dim(X)
 
 betaMainEffect <- vector("double", length = p)
 
-betaMainInteractions <- vector("double", length = p)
+# betaMainInteractions <- vector("double", length = p)
 
 # the first nActive/2 in the 3rd block are active
 betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
@@ -140,12 +140,12 @@ betaMainEffect[which(truemodule1 %in% 3)[1:(nActive/2)]] <- runif(
 betaMainEffect[which(truemodule1 %in% 4)[1:(nActive/2)]] <- runif(
   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
 
-betaMainInteractions[which(betaMainEffect!=0)] <- runif(nActive, alphaMean - 0.1, alphaMean + 0.1)
+# betaMainInteractions[which(betaMainEffect!=0)] <- runif(nActive, alphaMean - 0.1, alphaMean + 0.1)
 
 # must be in this order!!!! main effects, E, and then interactions... this order is being used
 # by the generate_data function
 beta <- c(betaMainEffect,
-          betaE,betaMainInteractions)
+          betaE)#,betaMainInteractions)
 
 plot(beta)
 
@@ -172,9 +172,11 @@ simulated_data$DT %>% dim
 simulated_data$DT %>% str
 pryr::object_size(simulated_data$DT)
 
-pryr::object_size(simulated_data$DT[,1:1002])
+# pryr::object_size(simulated_data$DT[,1:1002])
+#
+# pryr::object_size(simulated_data$DT)
 
-simdata <- simulated_data$DT[,c(1,1002,2:1001)]
+simdata <- simulated_data$DT[,c(1,502,2:501)]
 simdata[1:5,1:5]
 simdata %>% dim
 devtools::use_data(simdata, overwrite = TRUE)

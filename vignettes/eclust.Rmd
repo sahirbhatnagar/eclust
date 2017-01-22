@@ -59,9 +59,8 @@ pacman::p_load_gh("sahirbhatnagar/eclust")
 
 *************************
 
-# Load Packages
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, echo=FALSE}
 library(knitr)
 library(eclust)
 library(data.table)
