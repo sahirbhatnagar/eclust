@@ -9,23 +9,23 @@
         <meta name="description" content="A short description of my project">
       
       
-        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/">
+        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/installation/">
       
       
         <meta name="author" content="Sahir Rai Bhatnagar">
       
       
-        <link rel="shortcut icon" href="./assets/images/favicon.ico">
+        <link rel="shortcut icon" href="../assets/images/favicon.ico">
       
       <meta name="generator" content="mkdocs+mkdocs-material#1.0.2">
     
     
       
-        <title>Home - eclust</title>
+        <title>Installation - eclust</title>
       
     
     
-      <script src="./assets/javascripts/modernizr-facb31f4a3.js"></script>
+      <script src="../assets/javascripts/modernizr-facb31f4a3.js"></script>
     
     
       
@@ -38,9 +38,9 @@
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     
     
-      <link rel="stylesheet" href="./assets/stylesheets/application-1b8b9fdf68.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application-1b8b9fdf68.css">
       
-        <link rel="stylesheet" href="./assets/stylesheets/application-02ce7adcc2.palette.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-02ce7adcc2.palette.css">
       
       
     
@@ -68,9 +68,9 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="." title="eclust" class=" md-logo  md-header-nav__button">
+        <a href=".." title="eclust" class=" md-logo  md-header-nav__button">
           
-            <img src="./images/dte1.png" width="24" height="24">
+            <img src="../images/dte1.png" width="24" height="24">
           
         </a>
       </div>
@@ -83,7 +83,7 @@
             
               
             
-            Home
+            Installation
           
         </span>
       </div>
@@ -148,7 +148,7 @@
   <label class="md-nav__title md-nav__title--site" for="drawer">
     <i class=" md-logo  md-nav__button">
       
-        <img src="./images/dte1.png">
+        <img src="../images/dte1.png">
       
     </i>
     eclust
@@ -182,13 +182,24 @@
       
   <li class="md-nav__item">
     
+      <a href=".." title="Home" class="md-nav__link">
+        Home
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
     
       
     
     
-    <a href="." title="Home" class="md-nav__link md-nav__link--active">
-      Home
+    <a href="./" title="Installation" class="md-nav__link md-nav__link--active">
+      Installation
     </a>
     
       
@@ -207,18 +218,7 @@
       
   <li class="md-nav__item">
     
-      <a href="installation/" title="Installation" class="md-nav__link">
-        Installation
-      </a>
-    
-  </li>
-
-    
-      
-      
-  <li class="md-nav__item">
-    
-      <a href="data/" title="Data" class="md-nav__link">
+      <a href="../data/" title="Data" class="md-nav__link">
         Data
       </a>
     
@@ -229,7 +229,7 @@
       
   <li class="md-nav__item">
     
-      <a href="overview/" title="Package Functions" class="md-nav__link">
+      <a href="../overview/" title="Package Functions" class="md-nav__link">
         Package Functions
       </a>
     
@@ -240,7 +240,7 @@
       
   <li class="md-nav__item">
     
-      <a href="rda/" title="Real Data Analysis" class="md-nav__link">
+      <a href="../rda/" title="Real Data Analysis" class="md-nav__link">
         Real Data Analysis
       </a>
     
@@ -251,7 +251,7 @@
       
   <li class="md-nav__item">
     
-      <a href="simulation/" title="Simulations" class="md-nav__link">
+      <a href="../simulation/" title="Simulations" class="md-nav__link">
         Simulations
       </a>
     
@@ -262,7 +262,7 @@
       
   <li class="md-nav__item">
     
-      <a href="plots/" title="Heatmaps" class="md-nav__link">
+      <a href="../plots/" title="Heatmaps" class="md-nav__link">
         Heatmaps
       </a>
     
@@ -297,14 +297,16 @@
                
               
                 
-                <h1 id="eclust-r-package"><code>eclust</code> R Package<a class="headerlink" href="#eclust-r-package" title="Permanent link">&para;</a></h1>
-<p><img alt="" src="http://i.imgur.com/lqsjLte.png" /></p>
-<ul>
-<li>This package clusters gene expression or DNA methylation data that is sensitive to environmental exposures. It is the companion package to the paper</li>
-</ul>
-<blockquote>
-<p>Bhatnagar, SR., Yang, Y., Blanchette, M., Bouchard, L., Khundrakpam, B., Evans, A., Greenwood, CMT. (2017+). An analytic approach for interpretable predictive models in high dimensional data, in the presence of interactions with exposures. <a href="http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf">Preprint</a></p>
-</blockquote>
+                <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
+<p>You can install <code>eclust</code> from <a href="https://cran.r-project.org/package=eclust">CRAN</a>:</p>
+<div class="codehilite"><pre><span></span>install.packages<span class="p">(</span><span class="s">&quot;eclust&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Alternatively, you can install the development version of <code>eclust</code> from <a href="https://github.com/sahirbhatnagar/eclust">GitHub</a> with:</p>
+<div class="codehilite"><pre><span></span>install.packages<span class="p">(</span><span class="s">&quot;pacman&quot;</span><span class="p">)</span>
+pacman<span class="o">::</span>p_load_gh<span class="p">(</span><span class="s">&quot;sahirbhatnagar/eclust&quot;</span><span class="p">)</span>
+</pre></div>
               
             </article>
           </div>
@@ -317,14 +319,28 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
+          <a href=".." title="Home" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Home
+              </span>
+            </div>
+          </a>
         
-          <a href="installation/" title="Installation" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+        
+          <a href="../data/" title="Data" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Installation
+                Data
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -368,8 +384,8 @@
       
     </div>
     
-      <script src="./assets/javascripts/application-16f434a21a.js"></script>
-      <script>var config={url:{base:"."}},app=new Application(config);app.initialize()</script>
+      <script src="../assets/javascripts/application-16f434a21a.js"></script>
+      <script>var config={url:{base:".."}},app=new Application(config);app.initialize()</script>
       
         <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
       

@@ -4,23 +4,55 @@
     
     <url>
      <loc>https://sahirbhatnagar.github.io/eclust/</loc>
-     <lastmod>2017-01-20</lastmod>
+     <lastmod>2017-01-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
 
     
     <url>
-     <loc>https://sahirbhatnagar.github.io/eclust/about/</loc>
-     <lastmod>2017-01-20</lastmod>
+     <loc>https://sahirbhatnagar.github.io/eclust/installation/</loc>
+     <lastmod>2017-01-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
 
     
     <url>
-     <loc>https://sahirbhatnagar.github.io/eclust/rmark/</loc>
-     <lastmod>2017-01-20</lastmod>
+     <loc>https://sahirbhatnagar.github.io/eclust/data/</loc>
+     <lastmod>2017-01-22</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://sahirbhatnagar.github.io/eclust/overview/</loc>
+     <lastmod>2017-01-22</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://sahirbhatnagar.github.io/eclust/rda/</loc>
+     <lastmod>2017-01-22</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://sahirbhatnagar.github.io/eclust/simulation/</loc>
+     <lastmod>2017-01-22</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://sahirbhatnagar.github.io/eclust/plots/</loc>
+     <lastmod>2017-01-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
     

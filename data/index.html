@@ -9,7 +9,7 @@
         <meta name="description" content="A short description of my project">
       
       
-        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/about/">
+        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/data/">
       
       
         <meta name="author" content="Sahir Rai Bhatnagar">
@@ -21,7 +21,7 @@
     
     
       
-        <title>About - eclust</title>
+        <title>Data - eclust</title>
       
     
     
@@ -83,7 +83,7 @@
             
               
             
-            About
+            Data
           
         </span>
       </div>
@@ -193,17 +193,24 @@
       
   <li class="md-nav__item">
     
+      <a href="../installation/" title="Installation" class="md-nav__link">
+        Installation
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
     
       
     
     
-      <label class="md-nav__link md-nav__link--active" for="toc">
-        About
-      </label>
-    
-    <a href="./" title="About" class="md-nav__link md-nav__link--active">
-      About
+    <a href="./" title="Data" class="md-nav__link md-nav__link--active">
+      Data
     </a>
     
       
@@ -212,25 +219,6 @@
   
     
   
-  
-    <label class="md-nav__title" for="toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#new-section-without-code" title="New Section without code" class="md-nav__link">
-    New Section without code
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#even-more-sections" title="even more sections" class="md-nav__link">
-    even more sections
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
     
@@ -241,8 +229,41 @@
       
   <li class="md-nav__item">
     
-      <a href="../rmark/" title="Rmark" class="md-nav__link">
-        Rmark
+      <a href="../overview/" title="Package Functions" class="md-nav__link">
+        Package Functions
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../rda/" title="Real Data Analysis" class="md-nav__link">
+        Real Data Analysis
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../simulation/" title="Simulations" class="md-nav__link">
+        Simulations
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../plots/" title="Heatmaps" class="md-nav__link">
+        Heatmaps
       </a>
     
   </li>
@@ -265,25 +286,6 @@
     
   
   
-    <label class="md-nav__title" for="toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#new-section-without-code" title="New Section without code" class="md-nav__link">
-    New Section without code
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#even-more-sections" title="even more sections" class="md-nav__link">
-    even more sections
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -295,15 +297,12 @@
                
               
                 
-                <h1 id="hello-world">Hello World<a class="headerlink" href="#hello-world" title="Permanent link">&para;</a></h1>
-<div class="codehilite"><pre><span></span>x <span class="o">&lt;-</span> rnorm<span class="p">(</span><span class="m">10</span><span class="p">)</span>
-</pre></div>
-
-
-<h2 id="new-section-without-code">New Section without code<a class="headerlink" href="#new-section-without-code" title="Permanent link">&para;</a></h2>
-<p>Lorem ipsum</p>
-<h2 id="even-more-sections">even more sections<a class="headerlink" href="#even-more-sections" title="Permanent link">&para;</a></h2>
-<p>ghdsoaighisdhg</p>
+                <h1 id="data">Data<a class="headerlink" href="#data" title="Permanent link">&para;</a></h1>
+<p>There are two datasets included in this package that can be loaded into your <code>R</code> session via <code>data(tcgaov)</code> and <code>data(simdata)</code>:</p>
+<ol>
+<li><code>tcgaov</code>: A dataset containing a subset of the TCGA mRNA Ovarian serous cystadenocarcinoma data generated using Affymetrix HTHGU133a arrays. 511 samples (rows) and 881 genes (columns).</li>
+<li><code>simdata</code>: A dataset containing simulated data for example use of the <code>eclust</code> package functions. A matrix with 200 rows 1000 genes, a continuous response Y and a binary environment vector E.</li>
+</ol>
               
             </article>
           </div>
@@ -316,7 +315,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href=".." title="Home" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../installation/" title="Installation" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -325,19 +324,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Home
+                Installation
               </span>
             </div>
           </a>
         
         
-          <a href="../rmark/" title="Rmark" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../overview/" title="Package Functions" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Rmark
+                Package Functions
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -383,6 +382,8 @@
     
       <script src="../assets/javascripts/application-16f434a21a.js"></script>
       <script>var config={url:{base:".."}},app=new Application(config);app.initialize()</script>
+      
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
       
     
     

@@ -1,0 +1,795 @@
+
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A short description of my project">
+      
+      
+        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/simulation/">
+      
+      
+        <meta name="author" content="Sahir Rai Bhatnagar">
+      
+      
+        <link rel="shortcut icon" href="../assets/images/favicon.ico">
+      
+      <meta name="generator" content="mkdocs+mkdocs-material#1.0.2">
+    
+    
+      
+        <title>Simulations - eclust</title>
+      
+    
+    
+      <script src="../assets/javascripts/modernizr-facb31f4a3.js"></script>
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application-1b8b9fdf68.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-02ce7adcc2.palette.css">
+      
+      
+    
+    
+  </head>
+  
+  
+  
+  
+    <body data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="eclust" class=" md-logo  md-header-nav__button">
+          
+            <img src="../images/dte1.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+            
+            Simulations
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search">
+  <div class="md-search__overlay"></div>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" accesskey="s" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false">
+      <label class="md-icon md-search__icon" for="search"></label>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+              
+
+
+  
+
+
+  <a href="https://github.com/sahirbhatnagar/eclust" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      eclust
+    </div>
+  </a>
+
+            
+          </div>
+      </div>
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <i class=" md-logo  md-nav__button">
+      
+        <img src="../images/dte1.png">
+      
+    </i>
+    eclust
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/sahirbhatnagar/eclust" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      eclust
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href=".." title="Home" class="md-nav__link">
+        Home
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../installation/" title="Installation" class="md-nav__link">
+        Installation
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../data/" title="Data" class="md-nav__link">
+        Data
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../overview/" title="Package Functions" class="md-nav__link">
+        Package Functions
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../rda/" title="Real Data Analysis" class="md-nav__link">
+        Real Data Analysis
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Simulations
+      </label>
+    
+    <a href="./" title="Simulations" class="md-nav__link md-nav__link--active">
+      Simulations
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-design-matrix" title="The Design Matrix" class="md-nav__link">
+    The Design Matrix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-response" title="The response" class="md-nav__link">
+    The response
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linear-relationship" title="Linear Relationship" class="md-nav__link">
+    Linear Relationship
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-linear-relationship" title="Non-Linear Relationship" class="md-nav__link">
+    Non-Linear Relationship
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fitting-functions" title="Fitting Functions" class="md-nav__link">
+    Fitting Functions
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../plots/" title="Heatmaps" class="md-nav__link">
+        Heatmaps
+      </a>
+    
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-design-matrix" title="The Design Matrix" class="md-nav__link">
+    The Design Matrix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-response" title="The response" class="md-nav__link">
+    The response
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linear-relationship" title="Linear Relationship" class="md-nav__link">
+    Linear Relationship
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-linear-relationship" title="Non-Linear Relationship" class="md-nav__link">
+    Non-Linear Relationship
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fitting-functions" title="Fitting Functions" class="md-nav__link">
+    Fitting Functions
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+               
+              
+                
+                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
+
+<h1 id="simulation-functions-s_">Simulation functions (<code>s_</code>)<a class="headerlink" href="#simulation-functions-s_" title="Permanent link">&para;</a></h1>
+<p>The <code>s_</code> functions were used to conduct the simulation studies in the <em>Bhatnagar et.al (2017+)</em>. The <code>s_modules</code>, <code>s_generate_data</code> and <code>s_generate_data_mars</code> are the main functions to generate the simulated data.</p>
+<p>In the paper we designed 6 simulation scenarios that are constructed to illustrate different kinds of relationships between the variables and the response. For all scenarios, we have created high dimensional data sets with <em>p</em> predictors, and sample sizes of <em>n</em>. We also assume that we have two data sets for each simulation - a training data set where the parameters are estimated, and a testing data set where prediction performance is evaluated, each of equal size <em>n</em><sub><em>t<strong>r</strong>a<strong>i</strong>n</em></sub> = <em>n</em><sub><em>t<strong>e</strong>s</em><em>t</em></sub>. The number of subjects who were exposed (<em>n</em><sub><em>E</em> = 1</sub> = 100) and unexposed (<em>n</em><sub><em>E</em> = 0</sub> = 100) and the number of truly associated parameters (0.10 * <em>p</em>) remain fixed across the 6 simulation scenarios.</p>
+<p>Let
+<em>Y</em> = <em>Y</em><sup>*</sup> + <em>k</em> ⋅ <em>ε</em></p>
+<p>where <em>Y</em><sup>*</sup> is the linear predictor, the error term <em>ε</em> is generated from a standard normal distribution, and <em>k</em> is chosen such that the signal-to-noise ratio <em>S<strong>N</strong>R</em> = (<em>V<strong>a</strong>r</em>(<em>Y</em><sup>*</sup>)/<em>V<strong>a</strong>r</em>(<em>ε</em>)) is 0.2, 1 and 2 (e.g. the variance of the response variable <em>Y</em> due to <em>ε</em> is 1/<em>S<strong>N</strong>R</em> of the variance of <em>Y</em> due to <em>Y</em><sup>*</sup>).</p>
+<h2 id="the-design-matrix">The Design Matrix<a class="headerlink" href="#the-design-matrix" title="Permanent link">&para;</a></h2>
+<p>We generate covariate data in 5 blocks using the <code>s_modules</code> function which is a wrapper of the <code>simulateDatExpr</code> function from the <code>WGCNA</code> package in <code>R</code> (version 1.51). This generates data from a latent vector: first a seed vector is simulated, then covariates are generated with varying degree of correlation with the seed vector in a given block.</p>
+<p>For the unexposed observations (<em>E</em> = 0), only the predictors in the yellow block were simulated with correlation, while all other covariates were independent within and between blocks. For the exposed observations (<em>E</em> = 1), all 5 blocks contained predictors that are correlated.</p>
+<p>For simplicity, we will refer to the simulated data as gene expression data, with each column of the design matrix being a gene. First we generate gene expression data for <em>p</em> = 1000 genes, independently for the 100 unexposed (<code>d0</code>) and 100 exposed (<code>d1</code>) subjects using the <code>s_modules</code> function. The exposed subjects are meant to have correlated genes while the unexposed subject don't. The <code>modProportions</code> argument is a numeric vector with length equal the number of modules you want to generate plus one, containing fractions of the total number of genes to be put into each of the modules and into the "grey module", which means genes not related to any of the modules. In the following examples we generate 5 modules of equal size (15% of <em>p</em> each module) plus 1 "grey" module (25% of <em>p</em>)</p>
+<div class="codehilite"><pre><span></span>pacman<span class="o">::</span>p_load<span class="p">(</span>eclust<span class="p">)</span>
+d0 <span class="o">&lt;-</span> s_modules<span class="p">(</span>n <span class="o">=</span> <span class="m">100</span><span class="p">,</span> p <span class="o">=</span> <span class="m">1000</span><span class="p">,</span> rho <span class="o">=</span> <span class="m">0</span><span class="p">,</span> exposed <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span>
+                modProportions <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.25</span><span class="p">),</span>
+                minCor <span class="o">=</span> <span class="m">0.01</span><span class="p">,</span>
+                maxCor <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+                corPower <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+                propNegativeCor <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span>
+                backgroundNoise <span class="o">=</span> <span class="m">0.5</span><span class="p">,</span>
+                signed <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span>
+                leaveOut <span class="o">=</span> <span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##
+
+##  simulateDatExpr: simulating 1000 genes in 5 modules.
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>d1 <span class="o">&lt;-</span> s_modules<span class="p">(</span>n <span class="o">=</span> <span class="m">100</span><span class="p">,</span> p <span class="o">=</span> <span class="m">1000</span><span class="p">,</span> rho <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> exposed <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
+                modProportions <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.25</span><span class="p">),</span>
+                minCor <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span>
+                maxCor <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+                corPower <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span>
+                propNegativeCor <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span>
+                backgroundNoise <span class="o">=</span> <span class="m">0.5</span><span class="p">,</span>
+                signed <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##  simulateDatExpr: simulating 1000 genes in 5 modules.
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="c1"># get the true cluster labels</span>
+truemodule1 <span class="o">&lt;-</span> d1<span class="o">$</span>setLabels
+<span class="kp">table</span><span class="p">(</span>truemodule1<span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>## truemodule1
+##   0   1   2   3   4   5 
+## 250 150 150 150 150 150
+</pre></div>
+
+
+<p>Next we create the design matrix and label it. Note that the rows are the subjects and the columns are the genes. The first 100 rows correspond to the unexposed subjects, and the next 100 subjects correspond to the exposed subjects:</p>
+<div class="codehilite"><pre><span></span>pacman<span class="o">::</span>p_load<span class="p">(</span>magrittr<span class="p">)</span>
+
+X <span class="o">&lt;-</span> <span class="kp">rbind</span><span class="p">(</span>d0<span class="o">$</span>datExpr<span class="p">,</span> d1<span class="o">$</span>datExpr<span class="p">)</span> <span class="o">%&gt;%</span>
+  magrittr<span class="o">::</span>set_colnames<span class="p">(</span><span class="kp">paste0</span><span class="p">(</span><span class="s">&quot;Gene&quot;</span><span class="p">,</span> <span class="m">1</span><span class="o">:</span><span class="m">1000</span><span class="p">))</span> <span class="o">%&gt;%</span>
+  magrittr<span class="o">::</span>set_rownames<span class="p">(</span><span class="kp">paste0</span><span class="p">(</span><span class="s">&quot;Subject&quot;</span><span class="p">,</span><span class="m">1</span><span class="o">:</span><span class="m">200</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Here we used the <code>pheatmap</code> and <code>viridis</code> packages to show the correlation matrices of the genes stratified by exposure status. The first figure corresponds to the unexposed (<em>E</em> = 0) subjects, and the second figure corresponds to the exposed (<em>E</em> = 1) subjects:</p>
+<div class="codehilite"><pre><span></span>pacman<span class="o">::</span>p_load<span class="p">(</span>pheatmap<span class="p">)</span>
+pacman<span class="o">::</span>p_load<span class="p">(</span>viridis<span class="p">)</span>
+
+pheatmap<span class="o">::</span>pheatmap<span class="p">(</span>cor<span class="p">(</span>X<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">100</span><span class="p">,]),</span>
+                   show_rownames <span class="o">=</span> <span class="bp">F</span><span class="p">,</span> 
+                   show_colnames <span class="o">=</span> <span class="bp">F</span><span class="p">,</span> 
+                   color <span class="o">=</span> viridis<span class="p">(</span><span class="m">100</span><span class="p">))</span>
+
+pheatmap<span class="o">::</span>pheatmap<span class="p">(</span>cor<span class="p">(</span>X<span class="p">[</span><span class="m">101</span><span class="o">:</span><span class="m">200</span><span class="p">,]),</span>
+                   show_rownames <span class="o">=</span> <span class="bp">F</span><span class="p">,</span> 
+                   show_colnames <span class="o">=</span> <span class="bp">F</span><span class="p">,</span> 
+                   color <span class="o">=</span> viridis<span class="p">(</span><span class="m">100</span><span class="p">))</span>
+</pre></div>
+
+
+<p><img alt="" src="../simulation_files/figure-markdown_github/unnamed-chunk-3-1.png" /><img alt="" src="../simulation_files/figure-markdown_github/unnamed-chunk-3-2.png" /></p>
+<h2 id="the-response">The response<a class="headerlink" href="#the-response" title="Permanent link">&para;</a></h2>
+<p>The first three simulation scenarios differ in how the linear predictor <em>Y</em><sup>*</sup> is defined, and also in the choice of regression model used to fit the data. In simulations 1 and 2 we use lasso (Tibshirani 1996) and elasticnet (Zou 2005) to fit linear models; then we use MARS (Friedman 1991) in simulation 3 to estimate non-linear effects. Simulations 4, 5 and 6 use the GLM version of these models, respectively, since the responses are binary.</p>
+<h3 id="linear-relationship">Linear Relationship<a class="headerlink" href="#linear-relationship" title="Permanent link">&para;</a></h3>
+<p>For simulations 1 and 2 we used the <code>s_generate_data</code> function to generate linear relationships beteween the response and genes, of the form:</p>
+<p>$$Y^* = \sum_{\substack{j\in \left\lbrace 1, \ldots, 50 \right\rbrace\\ j \in \textrm{ red, green block}}}  \beta_j X_j + \beta_E E $$
+ where <em>β</em><sub><em>j</em></sub> ∼ Unif[0.9,1.1] and <em>β</em><sub><em>E</em></sub> = 2. That is, only the first 50 predictors of both the red and green blocks are active. In this setting, only the main effects model is being fit to the simulated data.</p>
+<p>We used the <code>s_generate_data</code> with the <code>include_interaction = TRUE</code> argument to generate responses of the form:</p>
+<p>$$
+Y^* = \sum_{\substack{j\in \left\lbrace 1, \ldots, 50 \right\rbrace\\ j \in \textrm{ red, green block}}} \beta_j X_j + \alpha_{j} X_j E + \beta_E E 
+$$</p>
+<p>where <em>β</em><sub><em>j</em></sub> ∼ Unif[0.9,1.1], <em>α</em><sub><em>j</em></sub> ∼ Unif[0.4,0.6], and <em>β</em><sub><em>E</em></sub> = 2. In this setting, both the main effects and their interactions with E are being fit to the simulated data.</p>
+<p>In this example we generate a response which depends on both the main effects and their interactions with E. We first generate the true <em>β</em> vector:</p>
+<div class="codehilite"><pre><span></span>betaMainEffect <span class="o">&lt;-</span> <span class="kt">vector</span><span class="p">(</span><span class="s">&quot;double&quot;</span><span class="p">,</span> length <span class="o">=</span> <span class="m">1000</span><span class="p">)</span>
+betaMainInteractions <span class="o">&lt;-</span> <span class="kt">vector</span><span class="p">(</span><span class="s">&quot;double&quot;</span><span class="p">,</span> length <span class="o">=</span> <span class="m">1000</span><span class="p">)</span>
+
+<span class="c1"># the first 25 in the 3rd block are active</span>
+betaMainEffect<span class="p">[</span><span class="kp">which</span><span class="p">(</span>truemodule1 <span class="o">%in%</span> <span class="m">3</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">50</span><span class="p">]]</span> <span class="o">&lt;-</span> runif<span class="p">(</span><span class="m">50</span><span class="p">,</span> <span class="m">0.9</span><span class="p">,</span> <span class="m">1.1</span><span class="p">)</span>
+
+<span class="c1"># the first 25 in the 4th block are active</span>
+betaMainEffect<span class="p">[</span><span class="kp">which</span><span class="p">(</span>truemodule1 <span class="o">%in%</span> <span class="m">4</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">50</span><span class="p">]]</span> <span class="o">&lt;-</span> runif<span class="p">(</span><span class="m">50</span><span class="p">,</span> <span class="m">0.9</span><span class="p">,</span> <span class="m">1.1</span><span class="p">)</span>
+
+<span class="c1"># the interaction effects</span>
+betaMainInteractions<span class="p">[</span><span class="kp">which</span><span class="p">(</span>betaMainEffect<span class="o">!=</span><span class="m">0</span><span class="p">)]</span> <span class="o">&lt;-</span> runif<span class="p">(</span><span class="m">50</span><span class="p">,</span> <span class="m">0.4</span><span class="p">,</span> <span class="m">0.6</span><span class="p">)</span>
+
+<span class="c1"># the environment effect</span>
+betaE <span class="o">&lt;-</span> <span class="m">2</span>
+
+<span class="c1"># the total beta vector</span>
+beta <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span>betaMainEffect<span class="p">,</span> betaE<span class="p">,</span> betaMainInteractions<span class="p">)</span>
+</pre></div>
+
+
+<p>Next we run the <code>s_generate_data</code> function to get the necessary results for the analysis step of the simulation study. This function creates a training and a test set of equal size by evenly divinding the subjects such that there are an equal number of exposed and unexposed in both training and test sets.</p>
+<p>There are several choices to make here, but these are the most important arguments:</p>
+<ol>
+<li><code>cluster_distance</code>: How should the genes, ignoring the exposure status of the individuals, be clustered? We choose the <em>T<strong>O</strong>M</em> matrix based on all subjects.</li>
+<li><code>eclust_distance</code>: How should the genes, accounting for the exposure status of the individuals, be clustered? We choose the difference of the exposure sensitive TOM matrices: <em>T<strong>O</strong>M</em>(<em>X</em><sub>diff</sub>)=|<em>T<strong>O</strong>M</em><sub><em>E</em> = 1</sub> − <em>T<strong>O</strong>M</em><sub><em>E</em> = 0</sub>|</li>
+<li><code>cut_method</code>: How should the number of clusters be determined? We choose the <code>dynamicTreeCut::cutreeDynamic()</code> algorithm which automatically selects the number of clusters.</li>
+</ol>
+<div class="codehilite"><pre><span></span>result <span class="o">&lt;-</span> s_generate_data<span class="p">(</span>p <span class="o">=</span> <span class="m">1000</span><span class="p">,</span> 
+                          X <span class="o">=</span> X<span class="p">,</span>
+                          beta <span class="o">=</span> <span class="kp">beta</span><span class="p">,</span>
+                          include_interaction <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
+                          cluster_distance <span class="o">=</span> <span class="s">&quot;tom&quot;</span><span class="p">,</span>
+                          n <span class="o">=</span> <span class="m">200</span><span class="p">,</span> 
+                          n0 <span class="o">=</span> <span class="m">100</span><span class="p">,</span>
+                          eclust_distance <span class="o">=</span> <span class="s">&quot;difftom&quot;</span><span class="p">,</span>
+                          signal_to_noise_ratio <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+                          distance_method <span class="o">=</span> <span class="s">&quot;euclidean&quot;</span><span class="p">,</span>
+                          cluster_method <span class="o">=</span> <span class="s">&quot;hclust&quot;</span><span class="p">,</span>
+                          cut_method <span class="o">=</span> <span class="s">&quot;dynamic&quot;</span><span class="p">,</span>
+                          agglomeration_method <span class="o">=</span> <span class="s">&quot;average&quot;</span><span class="p">,</span>
+                          nPC <span class="o">=</span> <span class="m">1</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>## Creating data and simulating response
+
+## Calculating similarity matrices
+
+## TOM calculation: adjacency..
+## adjacency: replaceMissing: 0
+## ..will not use multithreading.
+##  Fraction of slow calculations: 0.000000
+## ..connectivity..
+## ..matrix multiplication..
+## ..normalization..
+## ..done.
+## TOM calculation: adjacency..
+## adjacency: replaceMissing: 0
+## ..will not use multithreading.
+##  Fraction of slow calculations: 0.000000
+## ..connectivity..
+## ..matrix multiplication..
+## ..normalization..
+## ..done.
+## TOM calculation: adjacency..
+## adjacency: replaceMissing: 0
+## ..will not use multithreading.
+##  Fraction of slow calculations: 0.000000
+## ..connectivity..
+## ..matrix multiplication..
+## ..normalization..
+## ..done.
+
+## Creating CV folds from training data
+
+## Calculating number of clusters based on tom using hclust with average
+##                   linkage and the dynamic to determine the number of clusters
+
+##  ..cutHeight not given, setting it to 0.999  ===&gt;  99% of the (truncated) height range in dendro.
+##  ..done.
+
+## Calculating number of environment clusters based on  difftom
+
+##  ..cutHeight not given, setting it to 2.65  ===&gt;  99% of the (truncated) height range in dendro.
+##  ..done.
+
+## There are 2 clusters derived from the tom similarity matrix
+
+## There are 7 clusters derived from the difftom environment similarity matrix
+
+## There are a total of 9 clusters derived from the tom
+##                   similarity matrix and the difftom environment similarity matrix
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="kp">names</span><span class="p">(</span>result<span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##  [1] &quot;beta_truth&quot;              &quot;similarity&quot;             
+##  [3] &quot;similarityEclust&quot;        &quot;DT&quot;                     
+##  [5] &quot;Y&quot;                       &quot;X0&quot;                     
+##  [7] &quot;X1&quot;                      &quot;X_train&quot;                
+##  [9] &quot;X_test&quot;                  &quot;Y_train&quot;                
+## [11] &quot;Y_test&quot;                  &quot;DT_train&quot;               
+## [13] &quot;DT_test&quot;                 &quot;S0&quot;                     
+## [15] &quot;n_clusters_All&quot;          &quot;n_clusters_Eclust&quot;      
+## [17] &quot;n_clusters_Addon&quot;        &quot;clustersAll&quot;            
+## [19] &quot;clustersAddon&quot;           &quot;clustersEclust&quot;         
+## [21] &quot;gene_groups_inter&quot;       &quot;gene_groups_inter_Addon&quot;
+## [23] &quot;tom_train_all&quot;           &quot;tom_train_diff&quot;         
+## [25] &quot;tom_train_e1&quot;            &quot;tom_train_e0&quot;           
+## [27] &quot;corr_train_all&quot;          &quot;corr_train_diff&quot;        
+## [29] &quot;corr_train_e1&quot;           &quot;corr_train_e0&quot;          
+## [31] &quot;fisherScore&quot;             &quot;corScor&quot;                
+## [33] &quot;mse_null&quot;                &quot;DT_train_folds&quot;         
+## [35] &quot;X_train_folds&quot;           &quot;Y_train_folds&quot;
+</pre></div>
+
+
+<h3 id="non-linear-relationship">Non-Linear Relationship<a class="headerlink" href="#non-linear-relationship" title="Permanent link">&para;</a></h3>
+<p>We used the <code>s_generate_data_mars</code> function to generate non-linear effects of the predictors on the phenotype, of the form:</p>
+<p><img alt="" src="http://i.imgur.com/krucB3O.png" /></p>
+<p>The <code>s_generate_data_mars</code> works exactly the same way as the <code>s_generate_data</code> function. The only difference is that the <code>s_generate_data_mars</code> calls the <code>s_response_mars</code> function to generate the response, whereas the <code>s_generate_data</code> function calls the <code>s_response</code> function to generate the response.</p>
+<h2 id="fitting-functions">Fitting Functions<a class="headerlink" href="#fitting-functions" title="Permanent link">&para;</a></h2>
+<p>In our paper, we compare three general approaches as detailed in the table below:</p>
+<p><img alt="" src="http://i.imgur.com/s9cGeuL.png" /></p>
+<p>There are 4 fitting functions corresponding to the approaches outlined in the table above, specifically made to be used with the simulated data:</p>
+<table style="width:88%;">
+<colgroup>
+<col width="22%" />
+<col width="26%" />
+<col width="38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">function.name</th>
+<th align="center">General.Approach</th>
+<th align="center">model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">s_pen_separate</td>
+<td align="center">SEPARATE</td>
+<td align="center">lasso, elasticnet, mcp, scad</td>
+</tr>
+<tr class="even">
+<td align="center">s_pen_clust</td>
+<td align="center">CLUST, ECLUST</td>
+<td align="center">lasso, elasticnet, mcp, scad</td>
+</tr>
+<tr class="odd">
+<td align="center">s_mars_separate</td>
+<td align="center">SEPARATE</td>
+<td align="center">MARS</td>
+</tr>
+<tr class="even">
+<td align="center">s_mars_clust</td>
+<td align="center">CLUST, ECLUST</td>
+<td align="center">MARS</td>
+</tr>
+</tbody>
+</table>
+
+<p>In this example we fit a lasso to the clusters from the ECLUST method. The key argument here is the <code>gene_groups</code>. We provide <code>result[["clustersAddon"]]</code> to the <code>gene_groups</code> function because it is the clustering result using the environment information. If we wanted to run the CLUST method, then we would provide <code>result[["clustersAll"]]</code> to the <code>gene_groups</code> argument, because <code>result[["clustersAll"]]</code> is the clustering result from ignoring the environment information. We also specify <code>summary = "pc"</code> and <code>model = "lasso"</code> to specify that we want to use the 1st PC as the cluster representation and fit a lasso model to those clusters and their interaction with <code>E</code> (as specified by the <code>include_interaction = TRUE</code> argument)</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Provide ECLUST clustering results to the gene_groups argument</span>
+pen_res <span class="o">&lt;-</span> s_pen_clust<span class="p">(</span>x_train <span class="o">=</span> result<span class="p">[[</span><span class="s">&quot;X_train&quot;</span><span class="p">]],</span>
+                       x_test <span class="o">=</span> result<span class="p">[[</span><span class="s">&quot;X_test&quot;</span><span class="p">]],</span>
+                       y_train <span class="o">=</span> result<span class="p">[[</span><span class="s">&quot;Y_train&quot;</span><span class="p">]],</span>
+                       y_test <span class="o">=</span> result<span class="p">[[</span><span class="s">&quot;Y_test&quot;</span><span class="p">]],</span>
+                       s0 <span class="o">=</span> result<span class="p">[[</span><span class="s">&quot;S0&quot;</span><span class="p">]],</span>
+                       gene_groups <span class="o">=</span> result<span class="p">[[</span><span class="s">&quot;clustersAddon&quot;</span><span class="p">]],</span>
+                       summary <span class="o">=</span> <span class="s">&quot;pc&quot;</span><span class="p">,</span>
+                       model <span class="o">=</span> <span class="s">&quot;lasso&quot;</span><span class="p">,</span>
+                       exp_family <span class="o">=</span> <span class="s">&quot;gaussian&quot;</span><span class="p">,</span>
+                       clust_type <span class="o">=</span> <span class="s">&quot;ECLUST&quot;</span><span class="p">,</span>
+                       include_interaction <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>## Summary measure: pc, Model: lasso, Cluster Type: ECLUST
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="kp">unlist</span><span class="p">(</span>pen_res<span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##                ECLUST_pc_lasso_yes_mse 
+##                           2140.8980169 
+##               ECLUST_pc_lasso_yes_RMSE 
+##                             46.2698392 
+##               ECLUST_pc_lasso_yes_Shat 
+##                            910.0000000 
+##                ECLUST_pc_lasso_yes_TPR 
+##                              0.4975124 
+##                ECLUST_pc_lasso_yes_FPR 
+##                              0.4500000 
+##    ECLUST_pc_lasso_yes_CorrectSparsity 
+##                              0.5447276 
+##    ECLUST_pc_lasso_yes_CorrectZeroMain 
+##                              0.5488889 
+##   ECLUST_pc_lasso_yes_CorrectZeroInter 
+##                              0.5511111 
+##  ECLUST_pc_lasso_yes_IncorrectZeroMain 
+##                              0.5049505 
+## ECLUST_pc_lasso_yes_IncorrectZeroInter 
+##                              0.5000000 
+##          ECLUST_pc_lasso_yes_nclusters 
+##                              9.0000000
+</pre></div>
+
+
+<p>The table below describes the measures of performance:</p>
+<p><img alt="" src="http://i.imgur.com/o0m6p0z.png" /></p>
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../rda/" title="Real Data Analysis" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Real Data Analysis
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../plots/" title="Heatmaps" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Heatmaps
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 Sahir Rai Bhatnagar
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/sahirbhatnagar" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/syfi_24" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application-16f434a21a.js"></script>
+      <script>var config={url:{base:".."}},app=new Application(config);app.initialize()</script>
+      
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+      
+    
+  </body>
+</html>

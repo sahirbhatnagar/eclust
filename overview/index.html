@@ -9,23 +9,23 @@
         <meta name="description" content="A short description of my project">
       
       
-        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/">
+        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/overview/">
       
       
         <meta name="author" content="Sahir Rai Bhatnagar">
       
       
-        <link rel="shortcut icon" href="./assets/images/favicon.ico">
+        <link rel="shortcut icon" href="../assets/images/favicon.ico">
       
       <meta name="generator" content="mkdocs+mkdocs-material#1.0.2">
     
     
       
-        <title>Home - eclust</title>
+        <title>Package Functions - eclust</title>
       
     
     
-      <script src="./assets/javascripts/modernizr-facb31f4a3.js"></script>
+      <script src="../assets/javascripts/modernizr-facb31f4a3.js"></script>
     
     
       
@@ -38,9 +38,9 @@
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     
     
-      <link rel="stylesheet" href="./assets/stylesheets/application-1b8b9fdf68.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application-1b8b9fdf68.css">
       
-        <link rel="stylesheet" href="./assets/stylesheets/application-02ce7adcc2.palette.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-02ce7adcc2.palette.css">
       
       
     
@@ -68,9 +68,9 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="." title="eclust" class=" md-logo  md-header-nav__button">
+        <a href=".." title="eclust" class=" md-logo  md-header-nav__button">
           
-            <img src="./images/dte1.png" width="24" height="24">
+            <img src="../images/dte1.png" width="24" height="24">
           
         </a>
       </div>
@@ -83,7 +83,7 @@
             
               
             
-            Home
+            Package Functions
           
         </span>
       </div>
@@ -148,7 +148,7 @@
   <label class="md-nav__title md-nav__title--site" for="drawer">
     <i class=" md-logo  md-nav__button">
       
-        <img src="./images/dte1.png">
+        <img src="../images/dte1.png">
       
     </i>
     eclust
@@ -182,13 +182,46 @@
       
   <li class="md-nav__item">
     
+      <a href=".." title="Home" class="md-nav__link">
+        Home
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../installation/" title="Installation" class="md-nav__link">
+        Installation
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../data/" title="Data" class="md-nav__link">
+        Data
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
     
       
     
     
-    <a href="." title="Home" class="md-nav__link md-nav__link--active">
-      Home
+    <a href="./" title="Package Functions" class="md-nav__link md-nav__link--active">
+      Package Functions
     </a>
     
       
@@ -207,40 +240,7 @@
       
   <li class="md-nav__item">
     
-      <a href="installation/" title="Installation" class="md-nav__link">
-        Installation
-      </a>
-    
-  </li>
-
-    
-      
-      
-  <li class="md-nav__item">
-    
-      <a href="data/" title="Data" class="md-nav__link">
-        Data
-      </a>
-    
-  </li>
-
-    
-      
-      
-  <li class="md-nav__item">
-    
-      <a href="overview/" title="Package Functions" class="md-nav__link">
-        Package Functions
-      </a>
-    
-  </li>
-
-    
-      
-      
-  <li class="md-nav__item">
-    
-      <a href="rda/" title="Real Data Analysis" class="md-nav__link">
+      <a href="../rda/" title="Real Data Analysis" class="md-nav__link">
         Real Data Analysis
       </a>
     
@@ -251,7 +251,7 @@
       
   <li class="md-nav__item">
     
-      <a href="simulation/" title="Simulations" class="md-nav__link">
+      <a href="../simulation/" title="Simulations" class="md-nav__link">
         Simulations
       </a>
     
@@ -262,7 +262,7 @@
       
   <li class="md-nav__item">
     
-      <a href="plots/" title="Heatmaps" class="md-nav__link">
+      <a href="../plots/" title="Heatmaps" class="md-nav__link">
         Heatmaps
       </a>
     
@@ -297,14 +297,100 @@
                
               
                 
-                <h1 id="eclust-r-package"><code>eclust</code> R Package<a class="headerlink" href="#eclust-r-package" title="Permanent link">&para;</a></h1>
-<p><img alt="" src="http://i.imgur.com/lqsjLte.png" /></p>
-<ul>
-<li>This package clusters gene expression or DNA methylation data that is sensitive to environmental exposures. It is the companion package to the paper</li>
-</ul>
-<blockquote>
-<p>Bhatnagar, SR., Yang, Y., Blanchette, M., Bouchard, L., Khundrakpam, B., Evans, A., Greenwood, CMT. (2017+). An analytic approach for interpretable predictive models in high dimensional data, in the presence of interactions with exposures. <a href="http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf">Preprint</a></p>
-</blockquote>
+                <h1 id="overview-of-functions">Overview of Functions<a class="headerlink" href="#overview-of-functions" title="Permanent link">&para;</a></h1>
+<p>This package has three sets of functions starting with either <code>r_</code>, <code>s_</code> or <code>u_</code></p>
+<ol>
+<li><code>r_</code> (<strong>real data functions</strong>): related to analysis of real data. Most users will apply this set of functions to their data.</li>
+</ol>
+<table style="width:21%;">
+<colgroup>
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">function.name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">r_cluster_data</td>
+</tr>
+<tr class="even">
+<td align="center">r_prepare_data</td>
+</tr>
+</tbody>
+</table>
+
+<ol>
+<li><code>s_</code> (<strong>simulation functions</strong>): related to the simulations conducted in the <a href="http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf">paper</a>. There are functions to simulate data, run the analyses on these data, and output performance metrics.</li>
+</ol>
+<table style="width:28%;">
+<colgroup>
+<col width="27%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">function.name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">s_generate_data</td>
+</tr>
+<tr class="even">
+<td align="center">s_generate_data_mars</td>
+</tr>
+<tr class="odd">
+<td align="center">s_mars_clust</td>
+</tr>
+<tr class="even">
+<td align="center">s_mars_separate</td>
+</tr>
+<tr class="odd">
+<td align="center">s_modules</td>
+</tr>
+<tr class="even">
+<td align="center">s_pen_clust</td>
+</tr>
+<tr class="odd">
+<td align="center">s_pen_separate</td>
+</tr>
+<tr class="even">
+<td align="center">s_response</td>
+</tr>
+<tr class="odd">
+<td align="center">s_response_mars</td>
+</tr>
+</tbody>
+</table>
+
+<ol>
+<li><code>u_</code> (<strong>utility functions</strong>): functions that are used by both simulation and real data analysis functions. Not really meant to be called by the user.</li>
+</ol>
+<table style="width:33%;">
+<colgroup>
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">function.name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">u_cluster_similarity</td>
+</tr>
+<tr class="even">
+<td align="center">u_extract_selected_earth</td>
+</tr>
+<tr class="odd">
+<td align="center">u_extract_summary</td>
+</tr>
+<tr class="even">
+<td align="center">u_fisherZ</td>
+</tr>
+</tbody>
+</table>
               
             </article>
           </div>
@@ -317,14 +403,28 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
+          <a href="../data/" title="Data" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Data
+              </span>
+            </div>
+          </a>
         
-          <a href="installation/" title="Installation" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+        
+          <a href="../rda/" title="Real Data Analysis" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Installation
+                Real Data Analysis
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -368,8 +468,8 @@
       
     </div>
     
-      <script src="./assets/javascripts/application-16f434a21a.js"></script>
-      <script>var config={url:{base:"."}},app=new Application(config);app.initialize()</script>
+      <script src="../assets/javascripts/application-16f434a21a.js"></script>
+      <script>var config={url:{base:".."}},app=new Application(config);app.initialize()</script>
       
         <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
       

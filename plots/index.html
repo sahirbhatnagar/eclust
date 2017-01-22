@@ -9,7 +9,7 @@
         <meta name="description" content="A short description of my project">
       
       
-        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/rmark/">
+        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/plots/">
       
       
         <meta name="author" content="Sahir Rai Bhatnagar">
@@ -21,7 +21,7 @@
     
     
       
-        <title>Rmark - eclust</title>
+        <title>Heatmaps - eclust</title>
       
     
     
@@ -83,7 +83,7 @@
             
               
             
-            Rmark
+            Heatmaps
           
         </span>
       </div>
@@ -193,8 +193,52 @@
       
   <li class="md-nav__item">
     
-      <a href="../about/" title="About" class="md-nav__link">
-        About
+      <a href="../installation/" title="Installation" class="md-nav__link">
+        Installation
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../data/" title="Data" class="md-nav__link">
+        Data
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../overview/" title="Package Functions" class="md-nav__link">
+        Package Functions
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../rda/" title="Real Data Analysis" class="md-nav__link">
+        Real Data Analysis
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../simulation/" title="Simulations" class="md-nav__link">
+        Simulations
       </a>
     
   </li>
@@ -206,38 +250,19 @@
     
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
     
+      
     
-      <label class="md-nav__link md-nav__link--active" for="toc">
-        Rmark
-      </label>
     
-    <a href="./" title="Rmark" class="md-nav__link md-nav__link--active">
-      Rmark
+    <a href="./" title="Heatmaps" class="md-nav__link md-nav__link--active">
+      Heatmaps
     </a>
     
       
 <nav class="md-nav md-nav--secondary">
   
   
+    
   
-    <label class="md-nav__title" for="toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#r-markdown" title="R Markdown" class="md-nav__link">
-    R Markdown
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#including-plots" title="Including Plots" class="md-nav__link">
-    Including Plots
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
     
@@ -258,25 +283,8 @@
 <nav class="md-nav md-nav--secondary">
   
   
+    
   
-    <label class="md-nav__title" for="toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#r-markdown" title="R Markdown" class="md-nav__link">
-    R Markdown
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#including-plots" title="Including Plots" class="md-nav__link">
-    Including Plots
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -289,32 +297,76 @@
                
               
                 
-                  <h1>Rmark</h1>
-                
-                <h2 id="r-markdown">R Markdown<a class="headerlink" href="#r-markdown" title="Permanent link">&para;</a></h2>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax
-for authoring HTML, PDF, and MS Word documents. For more details on
-using R Markdown see <a href="http://rmarkdown.rstudio.com">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be generated that
-includes both content as well as the output of any embedded R code
-chunks within the document. You can embed an R code chunk like this:</p>
-<div class="codehilite"><pre><span></span>summary(cars)
+                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
 
-##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00
+<h1 id="plot-method-for-object-of-class-similarity">Plot Method for Object of class similarity<a class="headerlink" href="#plot-method-for-object-of-class-similarity" title="Permanent link">&para;</a></h1>
+<p>There is a plot method for similarity matrices included in this package, though it is very specific to the simulated data only since the resulting plot annotates the true cluster membership of the genes. The plot uses the <code>pheatmap</code> package for the heatmaps along with the <code>viridis</code> package for the color scheme so these packages need to be installed prior to using this function.</p>
+<p>The plot method is for objects of class <code>similarity</code>. The following objects, which are outputs of the <code>s_generate_data</code> function, are objects of class <code>similarity</code>:</p>
+<table style="width:21%;">
+<colgroup>
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">object.name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">tom_train_all</td>
+</tr>
+<tr class="even">
+<td align="center">tom_train_diff</td>
+</tr>
+<tr class="odd">
+<td align="center">tom_train_e1</td>
+</tr>
+<tr class="even">
+<td align="center">tom_train_e0</td>
+</tr>
+<tr class="odd">
+<td align="center">corr_train_all</td>
+</tr>
+<tr class="even">
+<td align="center">corr_train_diff</td>
+</tr>
+<tr class="odd">
+<td align="center">corr_train_e1</td>
+</tr>
+<tr class="even">
+<td align="center">corr_train_e0</td>
+</tr>
+<tr class="odd">
+<td align="center">fisherScore</td>
+</tr>
+<tr class="even">
+<td align="center">corScor</td>
+</tr>
+</tbody>
+</table>
+
+<p>To plot the heatmap of the similarity matrix, you need to provide it with the clustering tree, the cluster membership and the genes active in the response. In this example we plot the TOM matrix for the exposed subjects given by the <code>tom_train_e1</code> object. The resulting heatmap has annotations for the cluster membership and if the gene is active in the response:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># check that the object is of class similarity</span>
+<span class="kp">class</span><span class="p">(</span>result<span class="o">$</span>tom_train_e1<span class="p">)</span>
 </pre></div>
 
 
-<h2 id="including-plots">Including Plots<a class="headerlink" href="#including-plots" title="Permanent link">&para;</a></h2>
-<p>You can also embed plots, for example:</p>
-<p><img alt="" src="../rmark_files/figure-markdown_strict/pressure-1.png" /></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to
-prevent printing of the R code that generated the plot.</p>
+<div class="codehilite"><pre><span></span>## [1] &quot;matrix&quot;     &quot;similarity&quot;
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="c1"># get clustering tree</span>
+hc <span class="o">&lt;-</span> hclust<span class="p">(</span>as.dist<span class="p">(</span><span class="m">1</span> <span class="o">-</span> result<span class="o">$</span>tom_train_e1<span class="p">),</span> method <span class="o">=</span> <span class="s">&quot;average&quot;</span><span class="p">)</span>
+
+plot<span class="p">(</span>result<span class="o">$</span>tom_train_e1<span class="p">,</span> 
+     truemodule <span class="o">=</span> truemodule1<span class="p">,</span> 
+     cluster_rows <span class="o">=</span> hc<span class="p">,</span> 
+     cluster_cols <span class="o">=</span> hc<span class="p">,</span>
+     active <span class="o">=</span> <span class="kp">as.numeric</span><span class="p">(</span>betaMainEffect<span class="o">!=</span><span class="m">0</span><span class="p">))</span>
+</pre></div>
+
+
+<p><img alt="" src="../plots_files/figure-markdown_github/unnamed-chunk-3-1.png" /></p>
               
             </article>
           </div>
@@ -327,7 +379,7 @@ prevent printing of the R code that generated the plot.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../about/" title="About" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../simulation/" title="Simulations" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -336,7 +388,7 @@ prevent printing of the R code that generated the plot.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                About
+                Simulations
               </span>
             </div>
           </a>
@@ -380,6 +432,8 @@ prevent printing of the R code that generated the plot.</p>
     
       <script src="../assets/javascripts/application-16f434a21a.js"></script>
       <script>var config={url:{base:".."}},app=new Application(config);app.initialize()</script>
+      
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
       
     
     

@@ -1,0 +1,740 @@
+
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A short description of my project">
+      
+      
+        <link rel="canonical" href="https://sahirbhatnagar.github.io/eclust/rda/">
+      
+      
+        <meta name="author" content="Sahir Rai Bhatnagar">
+      
+      
+        <link rel="shortcut icon" href="../assets/images/favicon.ico">
+      
+      <meta name="generator" content="mkdocs+mkdocs-material#1.0.2">
+    
+    
+      
+        <title>Real Data Analysis - eclust</title>
+      
+    
+    
+      <script src="../assets/javascripts/modernizr-facb31f4a3.js"></script>
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application-1b8b9fdf68.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-02ce7adcc2.palette.css">
+      
+      
+    
+    
+  </head>
+  
+  
+  
+  
+    <body data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="eclust" class=" md-logo  md-header-nav__button">
+          
+            <img src="../images/dte1.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+            
+            Real Data Analysis
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search">
+  <div class="md-search__overlay"></div>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" accesskey="s" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false">
+      <label class="md-icon md-search__icon" for="search"></label>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+              
+
+
+  
+
+
+  <a href="https://github.com/sahirbhatnagar/eclust" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      eclust
+    </div>
+  </a>
+
+            
+          </div>
+      </div>
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <i class=" md-logo  md-nav__button">
+      
+        <img src="../images/dte1.png">
+      
+    </i>
+    eclust
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/sahirbhatnagar/eclust" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      eclust
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href=".." title="Home" class="md-nav__link">
+        Home
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../installation/" title="Installation" class="md-nav__link">
+        Installation
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../data/" title="Data" class="md-nav__link">
+        Data
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../overview/" title="Package Functions" class="md-nav__link">
+        Package Functions
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Real Data Analysis
+      </label>
+    
+    <a href="./" title="Real Data Analysis" class="md-nav__link md-nav__link--active">
+      Real Data Analysis
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#extract-the-relevant-data" title="Extract the relevant data" class="md-nav__link">
+    Extract the relevant data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-the-data-and-calculate-cluster-representations" title="Cluster the data and calculate cluster representations" class="md-nav__link">
+    Cluster the data and calculate cluster representations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prepare-data-for-input-in-any-regression-routine" title="Prepare data for input in any regression routine" class="md-nav__link">
+    Prepare data for input in any regression routine
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fit-a-regression-model" title="Fit a regression model" class="md-nav__link">
+    Fit a regression model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#determine-the-features-that-have-been-selected" title="Determine the features that have been selected" class="md-nav__link">
+    Determine the features that have been selected
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../simulation/" title="Simulations" class="md-nav__link">
+        Simulations
+      </a>
+    
+  </li>
+
+    
+      
+      
+  <li class="md-nav__item">
+    
+      <a href="../plots/" title="Heatmaps" class="md-nav__link">
+        Heatmaps
+      </a>
+    
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#extract-the-relevant-data" title="Extract the relevant data" class="md-nav__link">
+    Extract the relevant data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-the-data-and-calculate-cluster-representations" title="Cluster the data and calculate cluster representations" class="md-nav__link">
+    Cluster the data and calculate cluster representations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prepare-data-for-input-in-any-regression-routine" title="Prepare data for input in any regression routine" class="md-nav__link">
+    Prepare data for input in any regression routine
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fit-a-regression-model" title="Fit a regression model" class="md-nav__link">
+    Fit a regression model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#determine-the-features-that-have-been-selected" title="Determine the features that have been selected" class="md-nav__link">
+    Determine the features that have been selected
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+               
+              
+                
+                <h1 id="real-data-analysis-functions-r_">Real data analysis functions (<code>r_</code>)<a class="headerlink" href="#real-data-analysis-functions-r_" title="Permanent link">&para;</a></h1>
+<p>We will use the <code>data(tcgaov)</code> dataset included in this package, which contains a subset of the TCGA mRNA Ovarian serous cystadenocarcinoma data generated using Affymetrix HTHGU133a arrays. See <code>?tcgaov</code> for details about the data.</p>
+<p>In the example below we use the <code>r_cluster_data</code> to create the environment based clusters, and their summaries. We then use the <code>r_prepare_data</code> function to get it into proper form for regression routines such as <code>earth::earth</code>, <code>glmnet::cv.glmnet</code>, and <code>ncvreg::ncvreg</code>.</p>
+<h2 id="extract-the-relevant-data">Extract the relevant data<a class="headerlink" href="#extract-the-relevant-data" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><span class="c1"># load the data</span>
+data<span class="p">(</span><span class="s">&quot;tcgaov&quot;</span><span class="p">)</span>
+tcgaov<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">,</span> with <span class="o">=</span> <span class="kc">FALSE</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##              rn subtype E status   OS    ABCA8
+## 1: TCGA-04-1331       4 1      1 1336 3.684824
+## 2: TCGA-04-1332       1 0      1 1247 7.892982
+## 3: TCGA-04-1335       3 1      1   55 5.193188
+## 4: TCGA-04-1336       3 1      0 1495 3.055437
+## 5: TCGA-04-1337       1 0      1   61 3.149427
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="c1"># use log survival as the response</span>
+Y <span class="o">&lt;-</span> <span class="kp">log</span><span class="p">(</span>tcgaov<span class="p">[[</span><span class="s">&quot;OS&quot;</span><span class="p">]])</span>
+
+<span class="c1"># specify the environment variable</span>
+E <span class="o">&lt;-</span> tcgaov<span class="p">[[</span><span class="s">&quot;E&quot;</span><span class="p">]]</span>
+
+<span class="c1"># specify the matrix of genes only</span>
+genes <span class="o">&lt;-</span> <span class="kp">as.matrix</span><span class="p">(</span>tcgaov<span class="p">[,</span><span class="o">-</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;OS&quot;</span><span class="p">,</span><span class="s">&quot;rn&quot;</span><span class="p">,</span><span class="s">&quot;subtype&quot;</span><span class="p">,</span><span class="s">&quot;E&quot;</span><span class="p">,</span><span class="s">&quot;status&quot;</span><span class="p">),</span>with <span class="o">=</span> <span class="kc">FALSE</span><span class="p">])</span>
+
+<span class="c1"># for this example the training set will be all subjects.</span>
+<span class="c1"># change `p` argument to create a train and test set.</span>
+trainIndex <span class="o">&lt;-</span> <span class="kp">drop</span><span class="p">(</span>caret<span class="o">::</span>createDataPartition<span class="p">(</span>Y<span class="p">,</span> p <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="kt">list</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> times <span class="o">=</span> <span class="m">1</span><span class="p">))</span>
+testIndex <span class="o">&lt;-</span> trainIndex
+</pre></div>
+
+
+<h2 id="cluster-the-data-and-calculate-cluster-representations">Cluster the data and calculate cluster representations<a class="headerlink" href="#cluster-the-data-and-calculate-cluster-representations" title="Permanent link">&para;</a></h2>
+<p>We cluster the genes using the correlation matrix (specified by <code>cluster_distance = "corr"</code>) and the difference of the exposure dependent correlation matrices (specified by <code>eclust_distance = "diffcorr"</code>)</p>
+<div class="codehilite"><pre><span></span>cluster_res <span class="o">&lt;-</span> r_cluster_data<span class="p">(</span>data <span class="o">=</span> genes<span class="p">,</span>
+                              response <span class="o">=</span> Y<span class="p">,</span>
+                              exposure <span class="o">=</span> E<span class="p">,</span>
+                              train_index <span class="o">=</span> trainIndex<span class="p">,</span>
+                              test_index <span class="o">=</span> testIndex<span class="p">,</span>
+                              cluster_distance <span class="o">=</span> <span class="s">&quot;corr&quot;</span><span class="p">,</span>
+                              eclust_distance <span class="o">=</span> <span class="s">&quot;diffcorr&quot;</span><span class="p">,</span>
+                              measure_distance <span class="o">=</span> <span class="s">&quot;euclidean&quot;</span><span class="p">,</span>
+                              clustMethod <span class="o">=</span> <span class="s">&quot;hclust&quot;</span><span class="p">,</span>
+                              cutMethod <span class="o">=</span> <span class="s">&quot;dynamic&quot;</span><span class="p">,</span>
+                              method <span class="o">=</span> <span class="s">&quot;average&quot;</span><span class="p">,</span>
+                              nPC <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+                              minimum_cluster_size <span class="o">=</span> <span class="m">30</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##
+
+##  ..cutHeight not given, setting it to 10.9  ===&gt;  99% of the (truncated) height range in dendro.
+##  ..done.
+
+## Calculating number of environment clusters based on diffcorr
+
+##  ..cutHeight not given, setting it to 0.923  ===&gt;  99% of the (truncated) height range in dendro.
+##  ..done.
+
+## There are 7 clusters derived from the corr similarity matrix
+
+## There are 4 clusters derived from the diffcorr environment similarity matrix
+
+## There are a total of 11 clusters derived from the corr
+##                   similarity matrix and the diffcorr environment similarity matrix
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="c1"># the number of clusters determined by the similarity matrices specified</span>
+<span class="c1"># in the cluster_distance and eclust_distance arguments. This will always be larger</span>
+<span class="c1"># than cluster_res$clustersAll$nclusters which is based on the similarity matrix</span>
+<span class="c1"># specified in the cluster_distance argument</span>
+cluster_res<span class="o">$</span>clustersAddon<span class="o">$</span>nclusters
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>## [1] 11
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="c1"># the number of clusters determined by the similarity matrices specified</span>
+<span class="c1"># in the cluster_distance argument only</span>
+cluster_res<span class="o">$</span>clustersAll<span class="o">$</span>nclusters
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>## [1] 7
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="c1"># what&#39;s in the cluster_res object</span>
+<span class="kp">names</span><span class="p">(</span>cluster_res<span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>## [1] &quot;clustersAddon&quot;            &quot;clustersAll&quot;             
+## [3] &quot;etrain&quot;                   &quot;clustersAddonMembership&quot; 
+## [5] &quot;clustersAllMembership&quot;    &quot;clustersEclustMembership&quot;
+</pre></div>
+
+
+<h2 id="prepare-data-for-input-in-any-regression-routine">Prepare data for input in any regression routine<a class="headerlink" href="#prepare-data-for-input-in-any-regression-routine" title="Permanent link">&para;</a></h2>
+<p>Now we use the <code>r_prepare_data</code> function, where we are using the average expression from each cluster as feaand their interaction with E as features in the regression model:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># prepare data for use with earth function</span>
+avg_eclust_interaction <span class="o">&lt;-</span> r_prepare_data<span class="p">(</span>
+  data <span class="o">=</span> <span class="kp">cbind</span><span class="p">(</span>cluster_res<span class="o">$</span>clustersAddon<span class="o">$</span>averageExpr<span class="p">,</span> 
+               Y <span class="o">=</span> Y<span class="p">[</span>trainIndex<span class="p">],</span>
+               E <span class="o">=</span> E<span class="p">[</span>trainIndex<span class="p">]),</span>
+  response <span class="o">=</span> <span class="s">&quot;Y&quot;</span><span class="p">,</span> exposure <span class="o">=</span> <span class="s">&quot;E&quot;</span><span class="p">)</span>
+
+<span class="kp">head</span><span class="p">(</span>avg_eclust_interaction<span class="p">[[</span><span class="s">&quot;X&quot;</span><span class="p">]])</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##       avg1     avg2     avg3     avg4     avg5     avg6     avg7     avg8
+## 1 5.567323 4.603389 5.645931 5.463546 6.330674 5.017668 5.723670 4.537860
+## 2 6.416015 5.135543 5.915361 5.412958 6.539799 5.514176 6.330553 4.949290
+## 3 4.751661 4.428877 6.064181 4.553495 5.647454 5.434861 4.854128 4.923794
+## 4 4.488082 5.360132 6.184347 4.440893 7.747494 5.475239 5.509369 4.919032
+## 5 6.661257 5.316210 5.873579 4.951189 5.769990 5.254726 6.868405 4.618736
+## 6 6.206893 5.783308 6.017647 4.862209 6.001902 5.370070 6.680607 4.444538
+##       avg9    avg10    avg11 E   avg1:E   avg2:E   avg3:E   avg4:E
+## 1 5.504560 5.769372 4.604983 1 5.567323 4.603389 5.645931 5.463546
+## 2 6.195038 6.119165 4.787305 0 0.000000 0.000000 0.000000 0.000000
+## 3 4.829277 5.675971 4.227867 1 4.751661 4.428877 6.064181 4.553495
+## 4 4.855203 6.117120 4.754397 1 4.488082 5.360132 6.184347 4.440893
+## 5 6.282899 5.814544 5.048062 0 0.000000 0.000000 0.000000 0.000000
+## 6 6.000493 6.044401 5.190256 0 0.000000 0.000000 0.000000 0.000000
+##     avg5:E   avg6:E   avg7:E   avg8:E   avg9:E  avg10:E  avg11:E
+## 1 6.330674 5.017668 5.723670 4.537860 5.504560 5.769372 4.604983
+## 2 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000
+## 3 5.647454 5.434861 4.854128 4.923794 4.829277 5.675971 4.227867
+## 4 7.747494 5.475239 5.509369 4.919032 4.855203 6.117120 4.754397
+## 5 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000
+## 6 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000
+</pre></div>
+
+
+<h2 id="fit-a-regression-model">Fit a regression model<a class="headerlink" href="#fit-a-regression-model" title="Permanent link">&para;</a></h2>
+<p>At this stage, you can decide which regression model to use. Here we choose the MARS model from the <code>earth</code> package, but you may choose regression models from any number of packages (e.g. see the <a href="https://topepo.github.io/caret/available-models.html">extensive list of models</a> of models available in the <code>caret</code> package).</p>
+<div class="codehilite"><pre><span></span>fit_earth <span class="o">&lt;-</span> earth<span class="o">::</span>earth<span class="p">(</span>x <span class="o">=</span> avg_eclust_interaction<span class="p">[[</span><span class="s">&quot;X&quot;</span><span class="p">]],</span> 
+                          y <span class="o">=</span> avg_eclust_interaction<span class="p">[[</span><span class="s">&quot;Y&quot;</span><span class="p">]],</span> 
+                          pmethod <span class="o">=</span> <span class="s">&quot;backward&quot;</span><span class="p">,</span> 
+                          keepxy <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> 
+                          degree <span class="o">=</span> <span class="m">2</span><span class="p">,</span> 
+                          trace <span class="o">=</span> <span class="m">1</span><span class="p">,</span> 
+                          nk <span class="o">=</span> <span class="m">1000</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>## x[511,23] with colnames avg1 avg2 avg3 avg4 avg5 avg6 avg7 avg8 avg9 avg10 avg11 ...
+## y[511,1] with colname avg_eclust_interaction[[&quot;Y&quot;]]
+## Forward pass term 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 
+##      30, 32, 34, 36, 38
+## RSq changed by less than 0.001 at 37 terms, 35 terms used (DeltaRSq 0)
+## After forward pass GRSq -0.176 RSq 0.193
+## Prune method &quot;backward&quot; penalty 3 nprune null: selected 6 of 35 terms, and 4 of 23 preds
+## After pruning pass GRSq 0.01 RSq 0.0579
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>coef<span class="p">(</span>fit_earth<span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##                         (Intercept) h(avg9-5.58701) * h(6.54361-avg5:E) 
+##                            6.718508                            1.070107 
+##   h(avg1-5.99657) * h(avg7-6.84195)   h(avg1-5.99657) * h(avg7-6.70675) 
+##                           67.850654                          -39.786576 
+##   h(avg1-5.99657) * h(avg7-6.98039)                     h(avg9-5.50456) 
+##                          -28.720223                           -5.293762
+</pre></div>
+
+
+<p>You can also install the <code>plotmo</code> package to visualise the relationships between the hinge functions and the response using <code>plotmo::plotmo(fit_earth)</code>.</p>
+<h2 id="determine-the-features-that-have-been-selected">Determine the features that have been selected<a class="headerlink" href="#determine-the-features-that-have-been-selected" title="Permanent link">&para;</a></h2>
+<p>The <code>u_extract_selected_earth</code> is a utility function in this package to extract the selected predictors from the MARS model:</p>
+<div class="codehilite"><pre><span></span>u_extract_selected_earth<span class="p">(</span>fit_earth<span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>## [1] &quot;avg1&quot;   &quot;avg7&quot;   &quot;avg9&quot;   &quot;avg5:E&quot;
+</pre></div>
+
+
+<p>We that genes in clusters 1, 7 and 9 were selected. We also see that the interaction between the genes in cluster 5 and the environment was selected and has the highest variable importance. We can see the genes involved using the <code>cluster_res$clustersAddonMembership</code> object:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Genes in cluster 5</span>
+cluster_res<span class="o">$</span>clustersAddonMembership<span class="p">[</span>cluster <span class="o">%in%</span> <span class="m">5</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##         gene cluster module
+##  1: APOBEC3G       5  green
+##  2:    APOL6       5  green
+##  3:   CXCL10       5  green
+##  4:   CXCL11       5  green
+##  5:     GBP1       5  green
+##  6:     HCP5       5  green
+##  7:     IL15       5  green
+##  8:    PSMB9       5  green
+##  9:  RARRES3       5  green
+## 10:     TAP1       5  green
+## 11:     BST2       5  green
+## 12:   BTN3A2       5  green
+## 13:       C2       5  green
+## 14:     CBR3       5  green
+## 15: CCDC109B       5  green
+## 16:     HPSE       5  green
+## 17:  HTATIP2       5  green
+## 18:    IFI16       5  green
+## 19:    IFI27       5  green
+## 20:    IFI35       5  green
+## 21:    IFI44       5  green
+## 22:   IFI44L       5  green
+## 23:    IFIH1       5  green
+## 24:    IFIT1       5  green
+## 25:    IFIT2       5  green
+## 26:    IFIT3       5  green
+## 27:   IFITM1       5  green
+## 28:   IL15RA       5  green
+## 29:     IRF1       5  green
+## 30:     IRF7       5  green
+## 31:    ISG15       5  green
+## 32:    ISG20       5  green
+## 33:    LAMP3       5  green
+## 34:     LAP3       5  green
+## 35:   LGALS9       5  green
+## 36:      MX1       5  green
+## 37:     OAS1       5  green
+## 38:     OAS2       5  green
+## 39:     OAS3       5  green
+## 40:   PLSCR1       5  green
+## 41:   PSMB10       5  green
+## 42:    PSMB8       5  green
+## 43:    PSME2       5  green
+## 44:    RSAD2       5  green
+## 45:     RTP4       5  green
+## 46:    SAMD9       5  green
+## 47:  SLC15A3       5  green
+## 48:    SP100       5  green
+## 49:     TAP2       5  green
+## 50:    TAPBP       5  green
+## 51:     TLR3       5  green
+## 52:  TMEM140       5  green
+## 53:  TNFAIP8       5  green
+## 54:  TNFSF10       5  green
+## 55:   TRIM14       5  green
+## 56:   UBE2L6       5  green
+## 57:     XAF1       5  green
+##         gene cluster module
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span><span class="c1"># variable importance</span>
+earth<span class="o">::</span>evimp<span class="p">(</span>fit_earth<span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##              nsubsets   gcv    rss
+## avg5:E              4  84.7  100.0
+## avg11-unused        3 -49.6   73.9
+## avg1                2 100.0&gt;  81.8&gt;
+## avg7                2 100.0   81.8
+## avg9                2 100.0   81.8
+</pre></div>
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../overview/" title="Package Functions" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Package Functions
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../simulation/" title="Simulations" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Simulations
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 Sahir Rai Bhatnagar
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/sahirbhatnagar" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/syfi_24" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application-16f434a21a.js"></script>
+      <script>var config={url:{base:".."}},app=new Application(config);app.initialize()</script>
+      
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+      
+    
+  </body>
+</html>

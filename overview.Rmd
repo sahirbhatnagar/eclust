@@ -1,0 +1,37 @@
+---
+title: "data"
+author: "Sahir"
+date: "January 22, 2017"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(eclust)
+```
+
+# Overview of Functions
+
+This package has three sets of functions starting with either `r_`, `s_` or `u_` 
+
+1. `r_` (**real data functions**): related to analysis of real data. Most users will apply this set of functions to their data. 
+
+```{r, echo=FALSE}
+pander::pander(data.frame(`function name` = grep("^r_",pacman::p_functions("eclust"), value = T)))
+```
+
+
+2. `s_` (**simulation functions**): related to the simulations conducted in the [paper](http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf). There are functions to simulate data, run the analyses on these data, and output performance metrics.
+
+```{r, echo=FALSE}
+pander::pander(data.frame(`function name` = grep("^s_",pacman::p_functions("eclust"), value = T)))
+```
+
+
+3. `u_` (**utility functions**): functions that are used by both simulation and real data analysis functions. Not really meant to be called by the user.  
+
+```{r, echo=FALSE}
+pander::pander(data.frame(`function name` = grep("^u_",pacman::p_functions("eclust"), value = T)))
+```
