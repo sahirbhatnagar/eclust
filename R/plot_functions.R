@@ -28,7 +28,6 @@
 #' class(corrX) <- append(class(corrX), "similarity")
 #' plot(corrX, truemodule = c(rep(1:5, each=150), rep(0, 250)))
 #' }
-#' @importFrom viridis viridis
 #' @export
 
 plot.similarity <- function(x,
