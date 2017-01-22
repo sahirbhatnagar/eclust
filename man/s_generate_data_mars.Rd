@@ -130,7 +130,7 @@ list of (in the following order) \describe{ \item{beta_truth}{a 1
   \item{corr_train_e1}{the Pearson correlation matrix based on training
   exposed subjects only} \item{corr_train_e0}{the Pearson correlation matrix
   based on training unexposed subjects only}\item{fisherScore}{The fisher
-  scoring matrix. see \code{\link{fisherZ}} for details}\item{corScor}{The
+  scoring matrix. see \code{\link{u_fisherZ}} for details}\item{corScor}{The
   correlation scoring matrix: \eqn{|Cor_{E=1} + Cor_{E=0} - 2|}}
   \item{mse_null}{The MSE for the null model}\item{DT_train_folds}{The 10
   training folds used for the stability measures}\item{X_train_folds}{The 10

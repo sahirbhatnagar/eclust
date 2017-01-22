@@ -22,7 +22,6 @@ Suggests:
     rmarkdown,
     protoclust,
     factoextra,
-    viridis,
     glmnet
 VignetteBuilder: knitr
 Imports:
@@ -35,5 +34,7 @@ Imports:
     pROC,
     stringr,
     pheatmap,
+    viridis,
+    pander,
     stats
 RoxygenNote: 5.0.1
