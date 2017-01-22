@@ -1,18 +1,8 @@
-# Welcome to MkDocs
+`eclust` R Package
+==================
 
-For full documentation visit [mkdocs.org](http://mkdocs.org).
+![](http://i.imgur.com/lqsjLte.png)
 
-## Commands
+-   This package clusters gene expression or DNA methylation data that is sensitive to environmental exposures. It is the companion package to the paper
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs help` - Print this help message.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
-bfdbfdbdfbdf
+> Bhatnagar, SR., Yang, Y., Blanchette, M., Bouchard, L., Khundrakpam, B., Evans, A., Greenwood, CMT. (2017+). An analytic approach for interpretable predictive models in high dimensional data, in the presence of interactions with exposures. [Preprint](http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf)

@@ -1,0 +1,7 @@
+Data
+====
+
+There are two datasets included in this package that can be loaded into your `R` session via `data(tcgaov)` and `data(simdata)`:
+
+1.  `tcgaov`: A dataset containing a subset of the TCGA mRNA Ovarian serous cystadenocarcinoma data generated using Affymetrix HTHGU133a arrays. 511 samples (rows) and 881 genes (columns).
+2.  `simdata`: A dataset containing simulated data for example use of the `eclust` package functions. A matrix with 200 rows 1000 genes, a continuous response Y and a binary environment vector E.

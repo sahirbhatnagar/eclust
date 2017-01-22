@@ -14,6 +14,9 @@ copyright: 'Copyright &copy; 2017 Sahir Rai Bhatnagar'
 # Documentation and theme
 theme: 'material'
 
+extra_javascript:
+  - 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML'
+
 # Options
 extra:
   logo: 'images/dte1.png'
@@ -37,7 +40,29 @@ extra:
 # Extensions
 markdown_extensions:
   - admonition
-  - codehilite(guess_lang=false)
+  - codehilite(guess_lang=true)
   - footnotes
   - meta
   - toc(permalink=true)
+
+
+# Page tree
+pages:
+  - Home: index.md
+  - Installation: installation.md
+  - Data: data.md
+  - Package Functions: overview.md
+  - Real Data Analysis: rda.md
+  - Simulations: simulation.md
+  - Heatmaps: plots.md
+#  - Extensions:
+#    - Admonition: extensions/admonition.md
+#    - CodeHilite: extensions/codehilite.md
+#    - Footnotes: extensions/footnotes.md
+#    - Permalinks: extensions/permalinks.md
+#    - PyMdown: extensions/pymdown.md
+#  - Specimen: specimen.md
+#  - Customization: customization.md
+#  - Release notes: release-notes.md
+#  - Contributing: contributing.md
+#  - License: license.md

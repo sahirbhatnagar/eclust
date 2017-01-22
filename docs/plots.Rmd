@@ -1,0 +1,112 @@
+---
+title: "data"
+author: "Sahir"
+date: "January 22, 2017"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(eclust)
+```
+
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
+
+```{r, results='hide', message=FALSE, echo=FALSE}
+pacman::p_load(eclust)
+d0 <- s_modules(n = 100, p = 1000, rho = 0, exposed = FALSE,
+                modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+                minCor = 0.01,
+                maxCor = 1,
+                corPower = 1,
+                propNegativeCor = 0.3,
+                backgroundNoise = 0.5,
+                signed = FALSE,
+                leaveOut = 1:4)
+
+d1 <- s_modules(n = 100, p = 1000, rho = 0.9, exposed = TRUE,
+                modProportions = c(0.15,0.15,0.15,0.15,0.15,0.25),
+                minCor = 0.4,
+                maxCor = 1,
+                corPower = 0.3,
+                propNegativeCor = 0.3,
+                backgroundNoise = 0.5,
+                signed = FALSE)
+
+# get the true cluster labels
+truemodule1 <- d1$setLabels
+table(truemodule1)
+
+pacman::p_load(magrittr)
+
+X <- rbind(d0$datExpr, d1$datExpr) %>%
+  magrittr::set_colnames(paste0("Gene", 1:1000)) %>%
+  magrittr::set_rownames(paste0("Subject",1:200))
+
+betaMainEffect <- vector("double", length = 1000)
+betaMainInteractions <- vector("double", length = 1000)
+
+# the first 25 in the 3rd block are active
+betaMainEffect[which(truemodule1 %in% 3)[1:50]] <- runif(50, 0.9, 1.1)
+
+# the first 25 in the 4th block are active
+betaMainEffect[which(truemodule1 %in% 4)[1:50]] <- runif(50, 0.9, 1.1)
+
+# the interaction effects
+betaMainInteractions[which(betaMainEffect!=0)] <- runif(50, 0.4, 0.6)
+
+# the environment effect
+betaE <- 2
+
+# the total beta vector
+beta <- c(betaMainEffect, betaE, betaMainInteractions)
+
+result <- s_generate_data(p = 1000, 
+                          X = X,
+                          beta = beta,
+                          include_interaction = TRUE,
+                          cluster_distance = "tom",
+                          n = 200, 
+                          n0 = 100,
+                          eclust_distance = "difftom",
+                          signal_to_noise_ratio = 1,
+                          distance_method = "euclidean",
+                          cluster_method = "hclust",
+                          cut_method = "dynamic",
+                          agglomeration_method = "average",
+                          nPC = 1)
+```
+
+
+
+# Plot Method for Object of class similarity
+ 
+ There is a plot method for similarity matrices included in this package, though it is very specific to the simulated data only since the resulting plot annotates the true cluster membership of the genes. The plot uses the `pheatmap` package for the heatmaps along with the `viridis` package for the color scheme so these packages need to be installed prior to using this function. 
+
+The plot method is for objects of class `similarity`. The following objects, which are outputs of the `s_generate_data` function, are objects of class `similarity`:
+
+```{r, echo=FALSE}
+pander::pander(data.frame(`object name` = c("tom_train_all","tom_train_diff","tom_train_e1","tom_train_e0","corr_train_all","corr_train_diff","corr_train_e1","corr_train_e0","fisherScore","corScor")))
+```
+
+
+
+To plot the heatmap of the similarity matrix, you need to provide it with the clustering tree, the cluster membership and the genes active in the response. In this example we plot the TOM matrix for the exposed subjects given by the `tom_train_e1` object. The resulting heatmap has annotations for the cluster membership and if the gene is active in the response:
+
+```{r}
+# check that the object is of class similarity
+class(result$tom_train_e1)
+
+# get clustering tree
+hc <- hclust(as.dist(1 - result$tom_train_e1), method = "average")
+
+plot(result$tom_train_e1, 
+     truemodule = truemodule1, 
+     cluster_rows = hc, 
+     cluster_cols = hc,
+     active = as.numeric(betaMainEffect!=0))
+```
+
+ 

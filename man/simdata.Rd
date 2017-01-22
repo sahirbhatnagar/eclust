@@ -4,10 +4,10 @@
 \name{simdata}
 \alias{simdata}
 \title{Simulated Data with Environment Dependent Correlations}
-\format{A matrix with 200 rows and 1002 variables: \describe{
+\format{A matrix with 100 rows and 502 variables: \describe{
   \item{Y}{continuous response vector} \item{E}{binary environment variable
-  for ECLUST method. E = 0 for unexposed (n=100) and E = 1 for exposed (n=100)} \item{columns
-  3:1002}{gene expression data for 1000 genes. column names are the gene
+  for ECLUST method. E = 0 for unexposed (n=50) and E = 1 for exposed (n=50)} \item{columns
+  3:502}{gene expression data for 1000 genes. column names are the gene
   names } }}
 \source{
 \url{https://raw.githubusercontent.com/sahirbhatnagar/eclust/master/data-raw/simulated-data-processing.R}

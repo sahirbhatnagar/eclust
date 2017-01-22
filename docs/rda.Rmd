@@ -1,0 +1,127 @@
+---
+title: "data"
+author: "Sahir"
+date: "January 22, 2017"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(eclust)
+```
+
+# Real data analysis functions (`r_`)
+
+We will use the `data(tcgaov)` dataset included in this package, which contains a subset of the TCGA mRNA Ovarian serous cystadenocarcinoma data generated using Affymetrix HTHGU133a arrays. See `?tcgaov` for details about the data.  
+
+In the example below we use the `r_cluster_data` to create the environment based clusters, and their summaries. We then use the `r_prepare_data` function to get it into proper form for regression routines such as `earth::earth`, `glmnet::cv.glmnet`, and `ncvreg::ncvreg`.
+
+## Extract the relevant data
+
+```{r, eval = TRUE}
+# load the data
+data("tcgaov")
+tcgaov[1:5,1:6, with = FALSE]
+
+# use log survival as the response
+Y <- log(tcgaov[["OS"]])
+
+# specify the environment variable
+E <- tcgaov[["E"]]
+
+# specify the matrix of genes only
+genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with = FALSE])
+
+# for this example the training set will be all subjects.
+# change `p` argument to create a train and test set.
+trainIndex <- drop(caret::createDataPartition(Y, p = 1, list = FALSE, times = 1))
+testIndex <- trainIndex
+```
+
+
+## Cluster the data and calculate cluster representations
+
+We cluster the genes using the correlation matrix (specified by `cluster_distance = "corr"`) and the difference of the exposure dependent correlation matrices (specified by `eclust_distance = "diffcorr"`)
+
+```{r}
+cluster_res <- r_cluster_data(data = genes,
+                              response = Y,
+                              exposure = E,
+                              train_index = trainIndex,
+                              test_index = testIndex,
+                              cluster_distance = "corr",
+                              eclust_distance = "diffcorr",
+                              measure_distance = "euclidean",
+                              clustMethod = "hclust",
+                              cutMethod = "dynamic",
+                              method = "average",
+                              nPC = 1,
+                              minimum_cluster_size = 30)
+
+# the number of clusters determined by the similarity matrices specified
+# in the cluster_distance and eclust_distance arguments. This will always be larger
+# than cluster_res$clustersAll$nclusters which is based on the similarity matrix
+# specified in the cluster_distance argument
+cluster_res$clustersAddon$nclusters
+
+# the number of clusters determined by the similarity matrices specified
+# in the cluster_distance argument only
+cluster_res$clustersAll$nclusters
+
+# what's in the cluster_res object
+names(cluster_res)
+```
+
+## Prepare data for input in any regression routine
+
+Now we use the `r_prepare_data` function, where we are using the average expression from each cluster as feaand their interaction with E as features in the regression model:
+
+```{r}
+# prepare data for use with earth function
+avg_eclust_interaction <- r_prepare_data(
+  data = cbind(cluster_res$clustersAddon$averageExpr, 
+               Y = Y[trainIndex],
+               E = E[trainIndex]),
+  response = "Y", exposure = "E")
+
+head(avg_eclust_interaction[["X"]])
+```
+
+
+## Fit a regression model
+
+At this stage, you can decide which regression model to use. Here we choose the MARS model from the `earth` package, but you may choose regression models from any number of packages (e.g. see the [extensive list of models](https://topepo.github.io/caret/available-models.html) of models available in the `caret` package).
+
+```{r}
+fit_earth <- earth::earth(x = avg_eclust_interaction[["X"]], 
+                          y = avg_eclust_interaction[["Y"]], 
+                          pmethod = "backward", 
+                          keepxy = TRUE, 
+                          degree = 2, 
+                          trace = 1, 
+                          nk = 1000)
+
+coef(fit_earth)
+```
+
+You can also install the `plotmo` package to visualise the relationships between the hinge functions and the response using `plotmo::plotmo(fit_earth)`. 
+
+## Determine the features that have been selected
+
+The `u_extract_selected_earth` is a utility function in this package to extract the selected predictors from the MARS model: 
+```{r}
+u_extract_selected_earth(fit_earth)
+```
+
+We that genes in clusters 1, 7 and 9 were selected. We also see that the interaction between the genes in cluster 5 and the environment was selected and has the highest variable importance. We can see the genes involved using the `cluster_res$clustersAddonMembership` object: 
+
+```{r}
+# Genes in cluster 5
+cluster_res$clustersAddonMembership[cluster %in% 5]
+
+# variable importance
+earth::evimp(fit_earth)
+```
+

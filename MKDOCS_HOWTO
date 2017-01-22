@@ -1,0 +1,17 @@
+This explains how to run the mkdocs
+
+1. Create a .Rmd in the docs folder. The .Rmd should have this at the top:
+
+---
+title: "data"
+author: "Sahir"
+date: "January 22, 2017"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+
+2. click on knit. this will make an .md document in the docs/ folder
+
+3. Add the name of the page and the .md document to mkdocs.yml (which is located in the root folder)
