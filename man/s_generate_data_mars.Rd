@@ -89,16 +89,53 @@ two. Only used if \code{cutMethod='gap'}}
 \code{cutMethod='gap'}}
 }
 \value{
-list of (in the following order) \describe{ \item{beta_truth}{}
-  \item{distance}{} \item{DT}{data.table of simulated data from the
-  \code{s_response} function} \item{Y}{} \item{X0}{} \item{X1}{}
-  \item{X_train}{} \item{X_test}{} \item{Y_train}{} \item{Y_test}{}
-  \item{DT_train}{} \item{DT_test}{} \item{S0}{} \item{n_clusters}{}
-  \item{clustered_genes_train}{} \item{clustered_genes_test}{}
-  \item{clusters}{} \item{tom_train_all}{} \item{tom_train_diff}{}
-  \item{tom_train_e1}{} \item{tom_train_e0}{} \item{corr_train_all}{}
-  \item{corr_train_diff}{} \item{corr_train_e1}{} \item{corr_train_e0}{}
-  \item{mse_null}{} }
+list of (in the following order) \describe{ \item{beta_truth}{a 1
+  column matrix containing the true beta coefficient vector}
+  \item{similarity}{an object of class similarity which is the similarity
+  matrix specified by the \code{cluster_distance}
+  argument}\item{similarityEclust}{an object of class similarity which is the
+  similarity matrix specified by the \code{eclust_distance} argument}
+  \item{DT}{data.table of simulated data from the \code{s_response} function}
+  \item{Y}{The simulated response} \item{X0}{the n0 x p design matrix for the
+  unexposed subjects} \item{X1}{the n1 x p design matrix for the exposed
+  subjects} \item{X_train}{the training design matrix for all subjects}
+  \item{X_test}{the test set design matrix for all subjects}
+  \item{Y_train}{the training set response} \item{Y_test}{the test set
+  response} \item{DT_train}{the training response and training design matrix
+  in a single data.frame object} \item{DT_test}{the test response and
+  training design matrix in a single data.frame object} \item{S0}{a character
+  vector of the active genes i.e. the ones that are associated with the
+  response} \item{n_clusters_All}{the number of clusters identified by using
+  the similarity matrix specified by the \code{cluster_distance} argument}
+  \item{n_clusters_Eclust}{the number of clusters identified by using the
+  similarity matrix specified by the \code{eclust_distance}
+  argument}\item{n_clusters_Addon}{the sum of \code{n_clusters_All} and
+  \code{n_clusters_Eclust}} \item{clustersAll}{the cluster membership of each
+  gene based on the \code{cluster_distance} matrix} \item{clustersAddon}{the
+  cluster membership of each gene based on both the \code{cluster_distance}
+  matrix and the \code{eclust_distance} matrix. Note that each gene will
+  appear twice here}\item{clustersEclust}{the cluster membership of each gene
+  based on the \code{eclust_distance} matrix}
+  \item{gene_groups_inter}{cluster membership of each gene with a penalty
+  factor used for the group lasso} \item{gene_groups_inter_Addon}{cluster
+  membership of each gene with a penalty factor used for the group lasso}
+  \item{tom_train_all}{the TOM matrix based on all training subjects}
+  \item{tom_train_diff}{the absolute difference of the exposed and unexposed
+  TOM matrices: \eqn{|TOM_{E=1} - TOM_{E=0}|}} \item{tom_train_e1}{the TOM
+  matrix based on training exposed subjects only} \item{tom_train_e0}{the TOM
+  matrix based on training unexposed subjects only} \item{corr_train_all}{the
+  Pearson correlation matrix based on all training subjects}
+  \item{corr_train_diff}{the absolute difference of the exposed and unexposed
+  Pearson correlation matrices: \eqn{|Cor_{E=1} - Cor_{E=0}|}}
+  \item{corr_train_e1}{the Pearson correlation matrix based on training
+  exposed subjects only} \item{corr_train_e0}{the Pearson correlation matrix
+  based on training unexposed subjects only}\item{fisherScore}{The fisher
+  scoring matrix. see \code{\link{fisherZ}} for details}\item{corScor}{The
+  correlation scoring matrix: \eqn{|Cor_{E=1} + Cor_{E=0} - 2|}}
+  \item{mse_null}{The MSE for the null model}\item{DT_train_folds}{The 10
+  training folds used for the stability measures}\item{X_train_folds}{The 10
+  X training folds (the same as in DT_train_folds)}\item{Y_train_folds}{The
+  10 Y training folds (the same as in DT_train_folds)} }
 }
 \description{
 create a function that takes as input, the number of genes, the

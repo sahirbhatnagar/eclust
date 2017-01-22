@@ -1997,16 +1997,53 @@ s_modules <- function(n, p, rho, exposed, ...) {
 #'   sets, the correlation and TOM matrices and the clusters.
 #' @note the PCs and averages need to be calculated in the fitting functions,
 #'   because these will change based on the CV fold
-#' @return list of (in the following order) \describe{ \item{beta_truth}{}
-#'   \item{distance}{} \item{DT}{data.table of simulated data from the
-#'   \code{s_response} function} \item{Y}{} \item{X0}{} \item{X1}{}
-#'   \item{X_train}{} \item{X_test}{} \item{Y_train}{} \item{Y_test}{}
-#'   \item{DT_train}{} \item{DT_test}{} \item{S0}{} \item{n_clusters}{}
-#'   \item{clustered_genes_train}{} \item{clustered_genes_test}{}
-#'   \item{clusters}{} \item{tom_train_all}{} \item{tom_train_diff}{}
-#'   \item{tom_train_e1}{} \item{tom_train_e0}{} \item{corr_train_all}{}
-#'   \item{corr_train_diff}{} \item{corr_train_e1}{} \item{corr_train_e0}{}
-#'   \item{mse_null}{} }
+#' @return list of (in the following order) \describe{ \item{beta_truth}{a 1
+#'   column matrix containing the true beta coefficient vector}
+#'   \item{similarity}{an object of class similarity which is the similarity
+#'   matrix specified by the \code{cluster_distance}
+#'   argument}\item{similarityEclust}{an object of class similarity which is the
+#'   similarity matrix specified by the \code{eclust_distance} argument}
+#'   \item{DT}{data.table of simulated data from the \code{s_response} function}
+#'   \item{Y}{The simulated response} \item{X0}{the n0 x p design matrix for the
+#'   unexposed subjects} \item{X1}{the n1 x p design matrix for the exposed
+#'   subjects} \item{X_train}{the training design matrix for all subjects}
+#'   \item{X_test}{the test set design matrix for all subjects}
+#'   \item{Y_train}{the training set response} \item{Y_test}{the test set
+#'   response} \item{DT_train}{the training response and training design matrix
+#'   in a single data.frame object} \item{DT_test}{the test response and
+#'   training design matrix in a single data.frame object} \item{S0}{a character
+#'   vector of the active genes i.e. the ones that are associated with the
+#'   response} \item{n_clusters_All}{the number of clusters identified by using
+#'   the similarity matrix specified by the \code{cluster_distance} argument}
+#'   \item{n_clusters_Eclust}{the number of clusters identified by using the
+#'   similarity matrix specified by the \code{eclust_distance}
+#'   argument}\item{n_clusters_Addon}{the sum of \code{n_clusters_All} and
+#'   \code{n_clusters_Eclust}} \item{clustersAll}{the cluster membership of each
+#'   gene based on the \code{cluster_distance} matrix} \item{clustersAddon}{the
+#'   cluster membership of each gene based on both the \code{cluster_distance}
+#'   matrix and the \code{eclust_distance} matrix. Note that each gene will
+#'   appear twice here}\item{clustersEclust}{the cluster membership of each gene
+#'   based on the \code{eclust_distance} matrix}
+#'   \item{gene_groups_inter}{cluster membership of each gene with a penalty
+#'   factor used for the group lasso} \item{gene_groups_inter_Addon}{cluster
+#'   membership of each gene with a penalty factor used for the group lasso}
+#'   \item{tom_train_all}{the TOM matrix based on all training subjects}
+#'   \item{tom_train_diff}{the absolute difference of the exposed and unexposed
+#'   TOM matrices: \eqn{|TOM_{E=1} - TOM_{E=0}|}} \item{tom_train_e1}{the TOM
+#'   matrix based on training exposed subjects only} \item{tom_train_e0}{the TOM
+#'   matrix based on training unexposed subjects only} \item{corr_train_all}{the
+#'   Pearson correlation matrix based on all training subjects}
+#'   \item{corr_train_diff}{the absolute difference of the exposed and unexposed
+#'   Pearson correlation matrices: \eqn{|Cor_{E=1} - Cor_{E=0}|}}
+#'   \item{corr_train_e1}{the Pearson correlation matrix based on training
+#'   exposed subjects only} \item{corr_train_e0}{the Pearson correlation matrix
+#'   based on training unexposed subjects only}\item{fisherScore}{The fisher
+#'   scoring matrix. see \code{\link{fisherZ}} for details}\item{corScor}{The
+#'   correlation scoring matrix: \eqn{|Cor_{E=1} + Cor_{E=0} - 2|}}
+#'   \item{mse_null}{The MSE for the null model}\item{DT_train_folds}{The 10
+#'   training folds used for the stability measures}\item{X_train_folds}{The 10
+#'   X training folds (the same as in DT_train_folds)}\item{Y_train_folds}{The
+#'   10 Y training folds (the same as in DT_train_folds)} }
 #' @param agglomeration_method the agglomeration method to be used. This should
 #'   be (an unambiguous abbreviation of) one of "ward.D", "ward.D2", "single",
 #'   "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC)
@@ -2050,8 +2087,9 @@ s_modules <- function(n, p, rho, exposed, ...) {
 #' @param nPC number of principal components to extract from each cluster.
 #'   Default is 1. Only 1 or 2 is allowed.
 #' @details To generate a binary outcome we first generate a continuous outcome
-#'   Y which is \eqn{X^T \beta}, defined \eqn{p = 1/(1 + exp(-Y ))} and used this to
-#'   generate a two-class outcome z with \eqn{Pr(z = 1) = p} and \eqn{Pr(z = 0) = 1 - p}.
+#'   Y which is \eqn{X^T \beta}, defined \eqn{p = 1/(1 + exp(-Y ))} and used
+#'   this to generate a two-class outcome z with \eqn{Pr(z = 1) = p} and
+#'   \eqn{Pr(z = 0) = 1 - p}.
 #' @inheritParams u_cluster_similarity
 #' @examples
 #' library(magrittr)
@@ -2245,10 +2283,10 @@ s_generate_data <- function(p, X, beta, binary_outcome = FALSE,
   fisherScore <- u_fisherZ(n0 = n0, cor0 = corr_train_e0,
                          n1 = n1, cor1 = corr_train_e1)
 
-  # class(tom_train_all) <- append(class(tom_train_all), "similarity")
-  # class(tom_train_diff) <- append(class(tom_train_diff), "similarity")
-  # class(tom_train_e1) <- append(class(tom_train_e1), "similarity")
-  # class(tom_train_e0) <- append(class(tom_train_e0), "similarity")
+  class(tom_train_all) <- append(class(tom_train_all), "similarity")
+  class(tom_train_diff) <- append(class(tom_train_diff), "similarity")
+  class(tom_train_e1) <- append(class(tom_train_e1), "similarity")
+  class(tom_train_e0) <- append(class(tom_train_e0), "similarity")
   class(corr_train_all) <- append(class(corr_train_all), "similarity")
   class(corr_train_diff) <- append(class(corr_train_diff), "similarity")
   class(corr_train_e1) <- append(class(corr_train_e1), "similarity")
@@ -2462,16 +2500,53 @@ s_generate_data <- function(p, X, beta, binary_outcome = FALSE,
 #'   \code{s_response_mars}
 #' @inheritParams u_cluster_similarity
 #' @inheritParams s_generate_data
-#' @return list of (in the following order) \describe{ \item{beta_truth}{}
-#'   \item{distance}{} \item{DT}{data.table of simulated data from the
-#'   \code{s_response} function} \item{Y}{} \item{X0}{} \item{X1}{}
-#'   \item{X_train}{} \item{X_test}{} \item{Y_train}{} \item{Y_test}{}
-#'   \item{DT_train}{} \item{DT_test}{} \item{S0}{} \item{n_clusters}{}
-#'   \item{clustered_genes_train}{} \item{clustered_genes_test}{}
-#'   \item{clusters}{} \item{tom_train_all}{} \item{tom_train_diff}{}
-#'   \item{tom_train_e1}{} \item{tom_train_e0}{} \item{corr_train_all}{}
-#'   \item{corr_train_diff}{} \item{corr_train_e1}{} \item{corr_train_e0}{}
-#'   \item{mse_null}{} }
+#' @return list of (in the following order) \describe{ \item{beta_truth}{a 1
+#'   column matrix containing the true beta coefficient vector}
+#'   \item{similarity}{an object of class similarity which is the similarity
+#'   matrix specified by the \code{cluster_distance}
+#'   argument}\item{similarityEclust}{an object of class similarity which is the
+#'   similarity matrix specified by the \code{eclust_distance} argument}
+#'   \item{DT}{data.table of simulated data from the \code{s_response} function}
+#'   \item{Y}{The simulated response} \item{X0}{the n0 x p design matrix for the
+#'   unexposed subjects} \item{X1}{the n1 x p design matrix for the exposed
+#'   subjects} \item{X_train}{the training design matrix for all subjects}
+#'   \item{X_test}{the test set design matrix for all subjects}
+#'   \item{Y_train}{the training set response} \item{Y_test}{the test set
+#'   response} \item{DT_train}{the training response and training design matrix
+#'   in a single data.frame object} \item{DT_test}{the test response and
+#'   training design matrix in a single data.frame object} \item{S0}{a character
+#'   vector of the active genes i.e. the ones that are associated with the
+#'   response} \item{n_clusters_All}{the number of clusters identified by using
+#'   the similarity matrix specified by the \code{cluster_distance} argument}
+#'   \item{n_clusters_Eclust}{the number of clusters identified by using the
+#'   similarity matrix specified by the \code{eclust_distance}
+#'   argument}\item{n_clusters_Addon}{the sum of \code{n_clusters_All} and
+#'   \code{n_clusters_Eclust}} \item{clustersAll}{the cluster membership of each
+#'   gene based on the \code{cluster_distance} matrix} \item{clustersAddon}{the
+#'   cluster membership of each gene based on both the \code{cluster_distance}
+#'   matrix and the \code{eclust_distance} matrix. Note that each gene will
+#'   appear twice here}\item{clustersEclust}{the cluster membership of each gene
+#'   based on the \code{eclust_distance} matrix}
+#'   \item{gene_groups_inter}{cluster membership of each gene with a penalty
+#'   factor used for the group lasso} \item{gene_groups_inter_Addon}{cluster
+#'   membership of each gene with a penalty factor used for the group lasso}
+#'   \item{tom_train_all}{the TOM matrix based on all training subjects}
+#'   \item{tom_train_diff}{the absolute difference of the exposed and unexposed
+#'   TOM matrices: \eqn{|TOM_{E=1} - TOM_{E=0}|}} \item{tom_train_e1}{the TOM
+#'   matrix based on training exposed subjects only} \item{tom_train_e0}{the TOM
+#'   matrix based on training unexposed subjects only} \item{corr_train_all}{the
+#'   Pearson correlation matrix based on all training subjects}
+#'   \item{corr_train_diff}{the absolute difference of the exposed and unexposed
+#'   Pearson correlation matrices: \eqn{|Cor_{E=1} - Cor_{E=0}|}}
+#'   \item{corr_train_e1}{the Pearson correlation matrix based on training
+#'   exposed subjects only} \item{corr_train_e0}{the Pearson correlation matrix
+#'   based on training unexposed subjects only}\item{fisherScore}{The fisher
+#'   scoring matrix. see \code{\link{fisherZ}} for details}\item{corScor}{The
+#'   correlation scoring matrix: \eqn{|Cor_{E=1} + Cor_{E=0} - 2|}}
+#'   \item{mse_null}{The MSE for the null model}\item{DT_train_folds}{The 10
+#'   training folds used for the stability measures}\item{X_train_folds}{The 10
+#'   X training folds (the same as in DT_train_folds)}\item{Y_train_folds}{The
+#'   10 Y training folds (the same as in DT_train_folds)} }
 #' @export
 #' @examples
 #' library(magrittr)
@@ -2671,10 +2746,10 @@ s_generate_data_mars <- function(p, X, beta,  binary_outcome = FALSE,
   fisherScore <- u_fisherZ(n0 = n0, cor0 = corr_train_e0,
                          n1 = n1, cor1 = corr_train_e1)
 
-  # class(tom_train_all) <- append(class(tom_train_all), "similarity")
-  # class(tom_train_diff) <- append(class(tom_train_diff), "similarity")
-  # class(tom_train_e1) <- append(class(tom_train_e1), "similarity")
-  # class(tom_train_e0) <- append(class(tom_train_e0), "similarity")
+  class(tom_train_all) <- append(class(tom_train_all), "similarity")
+  class(tom_train_diff) <- append(class(tom_train_diff), "similarity")
+  class(tom_train_e1) <- append(class(tom_train_e1), "similarity")
+  class(tom_train_e0) <- append(class(tom_train_e0), "similarity")
   class(corr_train_all) <- append(class(corr_train_all), "similarity")
   class(corr_train_diff) <- append(class(corr_train_diff), "similarity")
   class(corr_train_e1) <- append(class(corr_train_e1), "similarity")
