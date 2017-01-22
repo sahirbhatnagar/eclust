@@ -1,4 +1,4 @@
-#' #' Fit Penalized Regression Models on Simulated Cluster Summaries
+#' Fit Penalized Regression Models on Simulated Cluster Summaries
 #'
 #' @description This function creates summaries of the given clusters (e.g. 1st
 #'   PC or average), and then fits a penalized regression model on those

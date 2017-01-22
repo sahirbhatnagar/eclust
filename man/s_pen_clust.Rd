@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation_functions.R
 \name{s_pen_clust}
 \alias{s_pen_clust}
-\title{#' Fit Penalized Regression Models on Simulated Cluster Summaries}
+\title{Fit Penalized Regression Models on Simulated Cluster Summaries}
 \usage{
 s_pen_clust(x_train, x_test, y_train, y_test, s0, gene_groups,
   summary = c("pc", "avg"), model = c("lasso", "elasticnet", "scad", "mcp"),

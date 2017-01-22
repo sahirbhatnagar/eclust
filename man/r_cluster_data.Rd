@@ -40,10 +40,10 @@ correlations ignoring the environment, and the other should be based on
 correlations accounting for the environment. This function will always
 return this add on}
 
-\item{measure_distance}{one of "euclidean","maximum","manhattan", "canberra",
-"binary","minkowski" to be passed to \code{\link[stats]{dist}} function for
-calculating the distance for the clusters based on the corr,corr1,corr0,
-tom, tom0, tom1 matrices}
+\item{measure_distance}{one of "euclidean","maximum","manhattan",
+"canberra", "binary","minkowski" to be passed to \code{\link[stats]{dist}}
+function for calculating the distance for the clusters based on the
+corr,corr1,corr0, tom, tom0, tom1 matrices}
 
 \item{minimum_cluster_size}{The minimum cluster size. Only applicable if
 \code{cutMethod='dynamic'}. This argument is passed to the
@@ -59,7 +59,16 @@ a list of length 3: \describe{\item{clustersAddon}{clustering results
   \code{\link{u_cluster_similarity}} for
   details}\item{clustersAll}{clustering results ignoring the environment. See
   \code{\link{u_cluster_similarity}} for details}\item{etrain}{vector of the
-  exposure variable for the training set}}
+  exposure variable for the training set}\item{clustersAddonMembership}{a
+  data.frame and data.table of the clustering membership for clustering
+  results based on the environment and not the environment. As a result, each
+  gene will show up twice in this table}\item{clustersAllMembership}{a
+  data.frame and data.table of the clustering membership for clustering
+  results based on all subjects i.e. ignoring the environment. Each gene will
+  only show up once in this table}\item{clustersEclustMembership}{a
+  data.frame and data.table of the clustering membership for clustering
+  results accounting for the environment. Each gene will only show up once in
+  this table}}
 }
 \description{
 This is one of the functions for real data analysis, which will

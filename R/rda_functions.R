@@ -15,10 +15,10 @@
 #'   correlations ignoring the environment, and the other should be based on
 #'   correlations accounting for the environment. This function will always
 #'   return this add on
-#' @param measure_distance  one of "euclidean","maximum","manhattan", "canberra",
-#'   "binary","minkowski" to be passed to \code{\link[stats]{dist}} function for
-#'   calculating the distance for the clusters based on the corr,corr1,corr0,
-#'   tom, tom0, tom1 matrices
+#' @param measure_distance  one of "euclidean","maximum","manhattan",
+#'   "canberra", "binary","minkowski" to be passed to \code{\link[stats]{dist}}
+#'   function for calculating the distance for the clusters based on the
+#'   corr,corr1,corr0, tom, tom0, tom1 matrices
 #' @param data n x p matrix of data. rows are samples, columns are genes or cpg
 #'   sites. Should not contain the environment variable
 #' @param response numeric vector of length n
@@ -40,7 +40,16 @@
 #'   \code{\link{u_cluster_similarity}} for
 #'   details}\item{clustersAll}{clustering results ignoring the environment. See
 #'   \code{\link{u_cluster_similarity}} for details}\item{etrain}{vector of the
-#'   exposure variable for the training set}}
+#'   exposure variable for the training set}\item{clustersAddonMembership}{a
+#'   data.frame and data.table of the clustering membership for clustering
+#'   results based on the environment and not the environment. As a result, each
+#'   gene will show up twice in this table}\item{clustersAllMembership}{a
+#'   data.frame and data.table of the clustering membership for clustering
+#'   results based on all subjects i.e. ignoring the environment. Each gene will
+#'   only show up once in this table}\item{clustersEclustMembership}{a
+#'   data.frame and data.table of the clustering membership for clustering
+#'   results accounting for the environment. Each gene will only show up once in
+#'   this table}}
 #' @details This function clusters the data. The results of this function should
 #'   then be passed to the \code{\link{r_prepare_data}} function which output
 #'   the appropriate X and Y matrices in the right format for regression
@@ -241,7 +250,7 @@ r_cluster_data <- function(data,
 
   # we need to combine the cluster information here
   # this is based on cluster_distance only
-  clustersAll <- copy(res$clusters)
+  clustersAll <- data.table::copy(res$clusters)
   n_clusters_All <- res$pcInfo$nclusters
 
   message(sprintf("There are %d clusters derived from the %s similarity matrix",
@@ -249,7 +258,7 @@ r_cluster_data <- function(data,
 
   # this is based on eclust_distance only
   n_clusters_Eclust <- resEclust$pcInfo$nclusters
-  clustersEclust <- copy(resEclust$clusters)
+  clustersEclust <- data.table::copy(resEclust$clusters)
 
   message(sprintf("There are %d clusters derived from the %s environment similarity matrix",
                   n_clusters_Eclust, eclust_distance))
@@ -274,7 +283,7 @@ r_cluster_data <- function(data,
 
   # this contains the clusters from the cluster_distance (e.g. TOM matrix)
   # and the clusters from the eclust_distance (e.g. diffTOM)
-  clustersAddon <- rbindlist(list(clustersAll, clustersEclust))
+  clustersAddon <- data.table::rbindlist(list(clustersAll, clustersEclust))
   # clustersAddon[, table(cluster, module)]
 
   # these are only derived on the main effects genes.. E is only included in the model
@@ -306,7 +315,10 @@ r_cluster_data <- function(data,
 
   return(list(clustersAddon = PC_and_avg_Addon,
               clustersAll = PC_and_avg_All,
-              etrain = etrain))
+              etrain = etrain,
+              clustersAddonMembership = clustersAddon,
+              clustersAllMembership = clustersAll,
+              clustersEclustMembership = clustersEclust))
 }
 
 
