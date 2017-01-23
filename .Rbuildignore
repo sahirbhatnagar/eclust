@@ -8,3 +8,5 @@
 ^mkdocs\.yml$
 ^site$
 ^MKDOCS_HOWTO$
+^eclust\.pdf$
+^\.Rd2pdf16249$
