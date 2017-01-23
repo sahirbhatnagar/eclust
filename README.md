@@ -15,13 +15,7 @@ The `eclust` package implements the methods developped in the paper *An analytic
 
 ## Installation
 
-You can install `manhattanly` from [CRAN](https://cran.r-project.org/package=eclust):
-
-```R
-install.packages("eclust")
-```
-
-Alternatively, you can install the development version of `eclust` from [GitHub](https://github.com/sahirbhatnagar/eclust) with:
+You can install the development version of `eclust` from [GitHub](https://github.com/sahirbhatnagar/eclust) with:
 
 ```R
 install.packages("pacman")
