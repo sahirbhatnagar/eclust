@@ -11,25 +11,22 @@
 
 # eclust
 
-The `eclust` package implements the methods developped in the paper *An analytic approach for interpretable predictive models in high dimensional data, in the presence of interactions with exposures (2016+)* [Preprint](http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf). Breifly, `eclust` is a two-step procedure: 1a) a clustering stage where variables are clustered based on some measure of similarity, 1b) a dimension reduction stage where a summary measure is created for each of the  clusters, and 2) a simultaneous variable selection and regression stage on the summarized cluster measures.
+The `eclust` package implements the methods developped in the paper *An analytic approach for interpretable predictive models in high dimensional data, in the presence of interactions with exposures (2017+)* [Preprint](http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf). Breifly, `eclust` is a two-step procedure: 1a) a clustering stage where variables are clustered based on some measure of similarity, 1b) a dimension reduction stage where a summary measure is created for each of the  clusters, and 2) a simultaneous variable selection and regression stage on the summarized cluster measures.
 
 ## Installation
 
-<!--You can install `eclust` from [CRAN](https://cran.r-project.org/web/packages/manhattanly/):
+You can install `manhattanly` from [CRAN](https://cran.r-project.org/package=eclust):
 
 ```R
-install.packages("manhattanly")
+install.packages("eclust")
 ```
--->
 
-You can install the development version of `eclust` from [GitHub](https://github.com/sahirbhatnagar/eclust) with:
+Alternatively, you can install the development version of `eclust` from [GitHub](https://github.com/sahirbhatnagar/eclust) with:
 
 ```R
-install.packages("devtools")
-devtools::install_github("sahirbhatnagar/eclust")
+install.packages("pacman")
+pacman::p_install_gh("sahirbhatnagar/eclust")
 ```
-
-
 
 ## Vignette
 
@@ -39,9 +36,9 @@ See the [online vignette](http://sahirbhatnagar.com/eclust/) for example usage o
 
 This package is makes use of several existing packages including:
 
-* [`glmnet`](https://cran.r-project.org/web/packages/glmnet/index.html) for lasso and elasticnet regression
-* [`earth`](https://cran.r-project.org/web/packages/earth/index.html) for MARS models
-* [`WGCNA`](https://cran.r-project.org/web/packages/WGCNA/index.html) for topological overlap matrices
+* [`glmnet`](https://cran.r-project.org/package=glmnet) for lasso and elasticnet regression
+* [`earth`](https://cran.r-project.org/package=earth) for MARS models
+* [`WGCNA`](https://cran.r-project.org/package=WGCNA) for topological overlap matrices
 
 
 ## Related Work

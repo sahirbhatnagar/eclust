@@ -63,6 +63,7 @@
 #' trainIndex <- drop(caret::createDataPartition(Y, p = 0.5, list = FALSE, times = 1))
 #' testIndex <- setdiff(seq_len(length(Y)),trainIndex)
 #'
+#' \dontrun{
 #' cluster_res <- r_cluster_data(data = genes,
 #'                               response = Y,
 #'                               exposure = E,
@@ -86,6 +87,7 @@
 #' # the number of clusters determined by the similarity matrices specified
 #' # in the cluster_distance argument only
 #' cluster_res$clustersAll$nclusters
+#' }
 #' @export
 r_cluster_data <- function(data,
                            response,
@@ -348,6 +350,7 @@ r_cluster_data <- function(data,
 #' trainIndex <- drop(caret::createDataPartition(Y, p = 0.5, list = FALSE, times = 1))
 #' testIndex <- setdiff(seq_len(length(Y)),trainIndex)
 #'
+#' \dontrun{
 #' cluster_res <- r_cluster_data(data = genes,
 #'                               response = Y,
 #'                               exposure = E,
@@ -370,6 +373,7 @@ r_cluster_data <- function(data,
 #' dim(pc_eclust_interaction$X)
 #' pc_eclust_interaction$main_effect_names
 #' pc_eclust_interaction$interaction_names
+#' }
 #' @export
 
 r_prepare_data <- function(data, response = "Y", exposure = "E", probe_names) {

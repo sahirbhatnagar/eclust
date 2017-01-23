@@ -36,6 +36,7 @@ genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with = FALSE])
 trainIndex <- drop(caret::createDataPartition(Y, p = 0.5, list = FALSE, times = 1))
 testIndex <- setdiff(seq_len(length(Y)),trainIndex)
 
+\dontrun{
 cluster_res <- r_cluster_data(data = genes,
                               response = Y,
                               exposure = E,
@@ -58,5 +59,6 @@ names(pc_eclust_interaction)
 dim(pc_eclust_interaction$X)
 pc_eclust_interaction$main_effect_names
 pc_eclust_interaction$interaction_names
+}
 }
 

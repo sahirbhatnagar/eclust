@@ -90,6 +90,7 @@ genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with = FALSE])
 trainIndex <- drop(caret::createDataPartition(Y, p = 0.5, list = FALSE, times = 1))
 testIndex <- setdiff(seq_len(length(Y)),trainIndex)
 
+\dontrun{
 cluster_res <- r_cluster_data(data = genes,
                               response = Y,
                               exposure = E,
@@ -113,6 +114,7 @@ cluster_res$clustersAddon$nclusters
 # the number of clusters determined by the similarity matrices specified
 # in the cluster_distance argument only
 cluster_res$clustersAll$nclusters
+}
 }
 \seealso{
 \code{\link{u_cluster_similarity}}
