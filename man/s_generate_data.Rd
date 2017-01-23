@@ -203,7 +203,7 @@ betaMainEffect[which(truemodule1 \%in\% 4)[1:(nActive/2)]] <- runif(
   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
 betaMainInteractions[which(betaMainEffect!=0)] <- runif(nActive, alphaMean - 0.1, alphaMean + 0.1)
 beta <- c(betaMainEffect, betaE, betaMainInteractions)
-
+\dontrun{
 result <- s_generate_data(p = p, X = X,
                           beta = beta,
                           include_interaction = TRUE,
@@ -217,5 +217,6 @@ result <- s_generate_data(p = p, X = X,
                           agglomeration_method = agglomerationMethod,
                           nPC = 1)
 names(result)
+}
 }
 

@@ -43,7 +43,7 @@ The following figure is an overview of what the ECLUST method does:
 
 # Installation
 
-You can install `eclust` from [CRAN](https://cran.r-project.org/package=eclust):
+You can install `eclust` from CRAN:
 
 ```R
 install.packages("eclust")

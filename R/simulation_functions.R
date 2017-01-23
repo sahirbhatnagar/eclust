@@ -2142,7 +2142,7 @@ s_modules <- function(n, p, rho, exposed, ...) {
 #'   nActive/2, betaMean+2 - 0.1, betaMean+2 + 0.1)
 #' betaMainInteractions[which(betaMainEffect!=0)] <- runif(nActive, alphaMean - 0.1, alphaMean + 0.1)
 #' beta <- c(betaMainEffect, betaE, betaMainInteractions)
-#'
+#' \dontrun{
 #' result <- s_generate_data(p = p, X = X,
 #'                           beta = beta,
 #'                           include_interaction = TRUE,
@@ -2156,6 +2156,7 @@ s_modules <- function(n, p, rho, exposed, ...) {
 #'                           agglomeration_method = agglomerationMethod,
 #'                           nPC = 1)
 #' names(result)
+#' }
 #' @export
 
 s_generate_data <- function(p, X, beta, binary_outcome = FALSE,
