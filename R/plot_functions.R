@@ -35,6 +35,9 @@ plot.similarity <- function(x,
                             truemodule,
                             active, ...){
 
+  pacman::p_load(char = "pheatmap")
+  pacman::p_load(char = "viridis")
+
   if (missing(active)) {
     annotation_col <- data.frame(
       module = factor(truemodule,
@@ -98,7 +101,7 @@ plot.similarity <- function(x,
 #'   unexposed subjects and the second heatmap corresponds to the exposed
 #'   subjects.
 #'
-#' @param object object of class \code{eclust}, which is returned by the
+#' @param x object of class \code{eclust}, which is returned by the
 #'   \code{\link{r_cluster_data}} function
 #' @param type show results from the "ECLUST" (which considers the environment)
 #'   or "CLUST" (which ignores the environment) methods. Default is "ECLUST".
@@ -128,6 +131,7 @@ plot.similarity <- function(x,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data("tcgaov")
 #' tcgaov[1:5,1:6, with = FALSE]
 #' Y <- log(tcgaov[["OS"]])
@@ -151,17 +155,18 @@ plot.similarity <- function(x,
 #'                               minimum_cluster_size = 60)
 #'
 #' class(cluster_res)
-#' \dontrun{
+#'
 #' plot(cluster_res, show_column_names = FALSE)
 #' }
-plot.eclust <- function(object,
+plot.eclust <- function(x,
                         type = c( "ECLUST","CLUST"),
                         summary = c("pc","avg"),
                         sample = c("training", "test"),
                         unexposed_title = "E=0",
-                        exposed_title = "E=1", ...) {
+                        exposed_title = "E=1",
+                        ...) {
 
-  # object <- cluster_res
+  # x <- cluster_res
   # summary <- "avg"
   # type = "ECLUST"
   # sample = "training"
@@ -170,16 +175,19 @@ plot.eclust <- function(object,
 
   #============================
 
+  pacman::p_load(char = "ComplexHeatmap")
+  pacman::p_load(char = "circlize")
+
   type <- match.arg(type)
   summary <- match.arg(summary)
   sample <- match.arg(sample)
 
   plot_data <- switch(type,
                       ECLUST = {
-                        object$clustersAddon
+                        x$clustersAddon
                       },
                       CLUST = {
-                        object$clustersAll
+                        x$clustersAll
                       })
 
   plot_data_2 <- switch(summary,
@@ -202,15 +210,15 @@ plot.eclust <- function(object,
                                  })
                         })
 
-  max_heat <- max(c(max(plot_data_2[which(object$etrain==0),]),max(plot_data_2[which(object$etrain==1),])))
-  min_heat <- min(c(min(plot_data_2[which(object$etrain==0),]),min(plot_data_2[which(object$etrain==1),])))
+  max_heat <- max(c(max(plot_data_2[which(x$etrain==0),]),max(plot_data_2[which(x$etrain==1),])))
+  min_heat <- min(c(min(plot_data_2[which(x$etrain==0),]),min(plot_data_2[which(x$etrain==1),])))
 
   cm <- circlize::colorRamp2(seq(min_heat, max_heat, length.out = 100), viridis::viridis(100))
-  ht1 = ComplexHeatmap::Heatmap(t(plot_data_2[which(object$etrain==0),]),
+  ht1 = ComplexHeatmap::Heatmap(t(plot_data_2[which(x$etrain==0),]),
                                 name = "E=0",
                                 col = cm,
                                 column_title = unexposed_title, ...)
-  ht2 = ComplexHeatmap::Heatmap(t(plot_data_2[which(object$etrain==1),]),
+  ht2 = ComplexHeatmap::Heatmap(t(plot_data_2[which(x$etrain==1),]),
                                 name = "E=1",
                                 col = cm,
                                 column_title = exposed_title, ...)

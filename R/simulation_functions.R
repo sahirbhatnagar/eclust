@@ -242,6 +242,10 @@ s_pen_clust <- function(x_train,
   model <- match.arg(model)
   exp_family <- match.arg(exp_family)
 
+  if (exp_family == "binomial") {
+    pacman::p_load(char = "pROC")
+  }
+
   message(sprintf("Summary measure: %s, Model: %s, Cluster Type: %s",
                   summary, model, clust_type))
 
@@ -812,6 +816,11 @@ s_pen_separate <- function(x_train,
   coef.est = NULL
   exp_family <- match.arg(exp_family)
 
+  if (exp_family == "binomial") {
+    pacman::p_load(char = "pROC")
+  }
+
+
   print(paste(model,"filter = ",
               filter, "filter_var = ",
               include_E, "include_interaction = ",
@@ -1161,8 +1170,13 @@ s_mars_separate <- function(x_train,
   # model: "scad", "mcp", "lasso", "elasticnet", "ridge"
   # filter: T or F based on univariate filter
 
+  pacman::p_load(char = "earth")
 
   exp_family <- match.arg(exp_family)
+
+  if (exp_family == "binomial") {
+    pacman::p_load(char = "pROC")
+  }
 
   print(paste(model,"filter = ", filter, "include_E = ",
               include_E, "include_interaction = ", include_interaction, sep = " "))
@@ -1530,11 +1544,17 @@ s_mars_clust <- function(x_train,
   # model = "MARS"; summary = "pc"; topgenes = NULL; clust_type="Eclust"; nPC = 1
   # exp_family = "binomial"
 
+  pacman::p_load(char = "earth")
+
   coef.est = cluster = gene = NULL
   clust_type <- match.arg(clust_type)
   summary <- match.arg(summary)
   model <- match.arg(model)
   exp_family <- match.arg(exp_family)
+
+  if (exp_family == "binomial") {
+    pacman::p_load(char = "pROC")
+  }
 
   message(sprintf("Summary measure: %s, Model: %s, Cluster Type: %s",
                   summary, model, clust_type))

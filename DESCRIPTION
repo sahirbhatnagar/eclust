@@ -23,6 +23,11 @@ Suggests:
     rmarkdown,
     protoclust,
     factoextra,
+    ComplexHeatmap,
+    circlize,
+    pheatmap,
+    viridis,
+    pROC,
     glmnet
 VignetteBuilder: knitr
 Imports:
@@ -32,12 +37,7 @@ Imports:
     magrittr,
     pacman,
     WGCNA,
-    pROC,
     stringr,
-    pheatmap,
-    viridis,
     pander,
-    ComplexHeatmap,
-    circlize,
     stats
 RoxygenNote: 5.0.1

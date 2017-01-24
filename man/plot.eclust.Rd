@@ -4,12 +4,12 @@
 \alias{plot.eclust}
 \title{Plot Heatmap of Cluster Summaries by Exposure Status}
 \usage{
-\method{plot}{eclust}(object, type = c("ECLUST", "CLUST"), summary = c("pc",
+\method{plot}{eclust}(x, type = c("ECLUST", "CLUST"), summary = c("pc",
   "avg"), sample = c("training", "test"), unexposed_title = "E=0",
   exposed_title = "E=1", ...)
 }
 \arguments{
-\item{object}{object of class \code{eclust}, which is returned by the
+\item{x}{object of class \code{eclust}, which is returned by the
 \code{\link{r_cluster_data}} function}
 
 \item{type}{show results from the "ECLUST" (which considers the environment)
@@ -56,6 +56,7 @@ Rows are the cluster summaries and columns are the subjects. This
   heatmaps. This is done for being able to visually compare the results.
 }
 \examples{
+\dontrun{
 data("tcgaov")
 tcgaov[1:5,1:6, with = FALSE]
 Y <- log(tcgaov[["OS"]])
@@ -79,7 +80,7 @@ cluster_res <- r_cluster_data(data = genes,
                               minimum_cluster_size = 60)
 
 class(cluster_res)
-\dontrun{
+
 plot(cluster_res, show_column_names = FALSE)
 }
 }
