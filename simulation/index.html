@@ -393,18 +393,55 @@
                
               
                 
-                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
-
-<h1 id="simulation-functions-s_">Simulation functions (<code>s_</code>)<a class="headerlink" href="#simulation-functions-s_" title="Permanent link">&para;</a></h1>
-<p>The <code>s_</code> functions were used to conduct the simulation studies in the <em>Bhatnagar et.al (2017+)</em>. The <code>s_modules</code>, <code>s_generate_data</code> and <code>s_generate_data_mars</code> are the main functions to generate the simulated data.</p>
-<p>In the paper we designed 6 simulation scenarios that are constructed to illustrate different kinds of relationships between the variables and the response. For all scenarios, we have created high dimensional data sets with <em>p</em> predictors, and sample sizes of <em>n</em>. We also assume that we have two data sets for each simulation - a training data set where the parameters are estimated, and a testing data set where prediction performance is evaluated, each of equal size <em>n</em><sub><em>t<strong>r</strong>a<strong>i</strong>n</em></sub> = <em>n</em><sub><em>t<strong>e</strong>s</em><em>t</em></sub>. The number of subjects who were exposed (<em>n</em><sub><em>E</em> = 1</sub> = 100) and unexposed (<em>n</em><sub><em>E</em> = 0</sub> = 100) and the number of truly associated parameters (0.10 * <em>p</em>) remain fixed across the 6 simulation scenarios.</p>
-<p>Let
-<em>Y</em> = <em>Y</em><sup>*</sup> + <em>k</em> ⋅ <em>ε</em></p>
-<p>where <em>Y</em><sup>*</sup> is the linear predictor, the error term <em>ε</em> is generated from a standard normal distribution, and <em>k</em> is chosen such that the signal-to-noise ratio <em>S<strong>N</strong>R</em> = (<em>V<strong>a</strong>r</em>(<em>Y</em><sup>*</sup>)/<em>V<strong>a</strong>r</em>(<em>ε</em>)) is 0.2, 1 and 2 (e.g. the variance of the response variable <em>Y</em> due to <em>ε</em> is 1/<em>S<strong>N</strong>R</em> of the variance of <em>Y</em> due to <em>Y</em><sup>*</sup>).</p>
+                <h1 id="simulation-functions-s_">Simulation functions (<code>s_</code>)<a class="headerlink" href="#simulation-functions-s_" title="Permanent link">&para;</a></h1>
+<p>The <code>s_</code> functions were used to conduct the simulation studies in the
+<em>Bhatnagar et.al (2017+)</em>. The <code>s_modules</code>, <code>s_generate_data</code> and
+<code>s_generate_data_mars</code> are the main functions to generate the simulated
+data.</p>
+<p>In the paper we designed 6 simulation scenarios that are constructed to
+illustrate different kinds of relationships between the variables and
+the response. For all scenarios, we have created high dimensional data
+sets with \( p \) predictors, and sample sizes of \( n \). We also
+assume that we have two data sets for each simulation - a training data
+set where the parameters are estimated, and a testing data set where
+prediction performance is evaluated, each of equal size \( n_{train} =
+n_{test} \). The number of subjects who were exposed (\( n_{E=1}=100
+\)) and unexposed (\( n_{E=0}=100 \)) and the number of truly
+associated parameters (\( 0.10 * p \)) remain fixed across the 6
+simulation scenarios.</p>
+<p>Let</p>
+<p>
+<script type="math/tex; mode=display"> Y = Y^* + k \cdot \varepsilon </script>
+</p>
+<p>where \( Y ^ * \) is the linear predictor, the error term \(
+\varepsilon \) is generated from a standard normal distribution, and
+\( k \) is chosen such that the signal-to-noise ratio
+<script type="math/tex; mode=display"> SNR = \left(Var(Y^*) \over Var(\varepsilon)\right) </script> is 0.2, 1 and 2
+(e.g. the variance of the response variable \( Y \) due to \(
+\varepsilon \) is \( 1/SNR \) of the variance of \( Y \) due to \(
+Y^* \)).</p>
 <h2 id="the-design-matrix">The Design Matrix<a class="headerlink" href="#the-design-matrix" title="Permanent link">&para;</a></h2>
-<p>We generate covariate data in 5 blocks using the <code>s_modules</code> function which is a wrapper of the <code>simulateDatExpr</code> function from the <code>WGCNA</code> package in <code>R</code> (version 1.51). This generates data from a latent vector: first a seed vector is simulated, then covariates are generated with varying degree of correlation with the seed vector in a given block.</p>
-<p>For the unexposed observations (<em>E</em> = 0), only the predictors in the yellow block were simulated with correlation, while all other covariates were independent within and between blocks. For the exposed observations (<em>E</em> = 1), all 5 blocks contained predictors that are correlated.</p>
-<p>For simplicity, we will refer to the simulated data as gene expression data, with each column of the design matrix being a gene. First we generate gene expression data for <em>p</em> = 1000 genes, independently for the 100 unexposed (<code>d0</code>) and 100 exposed (<code>d1</code>) subjects using the <code>s_modules</code> function. The exposed subjects are meant to have correlated genes while the unexposed subject don't. The <code>modProportions</code> argument is a numeric vector with length equal the number of modules you want to generate plus one, containing fractions of the total number of genes to be put into each of the modules and into the "grey module", which means genes not related to any of the modules. In the following examples we generate 5 modules of equal size (15% of <em>p</em> each module) plus 1 "grey" module (25% of <em>p</em>)</p>
+<p>We generate covariate data in 5 blocks using the <code>s_modules</code> function
+which is a wrapper of the <code>simulateDatExpr</code> function from the <code>WGCNA</code>
+package in <code>R</code> (version 1.51). This generates data from a latent vector:
+first a seed vector is simulated, then covariates are generated with
+varying degree of correlation with the seed vector in a given block.</p>
+<p>For the unexposed observations (\( E=0 \)), only the predictors in the
+yellow block were simulated with correlation, while all other covariates
+were independent within and between blocks. For the exposed observations
+(\( E=1 \)), all 5 blocks contained predictors that are correlated.</p>
+<p>For simplicity, we will refer to the simulated data as gene expression
+data, with each column of the design matrix being a gene. First we
+generate gene expression data for \( p=1000 \) genes, independently
+for the 100 unexposed (<code>d0</code>) and 100 exposed (<code>d1</code>) subjects using the
+<code>s_modules</code> function. The exposed subjects are meant to have correlated
+genes while the unexposed subject don't. The <code>modProportions</code> argument
+is a numeric vector with length equal the number of modules you want to
+generate plus one, containing fractions of the total number of genes to
+be put into each of the modules and into the "grey module", which means
+genes not related to any of the modules. In the following examples we
+generate 5 modules of equal size (15% of \( p \) each module) plus 1
+"grey" module (25% of \( p \))</p>
 <div class="codehilite"><pre><span></span>pacman<span class="o">::</span>p_load<span class="p">(</span>eclust<span class="p">)</span>
 d0 <span class="o">&lt;-</span> s_modules<span class="p">(</span>n <span class="o">=</span> <span class="m">100</span><span class="p">,</span> p <span class="o">=</span> <span class="m">1000</span><span class="p">,</span> rho <span class="o">=</span> <span class="m">0</span><span class="p">,</span> exposed <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span>
                 modProportions <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.15</span><span class="p">,</span><span class="m">0.25</span><span class="p">),</span>
@@ -451,7 +488,10 @@ truemodule1 <span class="o">&lt;-</span> d1<span class="o">$</span>setLabels
 </pre></div>
 
 
-<p>Next we create the design matrix and label it. Note that the rows are the subjects and the columns are the genes. The first 100 rows correspond to the unexposed subjects, and the next 100 subjects correspond to the exposed subjects:</p>
+<p>Next we create the design matrix and label it. Note that the rows are
+the subjects and the columns are the genes. The first 100 rows
+correspond to the unexposed subjects, and the next 100 subjects
+correspond to the exposed subjects:</p>
 <div class="codehilite"><pre><span></span>pacman<span class="o">::</span>p_load<span class="p">(</span>magrittr<span class="p">)</span>
 
 X <span class="o">&lt;-</span> <span class="kp">rbind</span><span class="p">(</span>d0<span class="o">$</span>datExpr<span class="p">,</span> d1<span class="o">$</span>datExpr<span class="p">)</span> <span class="o">%&gt;%</span>
@@ -460,7 +500,10 @@ X <span class="o">&lt;-</span> <span class="kp">rbind</span><span class="p">(</s
 </pre></div>
 
 
-<p>Here we used the <code>pheatmap</code> and <code>viridis</code> packages to show the correlation matrices of the genes stratified by exposure status. The first figure corresponds to the unexposed (<em>E</em> = 0) subjects, and the second figure corresponds to the exposed (<em>E</em> = 1) subjects:</p>
+<p>Here we used the <code>pheatmap</code> and <code>viridis</code> packages to show the
+correlation matrices of the genes stratified by exposure status. The
+first figure corresponds to the unexposed \( (E=0) \) subjects, and
+the second figure corresponds to the exposed \( (E=1) \) subjects:</p>
 <div class="codehilite"><pre><span></span>pacman<span class="o">::</span>p_load<span class="p">(</span>pheatmap<span class="p">)</span>
 pacman<span class="o">::</span>p_load<span class="p">(</span>viridis<span class="p">)</span>
 
@@ -476,19 +519,39 @@ pheatmap<span class="o">::</span>pheatmap<span class="p">(</span>cor<span class=
 </pre></div>
 
 
-<p><img alt="" src="../simulation_files/figure-markdown_github/unnamed-chunk-3-1.png" /><img alt="" src="../simulation_files/figure-markdown_github/unnamed-chunk-3-2.png" /></p>
+<p><img alt="" src="../simulation_files/figure-markdown/unnamed-chunk-3-1.png" /><img alt="" src="../simulation_files/figure-markdown/unnamed-chunk-3-2.png" /></p>
 <h2 id="the-response">The response<a class="headerlink" href="#the-response" title="Permanent link">&para;</a></h2>
-<p>The first three simulation scenarios differ in how the linear predictor <em>Y</em><sup>*</sup> is defined, and also in the choice of regression model used to fit the data. In simulations 1 and 2 we use lasso (Tibshirani 1996) and elasticnet (Zou 2005) to fit linear models; then we use MARS (Friedman 1991) in simulation 3 to estimate non-linear effects. Simulations 4, 5 and 6 use the GLM version of these models, respectively, since the responses are binary.</p>
+<p>The first three simulation scenarios differ in how the linear predictor
+\( Y^* \) is defined, and also in the choice of regression model
+used to fit the data. In simulations 1 and 2 we use lasso (Tibshirani
+1996) and elasticnet (Zou 2005) to fit linear models; then we use MARS
+(Friedman 1991) in simulation 3 to estimate non-linear effects.
+Simulations 4, 5 and 6 use the GLM version of these models,
+respectively, since the responses are binary.</p>
 <h3 id="linear-relationship">Linear Relationship<a class="headerlink" href="#linear-relationship" title="Permanent link">&para;</a></h3>
-<p>For simulations 1 and 2 we used the <code>s_generate_data</code> function to generate linear relationships beteween the response and genes, of the form:</p>
-<p>$$Y^* = \sum_{\substack{j\in \left\lbrace 1, \ldots, 50 \right\rbrace\\ j \in \textrm{ red, green block}}}  \beta_j X_j + \beta_E E $$
- where <em>β</em><sub><em>j</em></sub> ∼ Unif[0.9,1.1] and <em>β</em><sub><em>E</em></sub> = 2. That is, only the first 50 predictors of both the red and green blocks are active. In this setting, only the main effects model is being fit to the simulated data.</p>
-<p>We used the <code>s_generate_data</code> with the <code>include_interaction = TRUE</code> argument to generate responses of the form:</p>
-<p>$$
+<p>For simulations 1 and 2 we used the <code>s_generate_data</code> function to
+generate linear relationships beteween the response and genes, of the
+form:</p>
+<p>
+<script type="math/tex; mode=display"> Y^* = \sum_{\substack{j\in \left\lbrace 1, \ldots, 50 \right\rbrace\\ j \in \textrm{ red, green block}}}  \beta_j X_j + \beta_E E </script>
+where \( \beta_j \sim \textrm{Unif}\left[ 0.9,1.1\right] \) and \(
+\beta_E = 2 \). That is, only the first 50 predictors of both the red
+and green blocks are active. In this setting, only the main effects
+model is being fit to the simulated data.</p>
+<p>We used the <code>s_generate_data</code> with the <code>include_interaction = TRUE</code>
+argument to generate responses of the form:</p>
+<p>
+<script type="math/tex; mode=display">
 Y^* = \sum_{\substack{j\in \left\lbrace 1, \ldots, 50 \right\rbrace\\ j \in \textrm{ red, green block}}} \beta_j X_j + \alpha_{j} X_j E + \beta_E E 
-$$</p>
-<p>where <em>β</em><sub><em>j</em></sub> ∼ Unif[0.9,1.1], <em>α</em><sub><em>j</em></sub> ∼ Unif[0.4,0.6], and <em>β</em><sub><em>E</em></sub> = 2. In this setting, both the main effects and their interactions with E are being fit to the simulated data.</p>
-<p>In this example we generate a response which depends on both the main effects and their interactions with E. We first generate the true <em>β</em> vector:</p>
+</script>
+</p>
+<p>where <script type="math/tex; mode=display"> \beta_j \sim \textrm{Unif}\left[ 0.9,1.1\right] </script>
+<script type="math/tex; mode=display"> \alpha_{j} \sim \textrm{Unif}\left[ 0.4,0.6\right] </script>
+<script type="math/tex; mode=display"> \beta_E = 2 </script> In this setting, both the main effects and their
+interactions with E are being fit to the simulated data.</p>
+<p>In this example we generate a response which depends on both the main
+effects and their interactions with E. We first generate the true \(
+\beta \) vector:</p>
 <div class="codehilite"><pre><span></span>betaMainEffect <span class="o">&lt;-</span> <span class="kt">vector</span><span class="p">(</span><span class="s">&quot;double&quot;</span><span class="p">,</span> length <span class="o">=</span> <span class="m">1000</span><span class="p">)</span>
 betaMainInteractions <span class="o">&lt;-</span> <span class="kt">vector</span><span class="p">(</span><span class="s">&quot;double&quot;</span><span class="p">,</span> length <span class="o">=</span> <span class="m">1000</span><span class="p">)</span>
 
@@ -509,12 +572,24 @@ beta <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</sp
 </pre></div>
 
 
-<p>Next we run the <code>s_generate_data</code> function to get the necessary results for the analysis step of the simulation study. This function creates a training and a test set of equal size by evenly divinding the subjects such that there are an equal number of exposed and unexposed in both training and test sets.</p>
-<p>There are several choices to make here, but these are the most important arguments:</p>
+<p>Next we run the <code>s_generate_data</code> function to get the necessary results
+for the analysis step of the simulation study. This function creates a
+training and a test set of equal size by evenly divinding the subjects
+such that there are an equal number of exposed and unexposed in both
+training and test sets.</p>
+<p>There are several choices to make here, but these are the most important
+arguments:</p>
 <ol>
-<li><code>cluster_distance</code>: How should the genes, ignoring the exposure status of the individuals, be clustered? We choose the <em>T<strong>O</strong>M</em> matrix based on all subjects.</li>
-<li><code>eclust_distance</code>: How should the genes, accounting for the exposure status of the individuals, be clustered? We choose the difference of the exposure sensitive TOM matrices: <em>T<strong>O</strong>M</em>(<em>X</em><sub>diff</sub>)=|<em>T<strong>O</strong>M</em><sub><em>E</em> = 1</sub> − <em>T<strong>O</strong>M</em><sub><em>E</em> = 0</sub>|</li>
-<li><code>cut_method</code>: How should the number of clusters be determined? We choose the <code>dynamicTreeCut::cutreeDynamic()</code> algorithm which automatically selects the number of clusters.</li>
+<li><code>cluster_distance</code>: How should the genes, ignoring the exposure
+    status of the individuals, be clustered? We choose the \( TOM \)
+    matrix based on all subjects.</li>
+<li><code>eclust_distance</code>: How should the genes, accounting for the exposure
+    status of the individuals, be clustered? We choose the difference of
+    the exposure sensitive TOM matrices: \( TOM(X_{\textrm{diff}}) =
+    |TOM_{E=1} - TOM_{E=0}| \)</li>
+<li><code>cut_method</code>: How should the number of clusters be determined? We
+    choose the <code>dynamicTreeCut::cutreeDynamic()</code> algorithm which
+    automatically selects the number of clusters.</li>
 </ol>
 <div class="codehilite"><pre><span></span>result <span class="o">&lt;-</span> s_generate_data<span class="p">(</span>p <span class="o">=</span> <span class="m">1000</span><span class="p">,</span> 
                           X <span class="o">=</span> X<span class="p">,</span>
@@ -572,14 +647,14 @@ beta <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</sp
 
 ## Calculating number of environment clusters based on  difftom
 
-##  ..cutHeight not given, setting it to 2.65  ===&gt;  99% of the (truncated) height range in dendro.
+##  ..cutHeight not given, setting it to 2.86  ===&gt;  99% of the (truncated) height range in dendro.
 ##  ..done.
 
 ## There are 2 clusters derived from the tom similarity matrix
 
-## There are 7 clusters derived from the difftom environment similarity matrix
+## There are 10 clusters derived from the difftom environment similarity matrix
 
-## There are a total of 9 clusters derived from the tom
+## There are a total of 12 clusters derived from the tom
 ##                   similarity matrix and the difftom environment similarity matrix
 </pre></div>
 
@@ -610,51 +685,94 @@ beta <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</sp
 
 
 <h3 id="non-linear-relationship">Non-Linear Relationship<a class="headerlink" href="#non-linear-relationship" title="Permanent link">&para;</a></h3>
-<p>We used the <code>s_generate_data_mars</code> function to generate non-linear effects of the predictors on the phenotype, of the form:</p>
+<p>We used the <code>s_generate_data_mars</code> function to generate non-linear
+effects of the predictors on the phenotype, of the form:</p>
 <p><img alt="" src="http://i.imgur.com/krucB3O.png" /></p>
-<p>The <code>s_generate_data_mars</code> works exactly the same way as the <code>s_generate_data</code> function. The only difference is that the <code>s_generate_data_mars</code> calls the <code>s_response_mars</code> function to generate the response, whereas the <code>s_generate_data</code> function calls the <code>s_response</code> function to generate the response.</p>
+<p>The <code>s_generate_data_mars</code> works exactly the same way as the
+<code>s_generate_data</code> function. The only difference is that the
+<code>s_generate_data_mars</code> calls the <code>s_response_mars</code> function to generate
+the response, whereas the <code>s_generate_data</code> function calls the
+<code>s_response</code> function to generate the response.</p>
 <h2 id="fitting-functions">Fitting Functions<a class="headerlink" href="#fitting-functions" title="Permanent link">&para;</a></h2>
-<p>In our paper, we compare three general approaches as detailed in the table below:</p>
+<p>In our paper, we compare three general approaches as detailed in the
+table below:</p>
 <p><img alt="" src="http://i.imgur.com/s9cGeuL.png" /></p>
-<p>There are 4 fitting functions corresponding to the approaches outlined in the table above, specifically made to be used with the simulated data:</p>
-<table style="width:88%;">
-<colgroup>
-<col width="22%" />
-<col width="26%" />
-<col width="38%" />
-</colgroup>
+<p>There are 4 fitting functions corresponding to the approaches outlined
+in the table above, specifically made to be used with the simulated
+data:</p>
+<table>
 <thead>
-<tr class="header">
-<th align="center">function.name</th>
-<th align="center">General.Approach</th>
-<th align="center">model</th>
+<tr>
+<th style="text-align:left;">
+function.name
+</th>
+<th style="text-align:left;">
+General.Approach
+</th>
+<th style="text-align:left;">
+model
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="center">s_pen_separate</td>
-<td align="center">SEPARATE</td>
-<td align="center">lasso, elasticnet, mcp, scad</td>
+<tr>
+<td style="text-align:left;">
+s_pen_separate
+</td>
+<td style="text-align:left;">
+SEPARATE
+</td>
+<td style="text-align:left;">
+lasso, elasticnet, mcp, scad
+</td>
 </tr>
-<tr class="even">
-<td align="center">s_pen_clust</td>
-<td align="center">CLUST, ECLUST</td>
-<td align="center">lasso, elasticnet, mcp, scad</td>
+<tr>
+<td style="text-align:left;">
+s_pen_clust
+</td>
+<td style="text-align:left;">
+CLUST, ECLUST
+</td>
+<td style="text-align:left;">
+lasso, elasticnet, mcp, scad
+</td>
 </tr>
-<tr class="odd">
-<td align="center">s_mars_separate</td>
-<td align="center">SEPARATE</td>
-<td align="center">MARS</td>
+<tr>
+<td style="text-align:left;">
+s_mars_separate
+</td>
+<td style="text-align:left;">
+SEPARATE
+</td>
+<td style="text-align:left;">
+MARS
+</td>
 </tr>
-<tr class="even">
-<td align="center">s_mars_clust</td>
-<td align="center">CLUST, ECLUST</td>
-<td align="center">MARS</td>
+<tr>
+<td style="text-align:left;">
+s_mars_clust
+</td>
+<td style="text-align:left;">
+CLUST, ECLUST
+</td>
+<td style="text-align:left;">
+MARS
+</td>
 </tr>
 </tbody>
 </table>
 
-<p>In this example we fit a lasso to the clusters from the ECLUST method. The key argument here is the <code>gene_groups</code>. We provide <code>result[["clustersAddon"]]</code> to the <code>gene_groups</code> function because it is the clustering result using the environment information. If we wanted to run the CLUST method, then we would provide <code>result[["clustersAll"]]</code> to the <code>gene_groups</code> argument, because <code>result[["clustersAll"]]</code> is the clustering result from ignoring the environment information. We also specify <code>summary = "pc"</code> and <code>model = "lasso"</code> to specify that we want to use the 1st PC as the cluster representation and fit a lasso model to those clusters and their interaction with <code>E</code> (as specified by the <code>include_interaction = TRUE</code> argument)</p>
+<p>In this example we fit a lasso to the clusters from the ECLUST method.
+The key argument here is the <code>gene_groups</code>. We provide
+<code>result[["clustersAddon"]]</code> to the <code>gene_groups</code> function because it is
+the clustering result using the environment information. If we wanted to
+run the CLUST method, then we would provide <code>result[["clustersAll"]]</code> to
+the <code>gene_groups</code> argument, because <code>result[["clustersAll"]]</code> is the
+clustering result from ignoring the environment information. We also
+specify <code>summary = "pc"</code> and <code>model = "lasso"</code> to specify that we want
+to use the 1st PC as the cluster representation and fit a lasso model to
+those clusters and their interaction with <code>E</code> (as specified by the
+<code>include_interaction = TRUE</code> argument)</p>
 <div class="codehilite"><pre><span></span><span class="c1"># Provide ECLUST clustering results to the gene_groups argument</span>
 pen_res <span class="o">&lt;-</span> s_pen_clust<span class="p">(</span>x_train <span class="o">=</span> result<span class="p">[[</span><span class="s">&quot;X_train&quot;</span><span class="p">]],</span>
                        x_test <span class="o">=</span> result<span class="p">[[</span><span class="s">&quot;X_test&quot;</span><span class="p">]],</span>
@@ -679,27 +797,27 @@ pen_res <span class="o">&lt;-</span> s_pen_clust<span class="p">(</span>x_train 
 
 
 <div class="codehilite"><pre><span></span>##                ECLUST_pc_lasso_yes_mse 
-##                           2140.8980169 
+##                           1.573582e+03 
 ##               ECLUST_pc_lasso_yes_RMSE 
-##                             46.2698392 
+##                           3.966840e+01 
 ##               ECLUST_pc_lasso_yes_Shat 
-##                            910.0000000 
+##                           2.060000e+02 
 ##                ECLUST_pc_lasso_yes_TPR 
-##                              0.4975124 
+##                           4.378109e-01 
 ##                ECLUST_pc_lasso_yes_FPR 
-##                              0.4500000 
+##                           6.555556e-02 
 ##    ECLUST_pc_lasso_yes_CorrectSparsity 
-##                              0.5447276 
+##                           8.845577e-01 
 ##    ECLUST_pc_lasso_yes_CorrectZeroMain 
-##                              0.5488889 
+##                           9.600000e-01 
 ##   ECLUST_pc_lasso_yes_CorrectZeroInter 
-##                              0.5511111 
+##                           9.088889e-01 
 ##  ECLUST_pc_lasso_yes_IncorrectZeroMain 
-##                              0.5049505 
+##                           1.287129e-01 
 ## ECLUST_pc_lasso_yes_IncorrectZeroInter 
-##                              0.5000000 
+##                           1.000000e+00 
 ##          ECLUST_pc_lasso_yes_nclusters 
-##                              9.0000000
+##                           1.200000e+01
 </pre></div>
 
 
@@ -785,7 +903,7 @@ pen_res <span class="o">&lt;-</span> s_pen_clust<span class="p">(</span>x_train 
       <script src="../assets/javascripts/application-16f434a21a.js"></script>
       <script>var config={url:{base:".."}},app=new Application(config);app.initialize()</script>
       
-        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       
     
     
