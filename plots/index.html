@@ -253,6 +253,10 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Heatmaps
+      </label>
+    
     <a href="./" title="Heatmaps" class="md-nav__link md-nav__link--active">
       Heatmaps
     </a>
@@ -263,6 +267,25 @@
   
     
   
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#plot-method-for-object-of-class-similarity" title="Plot Method for Object of class similarity" class="md-nav__link">
+    Plot Method for Object of class similarity
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plot-method-for-object-of-class-eclust" title="Plot Method for Object of class eclust" class="md-nav__link">
+    Plot Method for Object of class eclust
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
     
@@ -286,6 +309,25 @@
     
   
   
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#plot-method-for-object-of-class-similarity" title="Plot Method for Object of class similarity" class="md-nav__link">
+    Plot Method for Object of class similarity
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plot-method-for-object-of-class-eclust" title="Plot Method for Object of class eclust" class="md-nav__link">
+    Plot Method for Object of class eclust
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -297,9 +339,8 @@
                
               
                 
-                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
-
-<h1 id="plot-method-for-object-of-class-similarity">Plot Method for Object of class similarity<a class="headerlink" href="#plot-method-for-object-of-class-similarity" title="Permanent link">&para;</a></h1>
+                <h1 id="plots">Plots<a class="headerlink" href="#plots" title="Permanent link">&para;</a></h1>
+<h2 id="plot-method-for-object-of-class-similarity">Plot Method for Object of class <code>similarity</code><a class="headerlink" href="#plot-method-for-object-of-class-similarity" title="Permanent link">&para;</a></h2>
 <p>There is a plot method for similarity matrices included in this package, though it is very specific to the simulated data only since the resulting plot annotates the true cluster membership of the genes. The plot uses the <code>pheatmap</code> package for the heatmaps along with the <code>viridis</code> package for the color scheme so these packages need to be installed prior to using this function.</p>
 <p>The plot method is for objects of class <code>similarity</code>. The following objects, which are outputs of the <code>s_generate_data</code> function, are objects of class <code>similarity</code>:</p>
 <table style="width:21%;">
@@ -367,6 +408,74 @@ plot<span class="p">(</span>result<span class="o">$</span>tom_train_e1<span clas
 
 
 <p><img alt="" src="../plots_files/figure-markdown_github/unnamed-chunk-3-1.png" /></p>
+<hr />
+<h2 id="plot-method-for-object-of-class-eclust">Plot Method for Object of class <code>eclust</code><a class="headerlink" href="#plot-method-for-object-of-class-eclust" title="Permanent link">&para;</a></h2>
+<p>There is also a function that plots heatmaps of cluster summaries such as the 1st principal component or average by exposure status. This is a plot method for object of class eclust returned by the <code>r_cluster_data</code> function. Two heatmaps, side-by-side are returned, where the first heatmap corresponds to the unexposed subjects and the second heatmap corresponds to the exposed subjects.</p>
+<div class="codehilite"><pre><span></span><span class="c1"># load the data</span>
+data<span class="p">(</span><span class="s">&quot;tcgaov&quot;</span><span class="p">)</span>
+
+<span class="c1"># use log survival as the response</span>
+Y <span class="o">&lt;-</span> <span class="kp">log</span><span class="p">(</span>tcgaov<span class="p">[[</span><span class="s">&quot;OS&quot;</span><span class="p">]])</span>
+
+<span class="c1"># specify the environment variable</span>
+E <span class="o">&lt;-</span> tcgaov<span class="p">[[</span><span class="s">&quot;E&quot;</span><span class="p">]]</span>
+
+<span class="c1"># specify the matrix of genes only</span>
+genes <span class="o">&lt;-</span> <span class="kp">as.matrix</span><span class="p">(</span>tcgaov<span class="p">[,</span><span class="o">-</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;OS&quot;</span><span class="p">,</span><span class="s">&quot;rn&quot;</span><span class="p">,</span><span class="s">&quot;subtype&quot;</span><span class="p">,</span><span class="s">&quot;E&quot;</span><span class="p">,</span><span class="s">&quot;status&quot;</span><span class="p">),</span>with <span class="o">=</span> <span class="kc">FALSE</span><span class="p">])</span>
+
+<span class="c1"># for this example the training set will be all subjects.</span>
+<span class="c1"># change `p` argument to create a train and test set.</span>
+trainIndex <span class="o">&lt;-</span> <span class="kp">drop</span><span class="p">(</span>caret<span class="o">::</span>createDataPartition<span class="p">(</span>Y<span class="p">,</span> p <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="kt">list</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> times <span class="o">=</span> <span class="m">1</span><span class="p">))</span>
+testIndex <span class="o">&lt;-</span> trainIndex
+
+cluster_res <span class="o">&lt;-</span> r_cluster_data<span class="p">(</span>data <span class="o">=</span> genes<span class="p">,</span>
+                              response <span class="o">=</span> Y<span class="p">,</span>
+                              exposure <span class="o">=</span> E<span class="p">,</span>
+                              train_index <span class="o">=</span> trainIndex<span class="p">,</span>
+                              test_index <span class="o">=</span> testIndex<span class="p">,</span>
+                              cluster_distance <span class="o">=</span> <span class="s">&quot;corr&quot;</span><span class="p">,</span>
+                              eclust_distance <span class="o">=</span> <span class="s">&quot;diffcorr&quot;</span><span class="p">,</span>
+                              measure_distance <span class="o">=</span> <span class="s">&quot;euclidean&quot;</span><span class="p">,</span>
+                              clustMethod <span class="o">=</span> <span class="s">&quot;hclust&quot;</span><span class="p">,</span>
+                              cutMethod <span class="o">=</span> <span class="s">&quot;dynamic&quot;</span><span class="p">,</span>
+                              method <span class="o">=</span> <span class="s">&quot;average&quot;</span><span class="p">,</span>
+                              nPC <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+                              minimum_cluster_size <span class="o">=</span> <span class="m">30</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>##  ..cutHeight not given, setting it to 10.9  ===&gt;  99% of the (truncated) height range in dendro.
+##  ..done.
+
+## Calculating number of environment clusters based on diffcorr
+
+##  ..cutHeight not given, setting it to 0.923  ===&gt;  99% of the (truncated) height range in dendro.
+##  ..done.
+
+## There are 7 clusters derived from the corr similarity matrix
+
+## There are 4 clusters derived from the diffcorr environment similarity matrix
+
+## There are a total of 11 clusters derived from the corr
+##                   similarity matrix and the diffcorr environment similarity matrix
+</pre></div>
+
+
+<p>We check the class of the object returned from the clustering results on the <code>tcgaov</code> data:</p>
+<div class="codehilite"><pre><span></span><span class="kp">class</span><span class="p">(</span>cluster_res<span class="p">)</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>## [1] &quot;eclust&quot;
+</pre></div>
+
+
+<p>We simply pass this object to the generic <code>plot</code> function:</p>
+<div class="codehilite"><pre><span></span>plot<span class="p">(</span>cluster_res<span class="p">,</span> show_column_names <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="" src="../plots_files/figure-markdown_github/unnamed-chunk-6-1.png" /></p>
               
             </article>
           </div>
