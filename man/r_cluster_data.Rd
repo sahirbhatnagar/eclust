@@ -54,21 +54,25 @@ corr,corr1,corr0, tom, tom0, tom1 matrices}
 function}
 }
 \value{
-a list of length 3: \describe{\item{clustersAddon}{clustering results
+a list of length 8: \describe{\item{clustersAddon}{clustering results
   based on the environment and not the environment. see
   \code{\link{u_cluster_similarity}} for
   details}\item{clustersAll}{clustering results ignoring the environment. See
   \code{\link{u_cluster_similarity}} for details}\item{etrain}{vector of the
-  exposure variable for the training set}\item{clustersAddonMembership}{a
-  data.frame and data.table of the clustering membership for clustering
-  results based on the environment and not the environment. As a result, each
-  gene will show up twice in this table}\item{clustersAllMembership}{a
-  data.frame and data.table of the clustering membership for clustering
-  results based on all subjects i.e. ignoring the environment. Each gene will
-  only show up once in this table}\item{clustersEclustMembership}{a
-  data.frame and data.table of the clustering membership for clustering
-  results accounting for the environment. Each gene will only show up once in
-  this table}}
+  exposure variable for the training
+  set}\item{cluster_distance_similarity}{the similarity matrix based on the
+  argument specified in
+  \code{cluster_distance}}\item{eclust_distance_similarity}{the similarity
+  matrix based on the argument specified in
+  \code{eclust_distance}}\item{clustersAddonMembership}{a data.frame and
+  data.table of the clustering membership for clustering results based on the
+  environment and not the environment. As a result, each gene will show up
+  twice in this table}\item{clustersAllMembership}{a data.frame and
+  data.table of the clustering membership for clustering results based on all
+  subjects i.e. ignoring the environment. Each gene will only show up once in
+  this table}\item{clustersEclustMembership}{a data.frame and data.table of
+  the clustering membership for clustering results accounting for the
+  environment. Each gene will only show up once in this table}}
 }
 \description{
 This is one of the functions for real data analysis, which will

@@ -35,21 +35,25 @@
 #' @param ... arguments passed to the \code{\link{u_cluster_similarity}}
 #'   function
 #' @seealso \code{\link{u_cluster_similarity}}
-#' @return a list of length 3: \describe{\item{clustersAddon}{clustering results
+#' @return a list of length 8: \describe{\item{clustersAddon}{clustering results
 #'   based on the environment and not the environment. see
 #'   \code{\link{u_cluster_similarity}} for
 #'   details}\item{clustersAll}{clustering results ignoring the environment. See
 #'   \code{\link{u_cluster_similarity}} for details}\item{etrain}{vector of the
-#'   exposure variable for the training set}\item{clustersAddonMembership}{a
-#'   data.frame and data.table of the clustering membership for clustering
-#'   results based on the environment and not the environment. As a result, each
-#'   gene will show up twice in this table}\item{clustersAllMembership}{a
-#'   data.frame and data.table of the clustering membership for clustering
-#'   results based on all subjects i.e. ignoring the environment. Each gene will
-#'   only show up once in this table}\item{clustersEclustMembership}{a
-#'   data.frame and data.table of the clustering membership for clustering
-#'   results accounting for the environment. Each gene will only show up once in
-#'   this table}}
+#'   exposure variable for the training
+#'   set}\item{cluster_distance_similarity}{the similarity matrix based on the
+#'   argument specified in
+#'   \code{cluster_distance}}\item{eclust_distance_similarity}{the similarity
+#'   matrix based on the argument specified in
+#'   \code{eclust_distance}}\item{clustersAddonMembership}{a data.frame and
+#'   data.table of the clustering membership for clustering results based on the
+#'   environment and not the environment. As a result, each gene will show up
+#'   twice in this table}\item{clustersAllMembership}{a data.frame and
+#'   data.table of the clustering membership for clustering results based on all
+#'   subjects i.e. ignoring the environment. Each gene will only show up once in
+#'   this table}\item{clustersEclustMembership}{a data.frame and data.table of
+#'   the clustering membership for clustering results accounting for the
+#'   environment. Each gene will only show up once in this table}}
 #' @details This function clusters the data. The results of this function should
 #'   then be passed to the \code{\link{r_prepare_data}} function which output
 #'   the appropriate X and Y matrices in the right format for regression
@@ -315,12 +319,18 @@ r_cluster_data <- function(data,
   #                            pc = PC_and_avg_All$PC)
 
 
-  return(list(clustersAddon = PC_and_avg_Addon,
-              clustersAll = PC_and_avg_All,
-              etrain = etrain,
-              clustersAddonMembership = clustersAddon,
-              clustersAllMembership = clustersAll,
-              clustersEclustMembership = clustersEclust))
+  results_final <- list(clustersAddon = PC_and_avg_Addon,
+                        clustersAll = PC_and_avg_All,
+                        etrain = etrain,
+                        cluster_distance_similarity = similarity,
+                        eclust_distance_similarity = similarityEclust,
+                        clustersAddonMembership = clustersAddon,
+                        clustersAllMembership = clustersAll,
+                        clustersEclustMembership = clustersEclust)
+
+  class(results_final) <- "eclust"
+
+  return(results_final)
 }
 
 

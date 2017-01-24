@@ -14,8 +14,11 @@ copyright: 'Copyright &copy; 2017 Sahir Rai Bhatnagar'
 # Documentation and theme
 theme: 'material'
 
+#extra_javascript:
+#  - 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML'
+
 extra_javascript:
-  - 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML'
+    - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
 
 # Options
 extra:
@@ -44,6 +47,7 @@ markdown_extensions:
   - footnotes
   - meta
   - toc(permalink=true)
+  - mdx_math
 
 
 # Page tree
