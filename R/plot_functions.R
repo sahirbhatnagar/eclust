@@ -84,3 +84,136 @@ plot.similarity <- function(x,
            annotation_legend = TRUE, ...)
 
 }
+
+
+
+
+#' Plot Heatmap of Cluster Summaries by Exposure Status
+#'
+#'
+#' @description Plots cluster summaries such as the 1st principal component or
+#'   average by exposure status. This is a plot method for object of class
+#'   eclust returned by the \code{\link{r_cluster_data}} function. Two heatmaps,
+#'   side-by-side are returned, where the first heatmap corresponds to the
+#'   unexposed subjects and the second heatmap corresponds to the exposed
+#'   subjects.
+#'
+#' @param object object of class \code{eclust}, which is returned by the
+#'   \code{\link{r_cluster_data}} function
+#' @param type show results from the "ECLUST" (which considers the environment)
+#'   or "CLUST" (which ignores the environment) methods. Default is "ECLUST".
+#'   See \code{\link{r_cluster_data}} for details. This function uses the
+#'   \code{clustersAddon} object for "ECLUST" and the \code{clustersAll} for
+#'   "CLUST"
+#' @param summary show the 1st principal component or the average of each
+#'   cluster. Default is "pc".
+#' @param sample which sample to show, the "training" or the "test" set. Default
+#'   is "training". This is determined by the \code{train_index} and
+#'   \code{test_index} arguments in the \code{\link{r_cluster_data}} function.
+#'   If you want to show all subjects, then provide the numeric vector 1:n to
+#'   either argument, where n is the entire sample size.
+#' @param unexposed_title The title for the unexposed subjects heatmap. Default
+#'   is "E=0".
+#' @param exposed_title The title for the exposed subjects heatmap. Default is
+#'   "E=1".
+#' @param ... other arguments passed to the
+#'   \code{\link[ComplexHeatmap]{Heatmap}} function
+#' @details Rows are the cluster summaries and columns are the subjects. This
+#'   function determines the minimum and maximum value for the whole dataset and
+#'   then creates a color scale using those values with the
+#'   \code{\link[circlize]{colorRamp2}}. This is so that both heatmaps are on
+#'   the same color scale, i.e., each color represents the same value in both
+#'   heatmaps. This is done for being able to visually compare the results.
+#' @return a plot of two Heatmaps, side-by-side, of the cluster summaries by exposure status
+#' @export
+#'
+#' @examples
+#' data("tcgaov")
+#' tcgaov[1:5,1:6, with = FALSE]
+#' Y <- log(tcgaov[["OS"]])
+#' E <- tcgaov[["E"]]
+#' genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with = FALSE])
+#' trainIndex <- drop(caret::createDataPartition(Y, p = 1, list = FALSE, times = 1))
+#' testIndex <- setdiff(seq_len(length(Y)),trainIndex)
+#'
+#' cluster_res <- r_cluster_data(data = genes,
+#'                               response = Y,
+#'                               exposure = E,
+#'                               train_index = trainIndex,
+#'                               test_index = testIndex,
+#'                               cluster_distance = "tom",
+#'                               eclust_distance = "difftom",
+#'                               measure_distance = "euclidean",
+#'                               clustMethod = "hclust",
+#'                               cutMethod = "dynamic",
+#'                               method = "average",
+#'                               nPC = 1,
+#'                               minimum_cluster_size = 60)
+#'
+#' class(cluster_res)
+#' \dontrun{
+#' plot(cluster_res, show_column_names = FALSE)
+#' }
+plot.eclust <- function(object,
+                        type = c( "ECLUST","CLUST"),
+                        summary = c("pc","avg"),
+                        sample = c("training", "test"),
+                        unexposed_title = "E=0",
+                        exposed_title = "E=1", ...) {
+
+  # object <- cluster_res
+  # summary <- "avg"
+  # type = "ECLUST"
+  # sample = "training"
+  # unexposed_title = "E=0"
+  # exposed_title = "E=1"
+
+  #============================
+
+  type <- match.arg(type)
+  summary <- match.arg(summary)
+  sample <- match.arg(sample)
+
+  plot_data <- switch(type,
+                      ECLUST = {
+                        object$clustersAddon
+                      },
+                      CLUST = {
+                        object$clustersAll
+                      })
+
+  plot_data_2 <- switch(summary,
+                        pc = {
+                          switch(sample,
+                                 training = {
+                                   plot_data$PC
+                                 },
+                                 test = {
+                                   plot_data$PCTest
+                                 })
+                        },
+                        avg = {
+                          switch(sample,
+                                 training = {
+                                   plot_data$averageExpr
+                                 },
+                                 test = {
+                                   plot_data$averageExprTest
+                                 })
+                        })
+
+  max_heat <- max(c(max(plot_data_2[which(object$etrain==0),]),max(plot_data_2[which(object$etrain==1),])))
+  min_heat <- min(c(min(plot_data_2[which(object$etrain==0),]),min(plot_data_2[which(object$etrain==1),])))
+
+  cm <- circlize::colorRamp2(seq(min_heat, max_heat, length.out = 100), viridis::viridis(100))
+  ht1 = ComplexHeatmap::Heatmap(t(plot_data_2[which(object$etrain==0),]),
+                                name = "E=0",
+                                col = cm,
+                                column_title = unexposed_title, ...)
+  ht2 = ComplexHeatmap::Heatmap(t(plot_data_2[which(object$etrain==1),]),
+                                name = "E=1",
+                                col = cm,
+                                column_title = exposed_title, ...)
+  ht1 + ht2
+
+}

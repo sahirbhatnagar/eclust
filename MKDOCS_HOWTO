@@ -30,6 +30,10 @@ output:
 
 3. Add the name of the page and the .md document to mkdocs.yml (which is located in the root folder)
 
+From the root folder (the one that has the YAML file for the site)
+mkdocs build
+mkdocs gh-deploy
+
 4. For mathjax:
 
 first make sure you have root permissions on the python folder:

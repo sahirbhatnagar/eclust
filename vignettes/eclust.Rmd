@@ -419,8 +419,9 @@ The table below describes the measures of performance:
 ![](http://i.imgur.com/o0m6p0z.png)
 
 
+# Plots
  
-# Plot Method for Object of class similarity
+## Plot Method for Object of class similarity
  
  There is a plot method for similarity matrices included in this package, though it is very specific to the simulated data only since the resulting plot annotates the true cluster membership of the genes. The plot uses the `pheatmap` package for the heatmaps along with the `viridis` package for the color scheme so these packages need to be installed prior to using this function. 
 
@@ -449,6 +450,24 @@ plot(result$tom_train_e1,
 ```
 
  
+## Plot Method for Object of class eclust
+
+There is also a function that plots heatmaps of cluster summaries such as the 1st principal component or average by exposure status. This is a plot method for object of class eclust returned by the `r_cluster_data` function. Two heatmaps, side-by-side are returned, where the first heatmap corresponds to the unexposed subjects and the second heatmap corresponds to the exposed subjects.
+
+
+We check the class of the object returned from the clustering results on the `tcgaov` data:
+
+```{r}
+class(cluster_res)
+```
+
+We simply pass this object to the generic `plot` function:
+
+```{r}
+plot(cluster_res, show_column_names = FALSE)
+```
+
+
 
 
 
