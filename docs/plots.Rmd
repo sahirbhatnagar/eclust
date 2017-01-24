@@ -12,7 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 pacman::p_load(eclust)
 ```
 
-<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
 
 ```{r, results='hide', message=FALSE, echo=FALSE}
 pacman::p_load(eclust)
@@ -80,10 +79,11 @@ result <- s_generate_data(p = 1000,
 ```
 
 
+# Plots
 
-# Plot Method for Object of class similarity
+## Plot Method for Object of class `similarity`
  
- There is a plot method for similarity matrices included in this package, though it is very specific to the simulated data only since the resulting plot annotates the true cluster membership of the genes. The plot uses the `pheatmap` package for the heatmaps along with the `viridis` package for the color scheme so these packages need to be installed prior to using this function. 
+There is a plot method for similarity matrices included in this package, though it is very specific to the simulated data only since the resulting plot annotates the true cluster membership of the genes. The plot uses the `pheatmap` package for the heatmaps along with the `viridis` package for the color scheme so these packages need to be installed prior to using this function. 
 
 The plot method is for objects of class `similarity`. The following objects, which are outputs of the `s_generate_data` function, are objects of class `similarity`:
 
@@ -110,3 +110,56 @@ plot(result$tom_train_e1,
 ```
 
  
+*******************
+
+## Plot Method for Object of class `eclust`
+
+There is also a function that plots heatmaps of cluster summaries such as the 1st principal component or average by exposure status. This is a plot method for object of class eclust returned by the `r_cluster_data` function. Two heatmaps, side-by-side are returned, where the first heatmap corresponds to the unexposed subjects and the second heatmap corresponds to the exposed subjects.
+
+
+```{r, eval = TRUE}
+# load the data
+data("tcgaov")
+
+# use log survival as the response
+Y <- log(tcgaov[["OS"]])
+
+# specify the environment variable
+E <- tcgaov[["E"]]
+
+# specify the matrix of genes only
+genes <- as.matrix(tcgaov[,-c("OS","rn","subtype","E","status"),with = FALSE])
+
+# for this example the training set will be all subjects.
+# change `p` argument to create a train and test set.
+trainIndex <- drop(caret::createDataPartition(Y, p = 1, list = FALSE, times = 1))
+testIndex <- trainIndex
+
+cluster_res <- r_cluster_data(data = genes,
+                              response = Y,
+                              exposure = E,
+                              train_index = trainIndex,
+                              test_index = testIndex,
+                              cluster_distance = "corr",
+                              eclust_distance = "diffcorr",
+                              measure_distance = "euclidean",
+                              clustMethod = "hclust",
+                              cutMethod = "dynamic",
+                              method = "average",
+                              nPC = 1,
+                              minimum_cluster_size = 30)
+```
+
+
+We check the class of the object returned from the clustering results on the `tcgaov` data:
+
+```{r}
+class(cluster_res)
+```
+
+We simply pass this object to the generic `plot` function:
+
+```{r}
+plot(cluster_res, show_column_names = FALSE)
+```
+

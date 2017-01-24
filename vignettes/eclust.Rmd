@@ -187,6 +187,9 @@ head(avg_eclust_interaction[["X"]])
 At this stage, you can decide which regression model to use. Here we choose the MARS model from the `earth` package, but you may choose regression models from any number of packages (e.g. see the [extensive list of models](https://topepo.github.io/caret/available-models.html) of models available in the `caret` package).
 
 ```{r}
+# install and load earth package
+pacman::p_load(char = "earth")
+
 fit_earth <- earth::earth(x = avg_eclust_interaction[["X"]], y = avg_eclust_interaction[["Y"]], 
                           pmethod = "backward", 
                           keepxy = TRUE, degree = 2, trace = 1, nk = 1000)

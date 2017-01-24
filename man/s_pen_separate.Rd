@@ -113,6 +113,7 @@ The stability of feature importance is defined as the variability of
   agreement will result in a distance of 0.
 }
 \examples{
+\dontrun{
 library(magrittr)
 
 # simulation parameters
@@ -186,6 +187,7 @@ pen_res <- s_pen_separate(x_train = result[["X_train"]],
                           exp_family = "gaussian",
                           include_interaction = TRUE)
 unlist(pen_res)
+}
 }
 \references{
 Toloşi, L., & Lengauer, T. (2011). \emph{Classification with

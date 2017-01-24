@@ -702,6 +702,7 @@ s_pen_clust <- function(x_train,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #'
 #' # simulation parameters
@@ -775,6 +776,7 @@ s_pen_clust <- function(x_train,
 #'                           exp_family = "gaussian",
 #'                           include_interaction = TRUE)
 #' unlist(pen_res)
+#' }
 s_pen_separate <- function(x_train,
                            x_test,
                            y_train,
