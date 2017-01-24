@@ -214,6 +214,7 @@ plot.eclust <- function(object,
                                 name = "E=1",
                                 col = cm,
                                 column_title = exposed_title, ...)
-  ht1 + ht2
+
+  ComplexHeatmap::add_heatmap(ht1,ht2)
 
 }

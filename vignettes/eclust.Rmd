@@ -53,7 +53,7 @@ Alternatively, you can install the development version of `eclust` from [GitHub]
 
 ```{r eval=FALSE, echo=TRUE}
 install.packages("pacman")
-pacman::p_load_gh("sahirbhatnagar/eclust")
+pacman::p_install_gh("sahirbhatnagar/eclust")
 ```
 
 
