@@ -11,7 +11,7 @@
 
 # eclust
 
-The `eclust` package implements the methods developped in the paper *An analytic approach for interpretable predictive models in high dimensional data, in the presence of interactions with exposures (2017+)* [Preprint](http://sahirbhatnagar.com/slides/manuscript1_SB_v4.pdf). Breifly, `eclust` is a two-step procedure: 1a) a clustering stage where variables are clustered based on some measure of similarity, 1b) a dimension reduction stage where a summary measure is created for each of the  clusters, and 2) a simultaneous variable selection and regression stage on the summarized cluster measures.
+The `eclust` package implements the methods developped in the paper *An analytic approach for interpretable predictive models in high dimensional data, in the presence of interactions with exposures (2017+)* [Preprint](https://doi.org/10.1101/102475). Breifly, `eclust` is a two-step procedure: 1a) a clustering stage where variables are clustered based on some measure of similarity, 1b) a dimension reduction stage where a summary measure is created for each of the  clusters, and 2) a simultaneous variable selection and regression stage on the summarized cluster measures.
 
 ## Installation
 
