@@ -23,7 +23,7 @@ env:
     - secure: "NpWZpQj48jV/QWAUCcJeKI9b/ZmO51jBi4bjd5KKFoDLog/imw0GFnMUuYv1DEkXdOZhV1H12n3mNlr0H/S84/7fv1gsoSqsse1eL/2Bmr38yDUFu42vZGYRXPrFyobkeJug+O+KzgeyVkvUrb5e2t48VQmdqNc7HUM5VTCTUGndPS96b4LSulO7U2oLCvbCrczGe0w+PTXYExdqC11p5QvekXcAG44SoIi+HEU0HkBf96MM8hPFdU+B8QpjgTGvtL6hxOOj2jsfxtTSCzB/Ih40K4OMO/IrdMiGN5mb1/p0VYW3wTD+Zvul1JKUvfzU4RGtMw50tuokDMcmaRCOwF0scOLH8JS9z9w7Dz5qDrV1vh462eG+MBobKAtZx0HygRnh6KXYVNzegY4VH+4FO8Ui902kdVH8KSz+zfmP//3+AWKa/g5w/IIx+TN48QwyBeaWSzYE4SmlN7Fm/iHuyS55RiyC/LJLuq9eS3WkGL1RAJGQTtkmRhxLJ211lmc5K6gDCa2mZhJcZrLGjAUSTqvgBnxOxe7ados4ESgMd0qlztb1xNCbQYDZRNnZc4MsJ3tbBI6Q4tdyl+KdjtCC4EQJelEiHuQpZf5y5P14BCiP+1UwaRihfbXJdAOzkJgwUMpPy/Hw2uWMeOdFNnGcqmoVhRa4kQDPvFTo0DQtEoI="
 
 before_install:
-  - sudo Rscript -e 'update.packages(ask = FALSE)'
+  - Rscript -e 'update.packages(ask = FALSE)'
   - sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra dvipng texlive-latex-recommended
   - tlmgr install ucs index
 
