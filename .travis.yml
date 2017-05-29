@@ -12,7 +12,10 @@
 #----------------------------------------------------------------
 
 language: r
-dist: trusty
+r:
+  - release
+  - devel
+sudo: false
 cache: packages
 
 warnings_are_errors: false
@@ -36,3 +39,7 @@ bioc_packages:
   - preprocessCore
   - GO.db
   - AnnotationDbi
+
+notifications:
+  email:
+    - sahir.bhatnagar@gmail.com
